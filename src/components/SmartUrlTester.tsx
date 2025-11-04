@@ -173,20 +173,10 @@ EJEMPLOS COMUNES:
             <Button
               onClick={testInitialUrl}
               disabled={!state.url || isTesting}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
               size="lg"
             >
-              {isTesting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Probando URL...
-                </>
-              ) : (
-                <>
-                  <TestTube className="mr-2 h-4 w-4" />
-                  🧪 Probar URL (Obligatorio)
-                </>
-              )}
+              {isTesting ? 'Probando URL...' : 'Probar URL (Obligatorio)'}
             </Button>
             <p className="text-sm text-muted-foreground mt-2 text-center">
               {isInitial && "Debes probar la URL primero para ver cuántas noticias están disponibles"}
@@ -217,7 +207,7 @@ EJEMPLOS COMUNES:
                 
                 <div className="mb-3 p-3 bg-white dark:bg-gray-800 rounded-lg border">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">Noticias disponibles:</span>
+                    <span className="font-medium text-foreground">Noticias disponibles:</span>
                     <span className={`text-xl font-bold ${hasResults ? 'text-green-700' : 'text-yellow-700'}`}>
                       {state.testResult.available_news_count}
                     </span>
@@ -238,15 +228,15 @@ EJEMPLOS COMUNES:
                 {/* Vista previa de noticias */}
                 {state.testResult.news_preview && state.testResult.news_preview.length > 0 && (
                   <div>
-                    <p className="font-medium mb-2">Vista previa (primeras noticias):</p>
+                    <p className="font-medium text-foreground mb-2">Vista previa (primeras noticias):</p>
                     <ul className="max-h-48 overflow-y-auto space-y-1 text-sm">
                       {state.testResult.news_preview.slice(0, 5).map((noticia, index) => (
                         <li key={index} className="flex items-start gap-2">
-                          <span className="text-muted-foreground">{index + 1}.</span>
+                          <span className="text-gray-500 dark:text-gray-600">{index + 1}.</span>
                           <div>
-                            <div className="font-medium">{noticia.titulo}</div>
+                            <div className="font-medium text-gray-900 dark:text-gray-900">{noticia.titulo}</div>
                             {noticia.descripcion && (
-                              <div className="text-muted-foreground text-xs">
+                              <div className="text-gray-600 dark:text-gray-700 text-xs">
                                 {noticia.descripcion}
                               </div>
                             )}
@@ -263,7 +253,7 @@ EJEMPLOS COMUNES:
           {/* Límite de noticias (solo si hay resultados) */}
           {hasResults && (
             <div className="space-y-2 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-              <Label htmlFor="maxNewsLimit" className="font-medium text-green-700">
+              <Label htmlFor="maxNewsLimit" className="font-medium text-green-700 dark:text-green-300">
                 📊 Límite de noticias a extraer
                 <span className="text-muted-foreground ml-2">
                   (máximo {state.testResult?.available_news_count || 0})
@@ -319,7 +309,6 @@ EJEMPLOS COMUNES:
                   size="sm"
                   onClick={showSelectorHelp}
                 >
-                  <HelpCircle className="h-4 w-4 mr-2" />
                   Ayuda
                 </Button>
               </div>
@@ -405,7 +394,7 @@ EJEMPLOS COMUNES:
                 {/* Tab: Listado de Noticias */}
                 <TabsContent value="listing" className="space-y-4">
                   <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-blue-900 mb-2">📋 Selectores de Listado</h4>
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">📋 Selectores de Listado</h4>
                     <p className="text-sm text-blue-700">
                       Para extraer múltiples noticias de páginas principales (ej: portadas de periódicos)
                     </p>
@@ -601,7 +590,7 @@ EJEMPLOS COMUNES:
         {state.testResult && (
           <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Estado del test:</span>
+              <span className="text-sm font-medium text-foreground">Estado del test:</span>
               <Badge variant={hasResults ? "default" : "secondary"}>
                 {hasResults ? "✅ Completado" : "⚠️ Necesita configuración"}
               </Badge>

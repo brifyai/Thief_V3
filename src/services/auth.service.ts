@@ -22,7 +22,7 @@ export interface AuthResponse {
 
 export async function login(data: LoginRequest): Promise<AuthResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 
 export async function register(data: RegisterRequest): Promise<AuthResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
 
 export async function verifyToken(token: string): Promise<{ valid: boolean; user?: User }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -128,7 +128,7 @@ export async function verifyToken(token: string): Promise<{ valid: boolean; user
 
 export async function getCurrentUser(token: string): Promise<User | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
