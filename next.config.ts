@@ -1,11 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Configuración de variables de entorno
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
-  },
-
   // Optimizaciones
   swcMinify: true,
   output: 'standalone',
