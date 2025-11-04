@@ -1,5 +1,6 @@
 // Configuración segura de API
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+export const API_BASE_URL = `${BASE_URL}/api`;
 
 // Clase de error personalizada para autenticación
 export class AuthenticationError extends Error {

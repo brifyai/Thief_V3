@@ -227,7 +227,7 @@ EJEMPLOS COMUNES:
               value={region}
               onChange={(e) => setRegion(e.target.value)}
               disabled={isLoading}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-md bg-background text-foreground"
             >
               <option value="">Sin región</option>
               {REGIONES_CHILE.map((region) => (
@@ -244,20 +244,10 @@ EJEMPLOS COMUNES:
           <Button
             onClick={testUrl}
             disabled={!url || isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             size="lg"
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Probando URL...
-              </>
-            ) : (
-              <>
-                <TestTube className="mr-2 h-4 w-4" />
-                🧪 Probar URL
-              </>
-            )}
+            {isLoading ? 'Probando URL...' : 'Probar URL'}
           </Button>
 
           {/* Resultados del Test */}
@@ -280,7 +270,7 @@ EJEMPLOS COMUNES:
                 
                 <div className="mb-3 p-3 bg-white dark:bg-gray-800 rounded-lg border">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">Noticias disponibles:</span>
+                    <span className="font-medium text-foreground">Noticias disponibles:</span>
                     <span className={`text-xl font-bold ${isSuccess ? 'text-green-700' : 'text-yellow-700'}`}>
                       {result.news_count}
                     </span>
@@ -301,15 +291,15 @@ EJEMPLOS COMUNES:
                 {/* Vista previa de noticias */}
                 {result.preview && result.preview.length > 0 && (
                   <div>
-                    <p className="font-medium mb-2">Vista previa (primeras noticias):</p>
+                    <p className="font-medium text-foreground mb-2">Vista previa (primeras noticias):</p>
                     <ul className="max-h-48 overflow-y-auto space-y-1 text-sm">
                       {result.preview.slice(0, 5).map((noticia, index) => (
                         <li key={index} className="flex items-start gap-2">
-                          <span className="text-muted-foreground">{index + 1}.</span>
+                          <span className="text-gray-500 dark:text-gray-600">{index + 1}.</span>
                           <div>
-                            <div className="font-medium">{noticia.title}</div>
+                            <div className="font-medium text-gray-900 dark:text-gray-900">{noticia.title}</div>
                             {noticia.excerpt && (
-                              <div className="text-muted-foreground text-xs">
+                              <div className="text-gray-600 dark:text-gray-700 text-xs">
                                 {noticia.excerpt}
                               </div>
                             )}
@@ -332,7 +322,7 @@ EJEMPLOS COMUNES:
                 {/* Sugerencias si hay error */}
                 {result.suggestions && result.suggestions.length > 0 && (
                   <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200">
-                    <p className="font-medium text-blue-700 mb-2">💡 Sugerencias:</p>
+                    <p className="font-medium text-blue-700 dark:text-blue-300 mb-2">💡 Sugerencias:</p>
                     <ul className="text-sm text-blue-600 space-y-1">
                       {result.suggestions.map((suggestion, index) => (
                         <li key={index}>• {suggestion}</li>
@@ -347,7 +337,7 @@ EJEMPLOS COMUNES:
           {/* Límite de noticias (solo si hay resultados) */}
           {hasResults && (
             <div className="space-y-2 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-              <Label htmlFor="maxNewsLimit" className="font-medium text-green-700">
+              <Label htmlFor="maxNewsLimit" className="font-medium text-green-700 dark:text-green-300">
                 📊 Límite de noticias a extraer
                 <span className="text-muted-foreground ml-2">
                   (máximo {result?.news_count || 0})
@@ -379,7 +369,6 @@ EJEMPLOS COMUNES:
                 onClick={() => setShowAdvanced(!showAdvanced)}
                 className="w-full"
               >
-                <Settings className="mr-2 h-4 w-4" />
                 {showAdvanced ? 'Ocultar' : 'Mostrar'} Configuración Avanzada
               </Button>
 
@@ -401,7 +390,6 @@ EJEMPLOS COMUNES:
                         size="sm"
                         onClick={showSelectorHelp}
                       >
-                        <HelpCircle className="h-4 w-4 mr-2" />
                         Ayuda
                       </Button>
                     </div>
@@ -464,17 +452,7 @@ EJEMPLOS COMUNES:
                         disabled={isLoading || !customSelectors.title || !customSelectors.content}
                         variant="outline"
                       >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Probando...
-                          </>
-                        ) : (
-                          <>
-                            <TestTube className="mr-2 h-4 w-4" />
-                            🧪 Probar Selectores
-                          </>
-                        )}
+                        {isLoading ? 'Probando...' : 'Probar Selectores'}
                       </Button>
 
                       <Button
@@ -488,7 +466,6 @@ EJEMPLOS COMUNES:
                         })}
                         disabled={isLoading}
                       >
-                        <Trash2 className="mr-2 h-4 w-4" />
                         Limpiar
                       </Button>
                     </div>

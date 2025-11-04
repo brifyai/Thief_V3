@@ -1,5 +1,8 @@
 import { API_BASE_URL, getAuthHeaders } from '../lib/api-secure';
 
+// URL base sin /api para endpoints especiales
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 export interface ArticleDetail {
   id: number;
   title?: string;
@@ -303,7 +306,7 @@ class ArticleService {
   // Generar resumen con IA
   async generateAISummary(content: string, title: string): Promise<string> {
     try {
-      const response = await fetch(`${API_BASE_URL}/rewrite-with-ai`, {
+      const response = await fetch(`${BASE_URL}/rewrite-with-ai`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),

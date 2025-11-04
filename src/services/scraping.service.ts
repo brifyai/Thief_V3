@@ -1,4 +1,8 @@
-import { API_BASE_URL, getAuthHeaders } from '../lib/api-secure';
+import { getAuthHeaders } from '../lib/api-secure';
+
+// URLs base - scraping endpoints están en la raíz, no en /api
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = `${BASE_URL}/api`;
 
 export interface ScrapingResult {
   success: boolean;
@@ -83,7 +87,7 @@ class ScrapingService {
   async scrape(url: string): Promise<ScrapingResult> {
     try {
       // Usar el endpoint correcto: /scrape-single (sin /api)
-      const response = await fetch(`${API_BASE_URL.replace('/api', '')}/scrape-single`, {
+      const response = await fetch(`${BASE_URL}/scrape-single`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ url })
@@ -113,7 +117,7 @@ class ScrapingService {
   // Reescribir contenido con IA
   async rewriteWithAI(content: string): Promise<{ rewritten_content: string }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/rewrite-with-ai`, {
+      const response = await fetch(`${BASE_URL}/rewrite-with-ai`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ content })

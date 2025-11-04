@@ -14,9 +14,9 @@ async function fetchHighlights(): Promise<HighlightsData> {
     throw new Error('No authentication token found');
   }
 
-  console.log('🔍 Fetching highlights from:', `${API_URL}/highlights`);
+  console.log('🔍 Fetching highlights from:', `${API_URL}/api/highlights`);
 
-  const response = await fetch(`${API_URL}/highlights`, {
+  const response = await fetch(`${API_URL}/api/highlights`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'

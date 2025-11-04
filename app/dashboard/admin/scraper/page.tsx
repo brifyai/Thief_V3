@@ -36,12 +36,10 @@ export default function AdminScraperPage() {
         {/* Tabs para diferentes métodos de prueba */}
         <Tabs defaultValue="simple" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="simple" className="flex items-center gap-2">
-              <TestTube className="h-4 w-4" />
+            <TabsTrigger value="simple">
               Test Simple (Recomendado)
             </TabsTrigger>
-            <TabsTrigger value="advanced" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
+            <TabsTrigger value="advanced">
               Test Avanzado
             </TabsTrigger>
           </TabsList>

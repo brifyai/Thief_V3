@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User, Settings, RefreshCw, Bell } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import toast from 'react-hot-toast';
 
@@ -25,6 +25,10 @@ export function Header() {
     logout();
     toast.success('Sesión cerrada exitosamente');
     router.push('/login');
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
   };
 
   const getInitials = (name: string) => {
@@ -45,7 +49,23 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Badge variant={user?.role === 'admin' ? 'default' : 'secondary'}>
+        {user?.role === 'admin' && (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+            >
+              Actualizar
+            </Button>
+
+            <Button variant="outline" size="sm">
+              Alertas
+            </Button>
+          </>
+        )}
+
+        <Badge variant={user?.role === 'admin' ? 'destructive' : 'secondary'}>
           {user?.role === 'admin' ? '👑 Admin' : '👤 Usuario'}
         </Badge>
 
