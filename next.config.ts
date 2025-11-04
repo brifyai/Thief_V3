@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
 
   // Optimizaciones
   swcMinify: true,
+  output: 'standalone',
   
   // Configuración de imágenes
   images: {
