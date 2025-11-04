@@ -1,4 +1,4 @@
-const prisma = require('../config/database'); // Usar instancia compartida
+const { supabase } = require('../config/database'); // Usar instancia compartida
 const { scrapeSite, scrapeSingleArticle } = require('./scraping.service');
 const { categorizeWithAI } = require('./ai.service');
 const { generateTitleAndSummary } = require('./aiEnhancer.service');

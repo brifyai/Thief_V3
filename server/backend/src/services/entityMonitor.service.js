@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const Groq = require('groq-sdk');
 const config = require('../config/env');
 const { trackAICallSimple } = require('../utils/aiWrapper');

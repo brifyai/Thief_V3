@@ -42,24 +42,18 @@ const getMe = async (req, res) => {
   try {
     const userId = req.user.id;
     
-    const user = await require('../config/database').user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        is_active: true,
-        created_at: true,
-        last_login: true
-      }
-    });
+    const supabase = require('../config/supabase');
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, email, name, role, is_active, created_at, last_login')
+      .eq('id', userId)
+      .single();
 
-    if (!user) {
+    if (error || !user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    res.json(user);
+    res.json({ user });
   } catch (error) {
     console.error('Error en getMe:', error);
     res.status(500).json({ error: 'Error al obtener información del usuario' });

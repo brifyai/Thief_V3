@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const duplicateDetector = require('./duplicateDetector.service');
 const { loggers } = require('../utils/logger');
 

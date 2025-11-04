@@ -8,8 +8,8 @@
  */
 
 require('dotenv').config();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { supabase } = require('../src/config/database');
+// Supabase client imported from config
 
 // Parsear argumentos
 const args = process.argv.slice(2);

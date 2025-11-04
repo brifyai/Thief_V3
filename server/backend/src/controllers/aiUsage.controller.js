@@ -3,7 +3,7 @@
 // Endpoints para monitoreo de uso de tokens IA
 // ========================================
 
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const { tokenTracker, MODEL_PRICING } = require('../services/tokenTracker.service');
 
 /**

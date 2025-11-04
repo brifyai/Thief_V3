@@ -195,7 +195,7 @@ const createWorker = () => {
     // Guardar error en la base de datos para que el usuario lo vea
     if (job && job.data) {
       try {
-        const prisma = require('../config/database');
+        const { supabase } = require('../config/database');
         const { userId, urls } = job.data;
         
         console.log(`💾 Guardando error en DB para usuario ${userId}...`);

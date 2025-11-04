@@ -57,11 +57,10 @@ npm start                # Ejecutar ambas
 npm run start:backend    # Solo backend
 npm run start:frontend   # Solo frontend
 
-# Base de datos (Backend)
-cd backend
-npx prisma migrate dev   # Ejecutar migraciones
-npx prisma studio       # Abrir Prisma Studio
-cd ..
+# Base de datos (Supabase)
+# 1. Ve a https://supabase.com y crea un proyecto
+# 2. Ejecuta supabase-schema.sql en el Editor SQL
+# 3. Configura SUPABASE_URL y SUPABASE_ANON_KEY en .env
 ```
 
 ---
@@ -101,11 +100,10 @@ npm run install:all
 
 ### Base de datos no configurada
 ```bash
-cd backend
-cp .env.example .env
-# Edita .env con tu DATABASE_URL
-npx prisma migrate dev
-cd ..
+# 1. Crea un proyecto en https://supabase.com
+# 2. Ejecuta supabase-schema.sql en Supabase Dashboard
+# 3. Configura las variables en .env:
+#    DATABASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY
 ```
 
 ---

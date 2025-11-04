@@ -5,8 +5,8 @@
 
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { supabase } = require('../src/config/database');
+// Supabase client imported from config
 
 async function createUser(email, password, name = null, role = 'user') {
   try {

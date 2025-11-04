@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+const { supabase } = require('../config/database');
 const bcrypt = require('bcryptjs');
-const prisma = new PrismaClient();
+// Supabase client imported from config
 
 // Obtener todos los usuarios (solo admin)
 exports.getAllUsers = async (req, res) => {

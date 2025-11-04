@@ -8,7 +8,6 @@ Aplicación completa de Web Scraping con Backend (Node.js/Express) y Frontend (N
 .
 ├── backend/                 # API REST (Node.js + Express)
 │   ├── src/
-│   ├── prisma/             # Base de datos
 │   ├── public/             # Archivos estáticos
 │   ├── scripts/            # Scripts de utilidad
 │   └── package.json
@@ -111,17 +110,12 @@ npm start
    ```
 
 2. Configura las variables de entorno necesarias:
-   - `DATABASE_URL`: Conexión a la base de datos
+   - `DATABASE_URL`: Conexión a Supabase
+   - `SUPABASE_URL`: URL de tu proyecto Supabase
+   - `SUPABASE_ANON_KEY`: Anon key de Supabase
    - `JWT_SECRET`: Clave secreta para JWT
-   - `GROQ_API_KEY`: Clave API de Groq (si se usa)
+   - `CHUTES_API_KEY`: Clave API de Chutes AI
    - Otras variables según sea necesario
-
-3. Ejecuta las migraciones de Prisma:
-   ```bash
-   cd backend
-   npx prisma migrate dev
-   cd ..
-   ```
 
 ### Frontend
 
