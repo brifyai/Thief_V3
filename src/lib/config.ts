@@ -2,7 +2,7 @@
 export const config = {
   // API Configuration
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
     timeout: parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '30000', 10), // 30 segundos
     retries: parseInt(process.env.NEXT_PUBLIC_API_RETRIES || '3', 10),
   },

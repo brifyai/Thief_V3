@@ -28,10 +28,11 @@ if (!process.env.DATABASE_URL && isProduction) {
   process.exit(1);
 }
 
-// En desarrollo, usar una URL de demo si no está configurada
+// En desarrollo, permitir modo sin base de datos
 if (!process.env.DATABASE_URL && !isProduction) {
-  console.warn('⚠️ DATABASE_URL no configurado - usando URL de demo para desarrollo');
+  console.warn('⚠️ DATABASE_URL no configurado - ejecutando en modo demo sin base de datos');
   process.env.DATABASE_URL = 'postgresql://demo:demo@localhost:5432/scraper_demo';
+  process.env.DEMO_MODE = 'true';
 }
 
 // Validaciones específicas de producción

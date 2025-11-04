@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 import type { QuickStatsData } from '@/types/stats';
 
-// ⚠️ IMPORTANTE: La URL ya incluye /api en la variable de entorno
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+// ⚠️ IMPORTANTE: La URL NO incluye /api, se agrega en cada llamada
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 async function fetchQuickStats(): Promise<QuickStatsData> {
   const token = localStorage.getItem('token');
@@ -13,9 +13,9 @@ async function fetchQuickStats(): Promise<QuickStatsData> {
     throw new Error('No authentication token found');
   }
 
-  console.log('🔍 Fetching stats from:', `${API_URL}/highlights/stats`);
+  console.log('🔍 Fetching stats from:', `${API_URL}/api/highlights/stats`);
 
-  const response = await fetch(`${API_URL}/highlights/stats`, {
+  const response = await fetch(`${API_URL}/api/highlights/stats`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'

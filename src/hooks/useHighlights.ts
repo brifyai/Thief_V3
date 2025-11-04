@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 import type { HighlightsData } from '@/types/highlights';
 
-// ⚠️ IMPORTANTE: La URL ya incluye /api en la variable de entorno
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+// ⚠️ IMPORTANTE: La URL NO incluye /api, se agrega en cada llamada
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 async function fetchHighlights(): Promise<HighlightsData> {
   // Obtener token de localStorage
