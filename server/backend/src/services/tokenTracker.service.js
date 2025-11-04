@@ -3,7 +3,7 @@
 // Monitoreo y tracking de uso de tokens IA
 // ========================================
 
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const { getRedisClient } = require('../utils/redisSingleton');
 
 // Precios por modelo (en USD por 1M tokens)

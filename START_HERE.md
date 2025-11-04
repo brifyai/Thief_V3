@@ -20,11 +20,10 @@ DATABASE_URL=postgresql://user:password@localhost:5432/scraper_db
 JWT_SECRET=tu_clave_secreta_aqui
 ```
 
-Luego ejecuta:
-```bash
-npx prisma migrate dev
-cd ..
-```
+Luego ejecuta el schema en Supabase:
+1. Ve a https://supabase.com/dashboard
+2. Abre el Editor SQL
+3. Ejecuta el contenido de `supabase-schema.sql`
 
 ### 3. Configura el frontend
 ```bash

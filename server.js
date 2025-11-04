@@ -134,9 +134,10 @@ api.get('/health', async (req, res) => {
   // Solo verificar base de datos si no estamos en modo demo
   if (process.env.DEMO_MODE !== 'true') {
     try {
-      const prisma = require('./server/backend/src/config/database');
-      await prisma.$queryRaw`SELECT 1`;
-      health.services.database = 'ok';
+      const { supabase } = require('./server/backend/src/config/database');
+      const { error } = await supabase.from('users').select('count').limit(1).single();
+      health.services.database = error ? 'error' : 'ok';
+      if (error) health.status = 'degraded';
     } catch (error) {
       health.services.database = 'error';
       health.status = 'degraded';

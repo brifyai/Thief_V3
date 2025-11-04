@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const { intelligentSearch, generateContentPreview } = require('../services/aiSearch.service');
 const autoScraperService = require('../services/autoScraper.service');
 const sentimentAnalyzer = require('../services/sentimentAnalyzer.service');

@@ -1,81 +1,83 @@
-const { PrismaClient } = require('@prisma/client');
+const { createClient } = require('@supabase/supabase-js');
 
-// Singleton para evitar múltiples instancias de PrismaClient
-let prisma;
+// Validar variables de entorno de Supabase
+if (!process.env.SUPABASE_URL && process.env.DEMO_MODE !== 'true') {
+  console.error('❌ FATAL: SUPABASE_URL no está configurado');
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  } else {
+    console.warn('⚠️ Continuando en modo demo sin Supabase');
+    process.env.DEMO_MODE = 'true';
+  }
+}
+
+if (!process.env.SUPABASE_ANON_KEY && process.env.DEMO_MODE !== 'true') {
+  console.error('❌ FATAL: SUPABASE_ANON_KEY no está configurado');
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  } else {
+    console.warn('⚠️ Continuando en modo demo sin Supabase');
+    process.env.DEMO_MODE = 'true';
+  }
+}
+
+let supabase;
 
 // Modo demo - no usar base de datos real
 if (process.env.DEMO_MODE === 'true') {
-  console.log('🎭 Modo demo activado - usando mock de base de datos');
+  console.log('🎭 Modo demo activado - usando mock de Supabase');
   
-  // Crear un mock de PrismaClient para modo demo
-  prisma = {
-    $connect: async () => Promise.resolve(),
-    $disconnect: async () => Promise.resolve(),
-    $queryRaw: async () => Promise.resolve([{ result: 'mock' }]),
-    user: {
-      findMany: async () => Promise.resolve([]),
-      findUnique: async () => Promise.resolve(null),
-      create: async () => Promise.resolve({ id: 1, email: 'demo@example.com' }),
-      update: async () => Promise.resolve({ id: 1, email: 'demo@example.com' }),
-      delete: async () => Promise.resolve({ id: 1, email: 'demo@example.com' }),
-    },
-    scraping_results: {
-      findMany: async () => Promise.resolve([]),
-      findUnique: async () => Promise.resolve(null),
-      create: async () => Promise.resolve({ id: 1, title: 'Demo Article' }),
-      update: async () => Promise.resolve({ id: 1, title: 'Demo Article' }),
-      delete: async () => Promise.resolve({ id: 1, title: 'Demo Article' }),
-    },
-    // Agregar más mocks según sea necesario
+  // Crear un mock de Supabase para modo demo
+  supabase = {
+    from: (table) => ({
+      select: () => ({
+        eq: () => ({
+          single: async () => ({ data: null, error: null }),
+          limit: () => ({
+            single: async () => ({ data: null, error: null })
+          })
+        }),
+        limit: () => ({
+          single: async () => ({ data: null, error: null })
+        }),
+        then: async (resolve) => resolve({ data: [], error: null })
+      }),
+      insert: async () => ({ data: null, error: null }),
+      update: async () => ({ data: null, error: null }),
+      delete: async () => ({ data: null, error: null })
+    }),
+    rpc: async () => ({ data: null, error: null })
   };
 } else {
-  // Configuración normal de Prisma
-  const prismaConfig = {
-    // Connection pooling optimizado
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
-    },
-    // Logging condicional
-    log: process.env.NODE_ENV === 'production' ? ['error', 'warn'] : ['query', 'error', 'warn'],
-    errorFormat: process.env.NODE_ENV === 'production' ? 'minimal' : 'pretty',
-    // Timeout y retry configuración
-    transactionOptions: {
-      timeout: 10000,
-      maxWait: 5000,
-    },
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    prisma = new PrismaClient(prismaConfig);
-  } else {
-    // En desarrollo, usar variable global para hot-reload
-    if (!global.prisma) {
-      global.prisma = new PrismaClient(prismaConfig);
+  // Crear cliente de Supabase
+  supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    {
+      auth: {
+        persistSession: false
+      }
     }
-    prisma = global.prisma;
-  }
+  );
 
-  // Manejo de desconexión graceful
-  process.on('beforeExit', async () => {
-    console.log('🔌 Cerrando conexiones de base de datos...');
-    await prisma.$disconnect();
-  });
-
-  // Manejo de errores de conexión
-  prisma.$connect()
-    .then(() => {
-      console.log('✅ Conexión a base de datos establecida');
+  // Verificar conexión
+  supabase.from('users').select('count').limit(1)
+    .then(({ data, error }) => {
+      if (error) {
+        console.error('❌ Error conectando a Supabase:', error.message);
+        if (process.env.NODE_ENV === 'production') {
+          process.exit(1);
+        }
+      } else {
+        console.log('✅ Conexión a Supabase establecida');
+      }
     })
     .catch((error) => {
-      console.error('❌ Error conectando a base de datos:', error);
-      if (process.env.NODE_ENV !== 'development') {
+      console.error('❌ Error conectando a Supabase:', error);
+      if (process.env.NODE_ENV === 'production') {
         process.exit(1);
-      } else {
-        console.warn('⚠️ Continuando en desarrollo sin base de datos');
       }
     });
 }
 
-module.exports = prisma;
+module.exports = { supabase };

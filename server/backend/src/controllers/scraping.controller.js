@@ -1,6 +1,6 @@
 const scrapingService = require('../services/scraping.service');
 const aiService = require('../services/ai.service');
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const { categorizeWithAI } = require('../services/ai.service');
 const { isValidTitle, isValidContent } = require('../utils/contentValidator');
 const { cleanContent, generateSummary, extractTitleFromContent, isValidTitle: isValidTitleCleaner } = require('../utils/contentCleaner');

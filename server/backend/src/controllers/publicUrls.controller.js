@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const { scrapeSite } = require('../services/scraping.service');
 
 /**

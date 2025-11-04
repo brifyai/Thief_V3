@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 
 // GET /api/urls - Filtrar por usuario autenticado
 const getUrls = async (req, res) => {

@@ -44,16 +44,6 @@ const errorHandler = (err, req, res, next) => {
  * Maneja errores conocidos y los convierte a errores personalizados
  */
 function handleKnownErrors(error, originalError) {
-  // Error de Prisma
-  if (originalError.name === 'PrismaClientKnownRequestError') {
-    return ErrorFactory.database('operation', 'unknown', originalError);
-  }
-
-  // Error de conexión de Prisma
-  if (originalError.name === 'PrismaClientInitializationError') {
-    return new ServiceUnavailableError('Database', 'Database connection failed');
-  }
-
   // Error de validación de JWT
   if (originalError.name === 'JsonWebTokenError') {
     return new AuthenticationError('Invalid token format');

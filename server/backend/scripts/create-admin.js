@@ -1,4 +1,4 @@
-const prisma = require('../src/config/database');
+const { supabase } = require('../src/config/database');
 const bcrypt = require('bcryptjs');
 
 /**

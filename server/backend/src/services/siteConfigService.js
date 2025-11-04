@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const { loggers } = require('../utils/logger');
 const { isValidTitle, isValidContent, sanitizeText, extractImages } = require('../utils/contentValidator');
 const configLoader = require('./configLoader.service');
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 
 const logger = loggers.scraping;
 

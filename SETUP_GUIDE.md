@@ -50,19 +50,14 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_ENV=development
 ```
 
-### 3. Configurar Base de Datos (Backend)
+### 3. Configurar Base de Datos (Supabase)
 
-```bash
-cd backend
+Este proyecto usa Supabase como base de datos. No requiere migraciones locales.
 
-# Ejecutar migraciones de Prisma
-npx prisma migrate dev
-
-# (Opcional) Abrir Prisma Studio para ver la BD
-npx prisma studio
-
-cd ..
-```
+1. Ve a https://supabase.com y crea un proyecto
+2. Copia el archivo `supabase-schema.sql` y ejecútalo en el Editor SQL de Supabase
+3. Obtén tus credenciales (SUPABASE_URL y SUPABASE_ANON_KEY)
+4. Configura las variables de entorno en `.env`
 
 ### 4. Iniciar la Aplicación
 
@@ -143,25 +138,13 @@ npm run start:backend
 npm run start:frontend
 ```
 
-### Base de Datos (Backend)
+### Base de Datos (Supabase)
 
-```bash
-cd backend
+La base de datos está gestionada por Supabase. Para hacer cambios:
 
-# Ver migraciones pendientes
-npx prisma migrate status
-
-# Crear nueva migración
-npx prisma migrate dev --name nombre_migracion
-
-# Abrir Prisma Studio
-npx prisma studio
-
-# Reset de BD (⚠️ Borra todos los datos)
-npx prisma migrate reset
-
-cd ..
-```
+1. Edita `supabase-schema.sql` con tus cambios
+2. Ejecuta el SQL actualizado en Supabase Dashboard
+3. No se usan migraciones locales
 
 ## 🔍 Troubleshooting
 

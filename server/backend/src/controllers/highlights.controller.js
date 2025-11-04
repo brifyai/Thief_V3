@@ -3,7 +3,7 @@
 // Noticias destacadas para mostrar en frontend
 // ========================================
 
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const cacheService = require('../utils/cacheService');
 
 /**

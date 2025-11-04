@@ -3,11 +3,11 @@
  * Agrega títulos y resúmenes a noticias que no los tienen
  */
 
-const { PrismaClient } = require('@prisma/client');
+const { supabase } = require('../src/config/database');
 const { cleanContent, generateSummary, extractTitleFromContent, isValidTitle } = require('../src/utils/contentCleaner');
 const aiEnhancer = require('../src/services/aiEnhancer.service');
 
-const prisma = new PrismaClient();
+// Supabase client imported from config
 
 async function reprocessOldNews() {
   console.log('🔄 REPROCESANDO NOTICIAS ANTIGUAS\n');

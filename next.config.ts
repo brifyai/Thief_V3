@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
 
   // Configuración experimental para desarrollo
   experimental: {
-    serverComponentsExternalPackages: ['@prisma/client'],
+    serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
 };
 

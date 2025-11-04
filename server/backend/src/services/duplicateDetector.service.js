@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const { generateContentHash, generateCombinedHash, areDuplicates } = require('../utils/contentHasher');
 const { loggers } = require('../utils/logger');
 

@@ -1,4 +1,4 @@
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 const cacheService = require('../utils/cacheService');
 
 // GET /api/stats - Actualizado para filtrar por usuario con caché

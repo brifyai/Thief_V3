@@ -1,4 +1,4 @@
-const prisma = require('../src/config/database');
+const { supabase } = require('../src/config/database');
 const entityStatsService = require('../src/services/entityStats.service');
 const entityAlertsService = require('../src/services/entityAlerts.service');
 

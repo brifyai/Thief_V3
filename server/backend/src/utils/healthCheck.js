@@ -4,7 +4,7 @@
  */
 
 const { getRedisClient } = require('./redisSingleton');
-const prisma = require('../config/database');
+const { supabase } = require('../config/database');
 
 class HealthCheckService {
   constructor() {

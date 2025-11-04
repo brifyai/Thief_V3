@@ -63,10 +63,6 @@ Scraperv3/
 │   │       ├── aiWrapper.js
 │   │       └── ... (más utilidades)
 │   │
-│   ├── 📁 prisma/              # ORM Prisma
-│   │   ├── schema.prisma       # Esquema de BD
-│   │   ├── migrations/         # Historial de migraciones
-│   │   └── migration_lock.toml
 │   │
 │   ├── 📁 public/              # Archivos estáticos
 │   │   ├── 📁 css/
@@ -202,10 +198,9 @@ Scraperv3/
 
 **Tecnologías**:
 - Node.js + Express
-- Prisma ORM
-- PostgreSQL
+- Supabase (PostgreSQL)
 - Redis (caché)
-- Groq API (IA)
+- Chutes AI (IA)
 
 **Responsabilidades**:
 - Scraping de sitios web
@@ -254,7 +249,7 @@ PostgreSQL
 
 ### Backend
 - `express`: Framework web
-- `@prisma/client`: ORM
+- `@supabase/supabase-js`: Cliente de Supabase
 - `axios`: Cliente HTTP
 - `jsonwebtoken`: Autenticación
 - `bullmq`: Cola de trabajos
@@ -279,7 +274,7 @@ Ver `README.md` para la lista completa de scripts.
 
 - Ambas aplicaciones pueden ejecutarse simultáneamente con `npm run dev`
 - El backend debe estar ejecutándose para que el frontend funcione
-- Las migraciones de BD se encuentran en `backend/prisma/migrations/`
+- El schema de BD se encuentra en `supabase-schema.sql`
 - Los componentes UI reutilizables están en `frontend/src/components/ui/`
 
 ## 🔗 Relaciones entre Carpetas
