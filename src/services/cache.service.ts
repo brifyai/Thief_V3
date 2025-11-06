@@ -60,7 +60,7 @@ class CacheService {
 
   async getHealth(): Promise<CacheHealth> {
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/health`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/health`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -91,7 +91,7 @@ class CacheService {
 
   async getStats(): Promise<CacheStats> {
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/stats`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -129,7 +129,7 @@ class CacheService {
     freedMemory: number;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/user/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/user/${userId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -156,7 +156,7 @@ class CacheService {
     freedMemory: number;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/searches/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/searches/${userId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -182,8 +182,8 @@ class CacheService {
   async getKeys(pattern?: string): Promise<CacheKey[]> {
     try {
       const url = pattern 
-        ? `${API_BASE_URL}/cache/keys?pattern=${encodeURIComponent(pattern)}`
-        : `${API_BASE_URL}/cache/keys`;
+        ? `${API_BASE_URL}/api/cache/keys?pattern=${encodeURIComponent(pattern)}`
+        : `${API_BASE_URL}/api/cache/keys`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -209,7 +209,7 @@ class CacheService {
     timeTaken: number;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/clear`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/clear`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -237,7 +237,7 @@ class CacheService {
     freedMemory: number;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/key/${encodeURIComponent(key)}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/key/${encodeURIComponent(key)}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });

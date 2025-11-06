@@ -34,6 +34,9 @@ const highlightsRoutes = require('./server/backend/src/routes/highlights.routes'
 const aiUsageRoutes = require('./server/backend/src/routes/aiUsage.routes');
 const simpleTestRoutes = require('./server/backend/src/routes/simpleTest.routes');
 const usersRoutes = require('./server/backend/src/routes/users.routes');
+const newsRoutes = require('./server/backend/src/routes/news.routes');
+const newsScrapingRoutes = require('./server/backend/src/routes/newsScraping.routes');
+const newsSearchRoutes = require('./server/backend/src/routes/newsSearch.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -152,7 +155,6 @@ api.get('/health', async (req, res) => {
 
 // Montar todas las rutas del API
 api.use('/api/auth', authRoutes);
-api.use('/', scrapingRoutes);
 api.use('/api/scraping', scrapingRoutes);
 api.use('/api', urlsRoutes);
 api.use('/api', statsRoutes);
@@ -170,6 +172,9 @@ api.use('/api/highlights', highlightsRoutes);
 api.use('/api/ai-usage', aiUsageRoutes);
 api.use('/api/simple-test', simpleTestRoutes);
 api.use('/api/users', usersRoutes);
+api.use('/api/news', newsRoutes);
+api.use('/api/news/scrape', newsScrapingRoutes);
+api.use('/api/news/search', newsSearchRoutes);
 
 // Documentación Swagger
 api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {

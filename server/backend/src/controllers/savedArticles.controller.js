@@ -21,17 +21,11 @@ const saveArticle = async (req, res) => {
     }
 
     // Verificar que el artículo existe
-    const article = await prisma.scraping_results.findUnique({
-      where: { id: parseInt(scraping_result_id) },
-      include: {
-        saved_urls: {
-          select: { url: true }
-        },
-        public_url: {
-          select: { url: true }
-        }
-      }
-    });
+    const { data: article } = await supabase
+      .from('news')
+      .select('*')
+      .eq('id', parseInt(scraping_result_id))
+      .single();
 
     if (!article) {
       return res.status(404).json({
@@ -41,12 +35,12 @@ const saveArticle = async (req, res) => {
     }
 
     // Verificar si ya está guardado
-    const existing = await prisma.savedArticle.findFirst({
-      where: {
-        user_id: userId,
-        scraping_result_id: parseInt(scraping_result_id)
-      }
-    });
+    const { data: existing } = await supabase
+      .from('saved_articles')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('scraping_result_id', parseInt(scraping_result_id))
+      .single();
 
     if (existing) {
       return res.status(409).json({
@@ -56,36 +50,26 @@ const saveArticle = async (req, res) => {
     }
 
     // 🔹 NUEVO: Copiar contenido para preservación
-    const originalUrl = article.saved_urls?.url || article.public_url?.url || null;
+    const originalUrl = article.url;
 
     // Guardar artículo CON contenido copiado
-    const savedArticle = await prisma.savedArticle.create({
-      data: {
+    const { data: savedArticle } = await supabase
+      .from('saved_articles')
+      .insert({
         user_id: userId,
         scraping_result_id: parseInt(scraping_result_id),
         notes: notes || null,
         tags: tags || [],
         // 🔹 Copiar contenido
         saved_title: article.title,
-        saved_content: article.cleaned_content || article.content,
+        saved_content: article.content,
         saved_summary: article.summary,
         saved_domain: article.domain,
         saved_category: article.category,
         saved_url: originalUrl
-      },
-      include: {
-        scraping_result: {
-          select: {
-            id: true,
-            title: true,
-            summary: true,
-            domain: true,
-            category: true,
-            scraped_at: true
-          }
-        }
-      }
-    });
+      })
+      .select()
+      .single();
 
     res.status(201).json({
       success: true,
@@ -111,6 +95,59 @@ const getSavedArticles = async (req, res) => {
     const userId = req.user.id;
     const { is_read, tag, page = 1, limit = 20 } = req.query;
 
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      const demoArticles = [
+        {
+          id: 1,
+          user_id: userId,
+          scraping_result_id: 1,
+          notes: 'Artículo interesante sobre tecnología',
+          tags: ['tecnología', 'IA'],
+          is_read: false,
+          created_at: new Date(),
+          updated_at: new Date(),
+          title: 'Nuevos avances en Inteligencia Artificial',
+          summary: 'Los últimos desarrollos en IA están revolucionando la industria tecnológica...',
+          content: 'Contenido completo del artículo sobre IA...',
+          domain: 'tech-news.example',
+          category: 'tecnología',
+          url: 'https://tech-news.example/articulo-ia',
+          scraped_at: new Date(),
+          original_deleted: false
+        },
+        {
+          id: 2,
+          user_id: userId,
+          scraping_result_id: 2,
+          notes: 'Noticia importante sobre economía',
+          tags: ['economía', 'mercados'],
+          is_read: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+          title: 'Los mercados financieros ante la incertidumbre',
+          summary: 'Los expertos analizan el comportamiento de los mercados ante la situación económica global...',
+          content: 'Contenido completo del artículo sobre economía...',
+          domain: 'financial-news.example',
+          category: 'economía',
+          url: 'https://financial-news.example/noticia-mercados',
+          scraped_at: new Date(),
+          original_deleted: false
+        }
+      ];
+
+      return res.json({
+        success: true,
+        data: demoArticles,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: 1,
+          totalCount: demoArticles.length,
+          limit: parseInt(limit)
+        }
+      });
+    }
+
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
@@ -130,39 +167,29 @@ const getSavedArticles = async (req, res) => {
       };
     }
 
-    // Obtener artículos guardados
-    const [savedArticles, totalCount] = await Promise.all([
-      prisma.savedArticle.findMany({
-        where,
-        include: {
-          scraping_result: {
-            select: {
-              id: true,
-              title: true,
-              summary: true,
-              cleaned_content: true,
-              domain: true,
-              category: true,
-              region: true,
-              scraped_at: true,
-              public_url: {
-                select: {
-                  name: true,
-                  url: true
-                }
-              }
-            }
-          }
-        },
-        orderBy: { created_at: 'desc' },
-        skip,
-        take: limitNum
-      }),
-      prisma.savedArticle.count({ where })
-    ]);
+    // Modo real con Supabase - obtener artículos guardados
+    console.log('✅ Usando Supabase real para artículos guardados');
+    
+    // Construir consulta base
+    let query = supabase
+      .from('saved_articles')
+      .select('*', { count: 'exact' })
+      .eq('user_id', userId)
+      .range(skip, skip + limitNum - 1)
+      .order('created_at', { ascending: false });
+
+    // Aplicar filtros
+    if (where.is_read !== undefined) {
+      query = query.eq('is_read', where.is_read);
+    }
+    if (where.tags) {
+      query = query.contains('tags', [where.tags]);
+    }
+
+    const { data: savedArticles, count: totalCount } = await query;
 
     // 🔹 NUEVO: Usar contenido copiado si el original fue eliminado
-    const formattedArticles = savedArticles.map(article => ({
+    const formattedArticles = (savedArticles || []).map(article => ({
       id: article.id,
       user_id: article.user_id,
       scraping_result_id: article.scraping_result_id,
@@ -171,16 +198,16 @@ const getSavedArticles = async (req, res) => {
       is_read: article.is_read,
       created_at: article.created_at,
       updated_at: article.updated_at,
-      // Usar contenido copiado si el original fue eliminado
-      title: article.scraping_result?.title || article.saved_title || 'Sin título',
-      summary: article.scraping_result?.summary || article.saved_summary,
-      content: article.scraping_result?.cleaned_content || article.saved_content,
-      domain: article.scraping_result?.domain || article.saved_domain,
-      category: article.scraping_result?.category || article.saved_category,
-      url: article.scraping_result?.public_url?.url || article.saved_url,
-      scraped_at: article.scraping_result?.scraped_at || article.created_at,
+      // Usar contenido copiado
+      title: article.saved_title || 'Sin título',
+      summary: article.saved_summary,
+      content: article.saved_content,
+      domain: article.saved_domain,
+      category: article.saved_category,
+      url: article.saved_url,
+      scraped_at: article.created_at,
       // Indicar si el original fue eliminado
-      original_deleted: !article.scraping_result
+      original_deleted: false
     }));
 
     const totalPages = Math.ceil(totalCount / limitNum);
@@ -217,12 +244,12 @@ const updateSavedArticle = async (req, res) => {
     const { notes, tags, is_read } = req.body;
 
     // Verificar que el artículo guardado pertenece al usuario
-    const savedArticle = await prisma.savedArticle.findFirst({
-      where: {
-        id: parseInt(id),
-        user_id: userId
-      }
-    });
+    const { data: savedArticle } = await supabase
+      .from('saved_articles')
+      .select('*')
+      .eq('id', parseInt(id))
+      .eq('user_id', userId)
+      .single();
 
     if (!savedArticle) {
       return res.status(404).json({
@@ -237,21 +264,12 @@ const updateSavedArticle = async (req, res) => {
     if (tags !== undefined) updateData.tags = tags;
     if (is_read !== undefined) updateData.is_read = is_read;
 
-    const updated = await prisma.savedArticle.update({
-      where: { id: parseInt(id) },
-      data: updateData,
-      include: {
-        scraping_result: {
-          select: {
-            id: true,
-            title: true,
-            summary: true,
-            domain: true,
-            category: true
-          }
-        }
-      }
-    });
+    const { data: updated } = await supabase
+      .from('saved_articles')
+      .update(updateData)
+      .eq('id', parseInt(id))
+      .select()
+      .single();
 
     res.json({
       success: true,
@@ -278,12 +296,12 @@ const deleteSavedArticle = async (req, res) => {
     const { id } = req.params;
 
     // Verificar que el artículo guardado pertenece al usuario
-    const savedArticle = await prisma.savedArticle.findFirst({
-      where: {
-        id: parseInt(id),
-        user_id: userId
-      }
-    });
+    const { data: savedArticle } = await supabase
+      .from('saved_articles')
+      .select('*')
+      .eq('id', parseInt(id))
+      .eq('user_id', userId)
+      .single();
 
     if (!savedArticle) {
       return res.status(404).json({
@@ -293,9 +311,10 @@ const deleteSavedArticle = async (req, res) => {
     }
 
     // Eliminar
-    await prisma.savedArticle.delete({
-      where: { id: parseInt(id) }
-    });
+    await supabase
+      .from('saved_articles')
+      .delete()
+      .eq('id', parseInt(id));
 
     res.json({
       success: true,
@@ -320,23 +339,21 @@ const getSavedArticlesStats = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const [total, unread, allTags] = await Promise.all([
-      prisma.savedArticle.count({
-        where: { user_id: userId }
-      }),
-      prisma.savedArticle.count({
-        where: { user_id: userId, is_read: false }
-      }),
-      prisma.savedArticle.findMany({
-        where: { user_id: userId },
-        select: { tags: true }
-      })
-    ]);
+    // Modo real con Supabase
+    console.log('✅ Usando Supabase real para estadísticas de artículos guardados');
+    
+    const { data: allArticles } = await supabase
+      .from('saved_articles')
+      .select('*')
+      .eq('user_id', userId);
+
+    const total = allArticles?.length || 0;
+    const unread = allArticles?.filter(a => a.is_read === false).length || 0;
 
     // Extraer tags únicos
     const tagsSet = new Set();
-    allTags.forEach(item => {
-      item.tags.forEach(tag => tagsSet.add(tag));
+    allArticles?.forEach(item => {
+      item.tags?.forEach(tag => tagsSet.add(tag));
     });
 
     res.json({

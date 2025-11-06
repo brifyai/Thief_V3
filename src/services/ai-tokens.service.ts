@@ -124,7 +124,7 @@ class AITokensService {
 
   async getTodayStats(): Promise<TodayStats> {
     try {
-      const response = await fetch(`${API_BASE_URL}/ai-usage/stats/today`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/stats/today`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -166,7 +166,7 @@ class AITokensService {
         end_date: endDate
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/stats/range?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/stats/range?${params}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -198,7 +198,7 @@ class AITokensService {
         type
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/calculator?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/calculator?${params}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -234,7 +234,7 @@ class AITokensService {
         limit: limit.toString()
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/alerts?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/alerts?${params}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -253,7 +253,7 @@ class AITokensService {
 
   async resolveAlert(alertId: number): Promise<{ id: number; resolved: boolean; resolved_at: string }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/ai-usage/alerts/${alertId}/resolve`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/alerts/${alertId}/resolve`, {
         method: 'POST',
         headers: getAuthHeaders()
       });
@@ -279,7 +279,7 @@ class AITokensService {
         days: days.toString()
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/top-operations?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/top-operations?${params}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -300,7 +300,7 @@ class AITokensService {
 
   async getAvailableModels(): Promise<AIModel[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/ai-usage/models`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/models`, {
         method: 'GET',
         headers: getAuthHeaders()
       });

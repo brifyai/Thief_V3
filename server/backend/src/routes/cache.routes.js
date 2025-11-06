@@ -23,7 +23,7 @@ router.delete('/user/:userId', authenticateToken, cacheController.clearUserCache
 // Limpiar búsquedas propias
 router.delete('/searches/:userId', authenticateToken, cacheController.clearSearchCache);
 
-// Endpoints de administrador
+// Endpoints públicos (solo autenticación requerida)
 router.get('/keys', authenticateToken, cacheController.getKeys);
 router.delete('/clear', authenticateToken, cacheController.clearAll);
 router.delete('/key/:key', authenticateToken, cacheController.deleteKey);

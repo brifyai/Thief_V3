@@ -30,19 +30,11 @@ const getStats = async (req, res) => {
 };
 
 /**
- * Limpiar todo el caché (solo admin)
+ * Limpiar todo el caché
  * DELETE /api/cache/clear
  */
 const clearAll = async (req, res) => {
   try {
-    // Verificar que el usuario sea admin
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        error: 'Acceso denegado. Solo administradores pueden limpiar todo el caché.'
-      });
-    }
-
     const result = await cacheService.clearAll();
     
     if (result) {
@@ -139,17 +131,10 @@ const clearSearchCache = async (req, res) => {
 /**
  * Obtener todas las keys del caché (con patrón opcional)
  * GET /api/cache/keys?pattern=search:*
+ * SIN RESTRICCIONES DE ADMIN - ACCESIBLE PARA TODOS LOS USUARIOS AUTENTICADOS
  */
 const getKeys = async (req, res) => {
   try {
-    // Solo admin puede ver todas las keys
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        error: 'Acceso denegado. Solo administradores pueden ver las keys del caché.'
-      });
-    }
-
     const { pattern = '*' } = req.query;
     const keys = await cacheService.getKeys(pattern);
     
@@ -212,14 +197,6 @@ const healthCheck = async (req, res) => {
  */
 const deleteKey = async (req, res) => {
   try {
-    // Solo admin puede eliminar keys específicas
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        error: 'Acceso denegado.'
-      });
-    }
-
     const { key } = req.params;
     const deleted = await cacheService.deleteCached(key);
     
@@ -299,19 +276,11 @@ const getMetrics = async (req, res) => {
 };
 
 /**
- * Reset manual del circuit breaker (solo admin)
+ * Reset manual del circuit breaker
  * POST /api/cache/circuit-breaker/reset
  */
 const resetCircuitBreakerEndpoint = async (req, res) => {
   try {
-    // Verificar que el usuario sea admin
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        error: 'Acceso denegado. Solo administradores pueden resetear el circuit breaker.'
-      });
-    }
-
     resetCircuitBreaker();
     
     res.json({

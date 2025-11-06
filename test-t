@@ -1,0 +1,105 @@
+const axios = require('axios');
+const cheerio = require('cheerio');
+
+async function testT13Extraction() {
+  console.log('🔍 DIAGNÓSTICO COMPLETO DE T13.CL');
+  console.log('='.repeat(60));
+  
+  try {
+    const response = await axios.get('https://www.t13.cl', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      timeout: 10000
+    });
+    
+    const $ = cheerio.load(response.data);
+    
+    console.log('📊 PROBLEMA 1: Elementos encontrados con selectores actuales');
+    console.log('-' .repeat(50));
+    
+    // Test de contenedores
+    const containers = $("a[href*='noticia']");
+    console.log(`✅ Contenedores encontrados: ${containers.length}`);
+    
+    if (containers.length > 0) {
+      const firstContainer = containers.first();
+      console.log(`📄 Primer contenedor HTML:`);
+      console.log(firstContainer.html().substring(0, 300) + '...');
+      
+      console.log(`\n🔍 Intentando extraer título:`);
+      // Test de selectores de título
+      const titleSelector = ".titulo";
+      const titleElement = firstContainer.find(titleSelector);
+      console.log(`   - Selector "${titleSelector}": ${titleElement.length} elementos`);
+      if (titleElement.length > 0) {
+        console.log(`   - Texto encontrado: "${titleElement.text().trim()}"`);
+      }
+      
+      console.log(`\n🔍 Intentando extraer con método alternativo:`);
+      // Test de atributo title
+      const titleAttr = firstContainer.attr('title');
+      console.log(`   - Atributo title: "${titleAttr || 'No encontrado'}"`);
+      
+      console.log(`\n🔍 Estructura del primer contenedor:`);
+      console.log(`   - href: ${firstContainer.attr('href') || 'No encontrado'}`);
+      console.log(`   - title: ${firstContainer.attr('title') || 'No encontrado'}`);
+      console.log(`   - text: "${firstContainer.text().trim().substring(0, 100)}..."`);
+      
+      console.log(`\n🧪 PROBANDO EXTRACCIÓN COMPLETA:`);
+      // Simular la lógica del sistema
+      const noticias = [];
+      containers.each((_, element) => {
+        const $element = $(element);
+        
+        // Intentar extracción actual del sistema
+        let titulo = "";
+        const titleSelector = Array.isArray(".titulo") 
+          ? ".titulo".join(", ") 
+          : ".titulo";
+        titulo = $element.find(titleSelector).first().text().trim();
+        
+        let enlace = $element.attr("href");
+        
+        let descripcion = "";
+        const descSelector = Array.isArray(".epigrafe") 
+          ? ".epigrafe".join(", ") 
+          : ".epigrafe";
+        descripcion = $element.find(descSelector).first().text().trim();
+        
+        if (titulo && titulo.length > 10 && enlace) {
+          noticias.push({
+            titulo: titulo || "Sin título",
+            descripcion: descripcion || "Sin descripción", 
+            enlace: enlace
+          });
+        }
+      });
+      
+      console.log(`\n📊 RESULTADO DE EXTRACCIÓN:`);
+      console.log(`   Total noticias extraídas: ${noticias.length}`);
+      
+      if (noticias.length > 0) {
+        console.log(`\n📰 Primeros elementos:`);
+        noticias.slice(0, 3).forEach((noticia, i) => {
+          console.log(`   ${i+1}. "${noticia.titulo}"`);
+          console.log(`      Enlace: ${noticia.enlace}`);
+          console.log(`      Descripción: ${noticia.descripcion}`);
+        });
+      } else {
+        console.log(`\n❌ NO SE EXTRAJERON NOTICIAS - Diagnóstico:`);
+        containers.each((i, el) => {
+          const $el = $(el);
+          const tituloTest = $el.find('.titulo').text().trim();
+          const enlaceTest = $el.attr('href');
+          console.log(`   Elemento ${i+1}: título="${tituloTest}" enlace="${enlaceTest}"`);
+        });
+      }
+    }
+    
+  } catch (error) {
+    console.log(`❌ Error: ${error.message}`);
+  }
+}
+
+testT13Extraction();

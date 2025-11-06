@@ -3,6 +3,48 @@ const supabase = require('../config/supabase');
 const { generateToken } = require('../utils/jwtHelper');
 
 const login = async (email, password) => {
+  console.log('🔍 Login attempt - Email:', email, 'Password:', password);
+  console.log('🔍 DEMO_MODE:', process.env.DEMO_MODE);
+  
+  // Modo demo - permitir credenciales predefinidas
+  if (process.env.DEMO_MODE === 'true' || process.env.DEMO_MODE === true) {
+    console.log('🎭 Demo mode detected');
+    if (email === 'demo@scraper.com' && password === 'demo123') {
+      console.log('✅ Demo credentials match');
+      const demoUser = {
+        id: 'demo-user-id',
+        email: 'demo@scraper.com',
+        name: 'Usuario Demo',
+        role: 'admin',
+        is_active: true
+      };
+
+      // Generar token JWT
+      const token = generateToken({
+        id: demoUser.id,
+        email: demoUser.email,
+        role: demoUser.role,
+      });
+
+      return {
+        token,
+        user: {
+          id: demoUser.id,
+          email: demoUser.email,
+          name: demoUser.name,
+          role: demoUser.role,
+        }
+      };
+    } else {
+      console.log('❌ Demo credentials do not match');
+    }
+    
+    // Si no coinciden las credenciales de demo, continuar con el flujo normal
+    // (que fallará porque no hay base de datos real)
+  } else {
+    console.log('🔧 Demo mode not detected');
+  }
+
   // Buscar usuario por email en la tabla users de Supabase
   const { data: users, error: fetchError } = await supabase
     .from('users')
@@ -52,6 +94,62 @@ const login = async (email, password) => {
 };
 
 const register = async (email, password, name) => {
+  // Modo demo - permitir registro de usuario demo
+  if (process.env.DEMO_MODE === 'true') {
+    if (email === 'demo@scraper.com' && password === 'demo123') {
+      const demoUser = {
+        id: 'demo-user-id',
+        email: 'demo@scraper.com',
+        name: name || 'Usuario Demo',
+        role: 'admin',
+        is_active: true
+      };
+
+      // Generar token JWT
+      const token = generateToken({
+        id: demoUser.id,
+        email: demoUser.email,
+        role: demoUser.role,
+      });
+
+      return {
+        token,
+        user: {
+          id: demoUser.id,
+          email: demoUser.email,
+          name: demoUser.name,
+          role: demoUser.role,
+        }
+      };
+    }
+    
+    // Para otros usuarios en modo demo, simular registro exitoso
+    const newDemoUser = {
+      id: `demo-user-${Date.now()}`,
+      email,
+      name: name || 'Usuario Demo',
+      role: 'user',
+      is_active: true
+    };
+
+    // Generar token JWT
+    const token = generateToken({
+      id: newDemoUser.id,
+      email: newDemoUser.email,
+      role: newDemoUser.role,
+    });
+
+    return {
+      token,
+      user: {
+        id: newDemoUser.id,
+        email: newDemoUser.email,
+        name: newDemoUser.name,
+        role: newDemoUser.role,
+      }
+    };
+  }
+
   // Verificar si el usuario ya existe en la tabla users de Supabase
   const { data: existingUser } = await supabase
     .from('users')

@@ -1,6 +1,5 @@
 import { User } from '@/stores/auth.store';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+import { API_BASE_URL, getAuthHeaders } from '../lib/api-secure';
 
 export interface LoginRequest {
   email: string;
@@ -36,20 +35,21 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
       throw new Error(`Error ${response.status}: ${result.message || response.statusText || 'Error del servidor'}`);
     }
 
-    // Verificar que la respuesta tenga token y usuario (en lugar de result.success)
-    if (!result.token || !result.user) {
-      throw new Error('Respuesta del servidor inválida: falta token o usuario');
+    // Verificar que la respuesta tenga sesión y usuario
+    if (!result.session || !result.user) {
+      throw new Error('Respuesta del servidor inválida: falta sesión o usuario');
     }
 
     // Guardar token en localStorage para persistencia
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', result.token);
+      localStorage.setItem('token', result.session.access_token);
+      localStorage.setItem('refresh_token', result.session.refresh_token);
     }
 
     // Estructurar la respuesta para compatibilidad
     return {
       success: true,
-      token: result.token,
+      token: result.session.access_token,
       user: result.user,
       message: result.message || 'Login exitoso'
     };

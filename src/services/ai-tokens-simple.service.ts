@@ -121,7 +121,7 @@ class SimpleAITokensService {
     try {
       console.log('🔍 Obteniendo estadísticas del día...');
       
-      const response = await fetch(`${API_BASE_URL}/ai-usage/stats/today`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/stats/today`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -172,7 +172,7 @@ class SimpleAITokensService {
         limit: limit.toString()
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/alerts?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/alerts?${params}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -190,7 +190,7 @@ class SimpleAITokensService {
     try {
       console.log(`🔍 Resolviendo alerta ${alertId}...`);
       
-      const response = await fetch(`${API_BASE_URL}/ai-usage/alerts/${alertId}/resolve`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/alerts/${alertId}/resolve`, {
         method: 'POST',
         headers: this.getAuthHeaders()
       });
@@ -215,7 +215,7 @@ class SimpleAITokensService {
         days: days.toString()
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/top-operations?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/top-operations?${params}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -235,7 +235,7 @@ class SimpleAITokensService {
     try {
       console.log('🔍 Obteniendo modelos disponibles...');
       
-      const response = await fetch(`${API_BASE_URL}/ai-usage/models`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/models`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -268,7 +268,7 @@ class SimpleAITokensService {
         type
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/calculator?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/calculator?${params}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -369,7 +369,7 @@ class SimpleAITokensService {
       console.log('📡 API Base URL:', API_BASE_URL);
 
       // Intentar hacer una petición simple
-      const response = await fetch(`${API_BASE_URL}/ai-usage/stats/today`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/stats/today`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });

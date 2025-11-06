@@ -124,7 +124,7 @@ class ArticleService {
   // Obtener estadísticas de artículos guardados
   async getSavedArticlesStats(): Promise<SavedArticleStats> {
     try {
-      const response = await fetch(`${API_BASE_URL}/saved-articles/stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/saved-articles/stats`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -161,7 +161,7 @@ class ArticleService {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL}/saved-articles`, {
+      const response = await fetch(`${API_BASE_URL}/api/saved-articles`, {
         method: 'POST',
         headers,
         body: JSON.stringify(data),
@@ -191,7 +191,7 @@ class ArticleService {
     };
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/saved-articles?page=${page}&limit=${limit}`, {
+      const response = await fetch(`${API_BASE_URL}/api/saved-articles?page=${page}&limit=${limit}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -219,7 +219,7 @@ class ArticleService {
   // Actualizar artículo guardado
   async updateSavedArticle(id: number, data: UpdateSavedArticleData): Promise<SavedArticle> {
     try {
-      const response = await fetch(`${API_BASE_URL}/saved-articles/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/saved-articles/${id}`, {
         method: 'PUT',
         headers: {
           ...getAuthHeaders(),
@@ -244,7 +244,7 @@ class ArticleService {
   // Eliminar artículo guardado
   async deleteSavedArticle(id: number): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/saved-articles/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/saved-articles/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -263,7 +263,7 @@ class ArticleService {
   async unsaveArticle(scrapingResultId: number): Promise<void> {
     try {
       // 1. Primero buscar el artículo guardado para obtener su ID
-      const savedArticlesResponse = await fetch(`${API_BASE_URL}/saved-articles`, {
+      const savedArticlesResponse = await fetch(`${API_BASE_URL}/api/saved-articles`, {
         headers: getAuthHeaders()
       });
 
@@ -287,7 +287,7 @@ class ArticleService {
       }
 
       // 3. Eliminar usando el endpoint correcto con el ID del artículo guardado
-      const deleteResponse = await fetch(`${API_BASE_URL}/saved-articles/${savedArticle.id}`, {
+      const deleteResponse = await fetch(`${API_BASE_URL}/api/saved-articles/${savedArticle.id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -427,7 +427,7 @@ class ArticleService {
     pagination: any;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/saved-articles?tag=${encodeURIComponent(tag)}&page=${page}&limit=${limit}`, {
+      const response = await fetch(`${API_BASE_URL}/api/saved-articles?tag=${encodeURIComponent(tag)}&page=${page}&limit=${limit}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -455,7 +455,7 @@ class ArticleService {
   // Obtener tags populares
   async getPopularTags(): Promise<Array<{ tag: string; count: number }>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/saved-articles/tags/popular`, {
+      const response = await fetch(`${API_BASE_URL}/api/saved-articles/tags/popular`, {
         method: 'GET',
         headers: getAuthHeaders()
       });

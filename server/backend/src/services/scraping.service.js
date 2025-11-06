@@ -31,31 +31,82 @@ const extractNewsWithCheerio = ($, containerSelector, selectors, baseUrl, keywor
   $(containerSelector).each((_, element) => {
     const $element = $(element);
     
-    // Extraer título
+    // Extraer título - LÓGICA MEJORADA para detectar títulos en atributos
     let titulo = "";
     if (selectors.title) {
-      const titleSelector = Array.isArray(selectors.title) 
-        ? selectors.title.join(", ") 
-        : selectors.title;
-      titulo = limpiarTexto($element.find(titleSelector).first().text());
+      const titleSelectors = Array.isArray(selectors.title) ? selectors.title : [selectors.title];
+      
+      // 🎯 LÓGICA ESPECIAL: Detectar si alguno de los selectores de título coincide con el contenedor
+      // O si contiene selectores de atributo como a[title]
+      let titleFound = false;
+      for (const titleSel of titleSelectors) {
+        if (titleSel === containerSelector || $element.is(titleSel)) {
+          // El selector del título es igual al del contenedor o coincide con el elemento
+          const titleAttr = $element.attr('title') ||
+                           $element.attr('data-title') ||
+                           $element.attr('alt') ||
+                           $element.text();
+          titulo = limpiarTexto(titleAttr);
+          logger.debug(`🎯 Título extraído desde atributo (selector: "${titleSel}"): "${titulo}"`);
+          titleFound = true;
+          break;
+        }
+      }
+      
+      if (!titleFound) {
+        // Lógica original: buscar en elementos hijos
+        for (const titleSel of titleSelectors) {
+          const foundTitle = limpiarTexto($element.find(titleSel).first().text());
+          if (foundTitle && foundTitle.length > 0) {
+            titulo = foundTitle;
+            logger.debug(`🎯 Título extraído desde hijos (selector: "${titleSel}"): "${titulo}"`);
+            break;
+          }
+        }
+      }
     }
     
-    // Extraer enlace
+    // Extraer enlace - LÓGICA MEJORADA para detectar enlaces en atributos
     let enlace = "";
     if (selectors.link) {
-      const linkSelector = Array.isArray(selectors.link) 
-        ? selectors.link.join(", ") 
-        : selectors.link;
-      enlace = $element.find(linkSelector).first().attr("href");
+      const linkSelectors = Array.isArray(selectors.link) ? selectors.link : [selectors.link];
+      
+      // 🎯 LÓGICA ESPECIAL: Detectar si alguno de los selectores de enlace coincide con el contenedor
+      let linkFound = false;
+      for (const linkSel of linkSelectors) {
+        if (linkSel === containerSelector || $element.is(linkSel)) {
+          enlace = $element.attr("href");
+          logger.debug(`🎯 Enlace extraído desde atributo (selector: "${linkSel}"): "${enlace}"`);
+          linkFound = true;
+          break;
+        }
+      }
+      
+      if (!linkFound) {
+        // Lógica original: buscar en elementos hijos
+        for (const linkSel of linkSelectors) {
+          const foundLink = $element.find(linkSel).first().attr("href");
+          if (foundLink && foundLink.length > 0) {
+            enlace = foundLink;
+            logger.debug(`🎯 Enlace extraído desde hijos (selector: "${linkSel}"): "${enlace}"`);
+            break;
+          }
+        }
+      }
     }
     
     // Extraer descripción
     let descripcion = "";
     if (selectors.description) {
-      const descSelector = Array.isArray(selectors.description) 
-        ? selectors.description.join(", ") 
-        : selectors.description;
-      descripcion = limpiarTexto($element.find(descSelector).first().text());
+      const descSelectors = Array.isArray(selectors.description) ? selectors.description : [selectors.description];
+      
+      for (const descSel of descSelectors) {
+        const foundDesc = limpiarTexto($element.find(descSel).first().text());
+        if (foundDesc && foundDesc.length > 0) {
+          descripcion = foundDesc;
+          break;
+        }
+      }
     }
     
     // Normalizar enlace

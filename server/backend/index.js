@@ -19,6 +19,8 @@ const searchRoutes = require('./src/routes/search.routes');
 const queueRoutes = require('./src/routes/queue.routes');
 const cacheRoutes = require('./src/routes/cache.routes');
 const siteConfigRoutes = require('./src/routes/siteConfig.routes');
+const newsRoutes = require('./src/routes/news.routes'); // 📰 Rutas de noticias (incluye humanización)
+const humanizedNewsRoutes = require('./src/routes/humanizedNews.routes'); // 🧠 Rutas de noticias humanizadas
 // const debugRoutes = require('./src/routes/debug.routes'); // ❌ Eliminado - no para producción
 const publicUrlsRoutes = require('./src/routes/publicUrls.routes');
 const userUrlSelectionsRoutes = require('./src/routes/userUrlSelections.routes');
@@ -30,6 +32,8 @@ const highlightsRoutes = require('./src/routes/highlights.routes'); // ⭐ Notic
 const aiUsageRoutes = require('./src/routes/aiUsage.routes'); // 📊 Monitoreo de tokens IA
 const simpleTestRoutes = require('./src/routes/simpleTest.routes'); // 🧪 Test simple de URLs
 const usersRoutes = require('./src/routes/users.routes'); // 👥 Gestión de usuarios
+const tempGenerateSummariesRoutes = require('./src/routes/temp-generate-summaries.routes'); // 🔧 Generación de resúmenes (temporal)
+const simpleGenerateSummariesRoutes = require('./src/routes/simple-generate-summaries.routes'); // 🔧 Generación simple de resúmenes
 
 const app = express();
 
@@ -243,6 +247,10 @@ app.get('/health', async (req, res) => {
 // Rutas de autenticación (públicas)
 app.use('/api/auth', authRoutes);
 
+// 🔧 Rutas temporales para desarrollo (ELIMINAR EN PRODUCCIÓN)
+app.use('/api/temp', tempGenerateSummariesRoutes);
+app.use('/api/simple', simpleGenerateSummariesRoutes);
+
 // Rutas de scraping (protegidas)
 // Rutas base: /scrape, /scrape-single, /rewrite-with-ai
 app.use('/', scrapingRoutes);
@@ -266,6 +274,12 @@ app.use('/api/cache', cacheRoutes);
 
 // Rutas de configuración de sitios (públicas y protegidas)
 app.use('/api/site-configs', siteConfigRoutes);
+
+// 📰 Rutas de noticias (incluye humanización)
+app.use('/api/news', newsRoutes);
+
+// 🧠 Rutas de noticias humanizadas
+app.use('/api/news/humanized', humanizedNewsRoutes);
 
 // Rutas de debugging y testing (protegidas)
 // app.use('/api/debug', debugRoutes); // ❌ Eliminado - no para producción

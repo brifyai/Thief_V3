@@ -140,7 +140,7 @@ export function UrlsTableWithRetest({ refreshTrigger, onUrlUpdated }: UrlsTableW
       }
 
       // Usar el endpoint correcto del backend: PUT /api/public-urls/:id/retest
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}/public-urls/${retestModal.urlId}/retest`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/public-urls/${retestModal.urlId}/retest`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

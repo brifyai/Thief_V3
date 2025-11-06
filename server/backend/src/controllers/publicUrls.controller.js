@@ -145,9 +145,11 @@ const createPublicUrl = async (req, res) => {
     }
 
     // Verificar si ya existe
-    const existing = await prisma.publicUrl.findUnique({
-      where: { url }
-    });
+    const { data: existing } = await supabase
+      .from('public_urls')
+      .select('*')
+      .eq('url', url)
+      .single();
 
     if (existing) {
       return res.status(409).json({
@@ -162,28 +164,21 @@ const createPublicUrl = async (req, res) => {
     }
 
     // Crear URL pública con límite
-    const publicUrl = await prisma.publicUrl.create({
-      data: {
+    const { data: publicUrl } = await supabase
+      .from('public_urls')
+      .insert({
         url,
         name: name || domain,
         domain,
         region: region || null,
         max_news_limit: max_news_limit || null,
         available_news_count,
-        last_tested_at: new Date(),
+        last_tested_at: new Date().toISOString(),
         test_status: 'success',
         created_by: req.user.id
-      },
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            email: true,
-            name: true
-          }
-        }
-      }
-    });
+      })
+      .select()
+      .single();
 
     // Si hay selectores personalizados, guardar configuración en SiteConfiguration
     let configSaved = null;
@@ -260,13 +255,76 @@ const createPublicUrl = async (req, res) => {
  */
 const getPublicUrls = async (req, res) => {
   try {
-    const { 
-      page = 1, 
+    const {
+      page = 1,
       limit = 50,
       region,
       domain,
       is_active = 'true'
     } = req.query;
+
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      const demoUrls = [
+        {
+          id: 1,
+          url: 'https://example-news.com',
+          name: 'Example News Site',
+          domain: 'example-news.com',
+          region: 'US',
+          is_active: true,
+          max_news_limit: 50,
+          available_news_count: 45,
+          last_tested_at: new Date(),
+          test_status: 'success',
+          created_at: new Date(),
+          updated_at: new Date(),
+          created_by: req.user.id,
+          createdBy: {
+            id: req.user.id,
+            email: req.user.email,
+            name: 'Demo User'
+          },
+          _count: {
+            selections: 5
+          }
+        },
+        {
+          id: 2,
+          url: 'https://tech-news.example',
+          name: 'Tech News',
+          domain: 'tech-news.example',
+          region: 'Global',
+          is_active: true,
+          max_news_limit: 30,
+          available_news_count: 28,
+          last_tested_at: new Date(),
+          test_status: 'success',
+          created_at: new Date(),
+          updated_at: new Date(),
+          created_by: req.user.id,
+          createdBy: {
+            id: req.user.id,
+            email: req.user.email,
+            name: 'Demo User'
+          },
+          _count: {
+            selections: 3
+          }
+        }
+      ];
+
+      return res.json({
+        success: true,
+        data: demoUrls,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: demoUrls.length,
+          totalPages: 1
+        }
+      });
+    }
 
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
@@ -292,30 +350,28 @@ const getPublicUrls = async (req, res) => {
       };
     }
 
-    // Obtener URLs y total
-    const [urls, total] = await Promise.all([
-      prisma.publicUrl.findMany({
-        where,
-        skip,
-        take: limitNum,
-        orderBy: { created_at: 'desc' },
-        include: {
-          createdBy: {
-            select: {
-              id: true,
-              email: true,
-              name: true
-            }
-          },
-          _count: {
-            select: {
-              selections: true
-            }
-          }
-        }
-      }),
-      prisma.publicUrl.count({ where })
-    ]);
+    // Modo real con Supabase - obtener URLs públicas
+    console.log('✅ Usando Supabase real para URLs públicas');
+    
+    // Construir consulta base
+    let query = supabase
+      .from('public_urls')
+      .select('*', { count: 'exact' })
+      .range(skip, skip + limitNum - 1)
+      .order('created_at', { ascending: false });
+
+    // Aplicar filtros
+    if (where.is_active !== undefined) {
+      query = query.eq('is_active', where.is_active);
+    }
+    if (where.region) {
+      query = query.eq('region', where.region);
+    }
+    if (where.domain) {
+      query = query.ilike('domain', `%${where.domain}%`);
+    }
+
+    const { data: urls, count: total } = await query;
 
     res.json({
       success: true,
@@ -330,9 +386,9 @@ const getPublicUrls = async (req, res) => {
 
   } catch (error) {
     console.error('Error en getPublicUrls:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al obtener URLs públicas',
-      details: error.message 
+      details: error.message
     });
   }
 };
@@ -345,23 +401,11 @@ const getPublicUrlById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const publicUrl = await prisma.publicUrl.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            email: true,
-            name: true
-          }
-        },
-        _count: {
-          select: {
-            selections: true
-          }
-        }
-      }
-    });
+    const { data: publicUrl } = await supabase
+      .from('public_urls')
+      .select('*')
+      .eq('id', parseInt(id))
+      .single();
 
     if (!publicUrl) {
       return res.status(404).json({ 
@@ -392,34 +436,30 @@ const updatePublicUrl = async (req, res) => {
     const { id } = req.params;
     const { name, region, is_active } = req.body;
 
-    const publicUrl = await prisma.publicUrl.findUnique({
-      where: { id: parseInt(id) }
-    });
+    const { data: publicUrl } = await supabase
+      .from('public_urls')
+      .select('*')
+      .eq('id', parseInt(id))
+      .single();
 
     if (!publicUrl) {
-      return res.status(404).json({ 
-        error: 'URL pública no encontrada' 
+      return res.status(404).json({
+        error: 'URL pública no encontrada'
       });
     }
 
     // Actualizar
-    const updated = await prisma.publicUrl.update({
-      where: { id: parseInt(id) },
-      data: {
-        ...(name !== undefined && { name }),
-        ...(region !== undefined && { region }),
-        ...(is_active !== undefined && { is_active })
-      },
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            email: true,
-            name: true
-          }
-        }
-      }
-    });
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (region !== undefined) updateData.region = region;
+    if (is_active !== undefined) updateData.is_active = is_active;
+
+    const { data: updated } = await supabase
+      .from('public_urls')
+      .update(updateData)
+      .eq('id', parseInt(id))
+      .select()
+      .single();
 
     res.json({
       success: true,
@@ -444,21 +484,23 @@ const deletePublicUrl = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const publicUrl = await prisma.publicUrl.findUnique({
-      where: { id: parseInt(id) }
-    });
+    const { data: publicUrl } = await supabase
+      .from('public_urls')
+      .select('*')
+      .eq('id', parseInt(id))
+      .single();
 
     if (!publicUrl) {
-      return res.status(404).json({ 
-        error: 'URL pública no encontrada' 
+      return res.status(404).json({
+        error: 'URL pública no encontrada'
       });
     }
 
     // Soft delete: marcar como inactiva
-    await prisma.publicUrl.update({
-      where: { id: parseInt(id) },
-      data: { is_active: false }
-    });
+    await supabase
+      .from('public_urls')
+      .update({ is_active: false })
+      .eq('id', parseInt(id));
 
     res.json({
       success: true,
@@ -484,9 +526,11 @@ const retestPublicUrl = async (req, res) => {
     const { new_limit, custom_selectors } = req.body;
 
     // 1. Obtener URL existente
-    const publicUrl = await prisma.publicUrl.findUnique({
-      where: { id: parseInt(id) }
-    });
+    const { data: publicUrl } = await supabase
+      .from('public_urls')
+      .select('*')
+      .eq('id', parseInt(id))
+      .single();
 
     if (!publicUrl) {
       return res.status(404).json({ 
@@ -569,19 +613,12 @@ const retestPublicUrl = async (req, res) => {
     }
 
     // 6. Actualizar URL en BD
-    const updatedUrl = await prisma.publicUrl.update({
-      where: { id: parseInt(id) },
-      data: updateData,
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            email: true,
-            name: true
-          }
-        }
-      }
-    });
+    const { data: updatedUrl } = await supabase
+      .from('public_urls')
+      .update(updateData)
+      .eq('id', parseInt(id))
+      .select()
+      .single();
 
     // 7. Si hay nuevos selectores, actualizar SiteConfiguration
     if (custom_selectors && Object.keys(custom_selectors).length > 0) {

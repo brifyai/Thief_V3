@@ -33,6 +33,12 @@ const navItems: NavItem[] = [
     roles: ['admin', 'user'],
   },
   {
+    title: 'Noticias',
+    href: '/news',
+    icon: Newspaper,
+    roles: ['admin', 'user'],
+  },
+  {
     title: 'Mis Fuentes',
     href: '/dashboard/my-sources',
     icon: Newspaper,

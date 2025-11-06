@@ -175,7 +175,7 @@ class MetricsService {
 
   async getGeneralMetrics(): Promise<GeneralMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/general`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/general`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -205,7 +205,7 @@ class MetricsService {
 
   async getDuplicateMetrics(): Promise<DuplicateMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/duplicates`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/duplicates`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -232,7 +232,7 @@ class MetricsService {
 
   async getTitleMetrics(): Promise<TitleMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/titles`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/titles`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -264,7 +264,7 @@ class MetricsService {
 
   async getCategorizationMetrics(): Promise<CategorizationMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/categorization`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/categorization`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -291,7 +291,7 @@ class MetricsService {
 
   async getAIMetrics(): Promise<AIMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/ai`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/ai`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -334,7 +334,7 @@ class MetricsService {
 
   async getDomainMetrics(): Promise<DomainMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/domains`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/domains`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -367,7 +367,7 @@ class MetricsService {
 
   async getRealTimeMetrics(): Promise<RealTimeMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/realtime`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/realtime`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -405,7 +405,7 @@ class MetricsService {
 
   async getAllMetrics(): Promise<AllMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/all`, {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/all`, {
         method: 'GET',
         headers: getAuthHeaders()
       });

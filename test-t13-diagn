@@ -1,0 +1,109 @@
+const axios = require('axios');
+const cheerio = require('cheerio');
+
+async function testT13Extraction() {
+  console.log('🔍 DIAGNÓSTICO COMPLETO DE T13.CL');
+  console.log('='.repeat(60));
+  
+  try {
+    const response = await axios.get('https://www.t13.cl', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      timeout: 10000
+    });
+    
+    const $ = cheerio.load(response.data);
+    
+    console.log('📊 PROBLEMA 1: Elementos encontrados con selectores actuales');
+    console.log('-'.repeat(50));
+    
+    // Test de contenedores
+    const containers = $("a[href*='noticia']");
+    console.log(`✅ Contenedores encontrados: ${containers.length}`);
+    
+    if (containers.length > 0) {
+      const firstContainer = containers.first();
+      console.log(`\n🔍 Estructura del primer contenedor:`);
+      console.log(`   - href: ${firstContainer.attr('href') || 'No encontrado'}`);
+      console.log(`   - title: ${firstContainer.attr('title') || 'No encontrado'}`);
+      console.log(`   - text: "${firstContainer.text().trim().substring(0, 100)}..."`);
+      
+      console.log(`\n🧪 PROBANDO EXTRACCIÓN COMPLETA:`);
+      
+      // Simular la lógica del sistema actual
+      const noticias = [];
+      containers.each((i, element) => {
+        const $element = $(element);
+        
+        // Lógica actual del sistema
+        let titulo = "";
+        titulo = $element.find(".titulo").first().text().trim();
+        
+        let enlace = $element.attr("href");
+        
+        let descripcion = "";
+        descripcion = $element.find(".epigrafe").first().text().trim();
+        
+        console.log(`Elemento ${i+1}:`);
+        console.log(`   - Título encontrado: "${titulo}"`);
+        console.log(`   - Enlace: ${enlace}`);
+        console.log(`   - Descripción: "${descripcion}"`);
+        console.log(`   - Válido: ${titulo && titulo.length > 10 && enlace ? 'SÍ' : 'NO'}`);
+        
+        if (titulo && titulo.length > 10 && enlace) {
+          noticias.push({
+            titulo: titulo,
+            descripcion: descripcion, 
+            enlace: enlace
+          });
+        }
+      });
+      
+      console.log(`\n📊 RESULTADO DE EXTRACCIÓN:`);
+      console.log(`   Total noticias extraídas: ${noticias.length}`);
+      
+      if (noticias.length > 0) {
+        console.log(`\n📰 Primeros elementos:`);
+        noticias.slice(0, 3).forEach((noticia, i) => {
+          console.log(`   ${i+1}. "${noticia.titulo}"`);
+        });
+      } else {
+        console.log(`\n❌ NO SE EXTRAJERON NOTICIAS`);
+        console.log(`   CAUSA: El sistema busca ".titulo" dentro de <a>, pero en T13 el título está en el atributo "title"`);
+      }
+      
+      // Probar extracción correcta
+      console.log(`\n🛠️ PROBANDO EXTRACCIÓN CORREGIDA:`);
+      const noticiasCorregidas = [];
+      containers.each((i, element) => {
+        const $element = $(element);
+        
+        // Lógica corregida
+        let titulo = $element.attr('title') || "";
+        let enlace = $element.attr("href");
+        
+        console.log(`Elemento ${i+1} (corregido):`);
+        console.log(`   - Título (atributo): "${titulo}"`);
+        console.log(`   - Enlace: ${enlace}`);
+        console.log(`   - Válido: ${titulo && titulo.length > 10 && enlace ? 'SÍ' : 'NO'}`);
+        
+        if (titulo && titulo.length > 10 && enlace) {
+          noticiasCorregidas.push({
+            titulo: titulo,
+            descripcion: "No hay descripción disponible", 
+            enlace: enlace
+          });
+        }
+      });
+      
+      console.log(`\n✅ RESULTADO CORREGIDO:`);
+      console.log(`   Total noticias extraídas: ${noticiasCorregidas.length}`);
+    }
+    
+  } catch (error) {
+    console.log(`❌ Error: ${error.message}`);
+  }
+}
+
+testT13Extraction();

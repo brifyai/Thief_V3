@@ -52,18 +52,18 @@ export default function AdminSystemPage() {
             details: 'PostgreSQL - Conexión estable'
           },
           {
-            component: 'Redis Cache',
+            component: 'Supabase Cache',
             status: 'healthy',
-            responseTime: 12,
+            responseTime: 25,
             lastCheck: new Date().toISOString(),
-            details: 'Redis 7.0 - Memoria: 512MB'
+            details: 'Supabase - Conexión estable'
           },
           {
             component: 'API de IA',
-            status: 'degraded',
-            responseTime: 1200,
+            status: 'healthy',
+            responseTime: 450,
             lastCheck: new Date().toISOString(),
-            details: 'OpenAI API - Respuesta lenta'
+            details: 'Chutes AI API - Funcionando correctamente'
           },
           {
             component: 'Servidor Web',
@@ -295,23 +295,23 @@ export default function AdminSystemPage() {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Entorno</span>
-              <Badge variant="outline">Producción</Badge>
+              <Badge variant="outline">Desarrollo</Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Versión</span>
-              <Badge variant="outline">v1.0.0</Badge>
+              <Badge variant="outline">v3.0.0</Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Node.js</span>
               <Badge variant="outline">v20.x</Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Tiempo Actividad</span>
-              <Badge variant="outline">15 días</Badge>
+              <span className="text-sm font-medium">Base de Datos</span>
+              <Badge variant="outline">Supabase</Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Último Reinicio</span>
-              <Badge variant="outline">Hace 15 días</Badge>
+              <span className="text-sm font-medium">API IA</span>
+              <Badge variant="outline">Chutes AI</Badge>
             </div>
           </CardContent>
         </Card>

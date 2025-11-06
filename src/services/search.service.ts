@@ -140,7 +140,7 @@ class SearchService {
         ...(filters?.keywords && { keywords: filters.keywords.join(',') }),
       });
 
-      const response = await fetch(`${API_BASE_URL}/search?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/search?${params}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -164,7 +164,7 @@ class SearchService {
   // Obtener opciones de filtros
   async getFiltersOptions(): Promise<SearchFiltersOptions> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/filters`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/filters`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -194,7 +194,7 @@ class SearchService {
   // Obtener estadísticas de búsqueda
   async getSearchStats(): Promise<SearchStats> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/stats`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -228,7 +228,7 @@ class SearchService {
   // Búsqueda inteligente con IA
   async aiSearch(data: AISearchRequest): Promise<AISearchResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/ai`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/ai`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
@@ -262,7 +262,7 @@ class SearchService {
     jobId?: string;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/run-auto-scraping`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/run-auto-scraping`, {
         method: 'POST',
         headers: getAuthHeaders()
       });
@@ -282,7 +282,7 @@ class SearchService {
   // Obtener estado del scraping automático
   async getAutoScrapingStatus(): Promise<AutoScrapingStatus> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/auto-scraping-status`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/auto-scraping-status`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -312,7 +312,7 @@ class SearchService {
   // Obtener contenido por ID (para resultados de búsqueda)
   async getContentById(id: string): Promise<SearchResult> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/content/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/content/${id}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -388,7 +388,7 @@ class SearchService {
   // Obtener sugerencias de búsqueda basadas en consultas populares
   async getSearchSuggestions(query: string, limit: number = 5): Promise<string[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/suggestions?q=${encodeURIComponent(query)}&limit=${limit}`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/suggestions?q=${encodeURIComponent(query)}&limit=${limit}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -408,7 +408,7 @@ class SearchService {
   // Guardar búsqueda en historial
   async saveSearchToHistory(query: string, filters?: SearchFilters): Promise<void> {
     try {
-      await fetch(`${API_BASE_URL}/search/history`, {
+      await fetch(`${API_BASE_URL}/api/search/history`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
@@ -434,7 +434,7 @@ class SearchService {
     resultsCount: number;
   }>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/search/history?limit=${limit}`, {
+      const response = await fetch(`${API_BASE_URL}/api/search/history?limit=${limit}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });

@@ -66,46 +66,58 @@ FORMATO DE RESPUESTA:
     },
     body: JSON.stringify({
       model: config.aiModel,
-      max_tokens: 4000,
+      max_tokens: 3000, // Reducido para mayor velocidad
       temperature: 0.7,
       messages: [
         {
           role: "system",
-          content: `Eres un periodista experto encargado de reescribir noticias con alto rigor, claridad y creatividad. Nivel de razonamiento: ${config.aiReasoningEffort}. Sigue las instrucciones y devuelve exclusivamente un JSON válido con las claves {titulo, contenido}.`,
+          content: `Eres un periodista experto. Responde de forma concisa y eficiente. Devuelve SOLO JSON válido: {titulo, contenido}.`,
         },
         {
           role: "user",
           content: prompt,
         },
       ],
+      stream: false // Asegurar que no sea streaming para mayor velocidad
     }),
   };
 
-  console.log("Enviando solicitud a Chutes AI API");
+  console.log("🚀 Enviando solicitud a Chutes AI API optimizada");
    
-  // Función para hacer la solicitud con reintentos, rate limiting y circuit breaker
-  const makeRequest = async (retryCount = 0, maxRetries = 3) => {
+  // Función para hacer la solicitud con reintentos optimizados y circuit breaker
+  const makeRequest = async (retryCount = 0, maxRetries = 2) => {
     try {
-      // Aplicar rate limiting
+      // Rate limiting más agresivo para mejor rendimiento
       await groqRateLimiter.acquire();
       
-      // Ejecutar con circuit breaker
+      // Timeout personalizado para evitar esperas largas
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos max
+      
+      // Ejecutar con circuit breaker y timeout
       const response = await groqCircuitBreaker.execute(async () => {
-        return await fetch(`${CHUTES_API_BASE_URL}/chat/completions`, requestOptions);
+        return await fetch(`${CHUTES_API_BASE_URL}/chat/completions`, {
+          ...requestOptions,
+          signal: controller.signal
+        });
       });
-      console.log("Respuesta recibida de Chutes AI. Status:", response.status);
+      
+      // Limpiar timeout
+      clearTimeout(timeoutId);
+      
+      console.log("✅ Respuesta recibida de Chutes AI. Status:", response.status);
 
-      // Reintentar en 429 (rate limit) o 5xx
+      // Reintentar más rápido en caso de error
       if ((response.status === 429 || (response.status >= 500 && response.status < 600)) && retryCount < maxRetries) {
-        const backoffDelay = Math.min(2000 * Math.pow(2, retryCount), 10000);
-        console.log(`API ocupada, reintentando en ${backoffDelay}ms... (intento ${retryCount + 1}/${maxRetries})`);
+        const backoffDelay = Math.min(1000 * Math.pow(2, retryCount), 5000); // Reducido a máximo 5s
+        console.log(`⚡ API ocupada, reintentando en ${backoffDelay}ms... (intento ${retryCount + 1}/${maxRetries})`);
         await new Promise(resolve => setTimeout(resolve, backoffDelay));
         return makeRequest(retryCount + 1, maxRetries);
       }
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Error detallado de Chutes AI:", {
+        console.error("❌ Error detallado de Chutes AI:", {
           status: response.status,
           statusText: response.statusText,
           error: errorText,
@@ -115,14 +127,14 @@ FORMATO DE RESPUESTA:
 
       return response;
     } catch (error) {
-      // Si el circuit breaker está abierto, no reintentar
-      if (error.message && error.message.includes('Circuit breaker')) {
+      // Si el circuit breaker está abierto o timeout, no reintentar
+      if (error.message && (error.message.includes('Circuit breaker') || error.name === 'AbortError')) {
         throw error;
       }
       
       if (retryCount < maxRetries) {
-        const backoffDelay = Math.min(2000 * Math.pow(2, retryCount), 10000);
-        console.log(`Error en la solicitud, reintentando en ${backoffDelay}ms... (intento ${retryCount + 1}/${maxRetries})`);
+        const backoffDelay = Math.min(1000 * Math.pow(2, retryCount), 5000);
+        console.log(`🔄 Error en la solicitud, reintentando en ${backoffDelay}ms... (intento ${retryCount + 1}/${maxRetries})`);
         await new Promise(resolve => setTimeout(resolve, backoffDelay));
         return makeRequest(retryCount + 1, maxRetries);
       }

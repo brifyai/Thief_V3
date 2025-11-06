@@ -70,7 +70,7 @@ class QueueService {
   // Iniciar trabajo en cola
   async addJob(jobData: CreateJobRequest): Promise<JobResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/scraping`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/scraping`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
@@ -98,7 +98,7 @@ class QueueService {
   // Obtener estado de trabajo específico
   async getJobStatus(jobId: string): Promise<QueueJob | null> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/status/${jobId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/status/${jobId}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -122,7 +122,7 @@ class QueueService {
   // Obtener trabajos activos
   async getActiveJobs(): Promise<ActiveJob[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/active`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/active`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -142,7 +142,7 @@ class QueueService {
   // Obtener estadísticas de cola
   async getQueueStats(): Promise<QueueStats> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/stats`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -187,7 +187,7 @@ class QueueService {
     message: string;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/${jobId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -214,7 +214,7 @@ class QueueService {
     message: string;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/clean`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/clean`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
@@ -290,7 +290,7 @@ class QueueService {
       const params = new URLSearchParams({ userId: userId.toString() });
       if (status) params.set('status', status);
 
-      const response = await fetch(`${API_BASE_URL}/queue/jobs?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/jobs?${params}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -310,7 +310,7 @@ class QueueService {
   // Reintentar trabajo fallido
   async retryJob(jobId: string): Promise<JobResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/${jobId}/retry`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}/retry`, {
         method: 'POST',
         headers: getAuthHeaders()
       });
@@ -337,7 +337,7 @@ class QueueService {
     message: string;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/${jobId}/pause`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}/pause`, {
         method: 'POST',
         headers: getAuthHeaders()
       });
@@ -363,7 +363,7 @@ class QueueService {
     message: string;
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/${jobId}/resume`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}/resume`, {
         method: 'POST',
         headers: getAuthHeaders()
       });
@@ -494,7 +494,7 @@ class QueueService {
     bottlenecks: string[];
   }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/queue/metrics?range=${timeRange}`, {
+      const response = await fetch(`${API_BASE_URL}/api/queue/metrics?range=${timeRange}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
