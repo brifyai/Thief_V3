@@ -2,29 +2,29 @@ const { verifyToken } = require('../utils/jwtHelper');
 const { isDemoMode } = require('../config/database');
 
 const authenticateToken = (req, res, next) => {
-  // En modo demo o desarrollo, aceptar cualquier token o crear un usuario demo
+  // En modo demo o desarrollo, aceptar cualquier token o crear un usuario admin por defecto
   if (isDemoMode || process.env.NODE_ENV === 'development') {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     
-    // Si no hay token, crear usuario demo
+    // Si no hay token, crear usuario admin por defecto (para habilitar panel admin en dev)
     if (!token) {
       req.user = {
-        id: 'demo-user',
-        email: 'demo@example.com',
-        name: 'Demo User',
-        role: 'user'
+        id: 'demo-admin',
+        email: 'admin@example.com',
+        name: 'Demo Admin',
+        role: 'admin'
       };
       return next();
     }
     
-    // Si el token es "demo-token", crear usuario demo
-    if (token === 'demo-token') {
+    // Si el token es "demo-token" o "demo-admin", crear usuario admin
+    if (token === 'demo-token' || token === 'demo-admin') {
       req.user = {
-        id: 'demo-user',
-        email: 'demo@example.com',
-        name: 'Demo User',
-        role: 'user'
+        id: 'demo-admin',
+        email: 'admin@example.com',
+        name: 'Demo Admin',
+        role: 'admin'
       };
       return next();
     }
@@ -36,12 +36,12 @@ const authenticateToken = (req, res, next) => {
       return next();
     }
     
-    // Si el token es inválido, crear usuario demo de todos modos
+    // Si el token es inválido, crear usuario admin de todos modos (solo en dev/demo)
     req.user = {
-      id: 'demo-user',
-      email: 'demo@example.com',
-      name: 'Demo User',
-      role: 'user'
+      id: 'demo-admin',
+      email: 'admin@example.com',
+      name: 'Demo Admin',
+      role: 'admin'
     };
     return next();
   }

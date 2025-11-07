@@ -11,20 +11,33 @@ if (demoMode || !supabaseUrl || !supabaseKey) {
   
   // Crear un mock de Supabase para modo demo
   const mockSupabase = {
-    from: () => ({
-      select: () => ({
-        eq: () => ({
-          order: () => ({
-            limit: () => ({
-              data: [],
+    from: (table) => ({
+      select: function() {
+        return {
+          eq: () => ({
+            order: () => ({
+              limit: () => ({
+                data: [],
+                error: null
+              })
+            }),
+            single: () => ({ data: null, error: null })
+          }),
+          single: () => ({ data: null, error: null }),
+          data: [],
+          error: null
+        };
+      },
+      insert: function(data) {
+        return {
+          select: () => ({
+            single: () => ({
+              data: { id: `demo-${Date.now()}`, ...data },
               error: null
             })
           })
-        }),
-        data: [],
-        error: null
-      }),
-      insert: () => ({ data: null, error: null }),
+        };
+      },
       update: () => ({ data: null, error: null }),
       delete: () => ({ data: null, error: null })
     }),

@@ -3,6 +3,7 @@ const router = express.Router();
 const newsSearchController = require('../controllers/newsSearch.controller');
 const { authenticateToken } = require('../middleware/auth');
 const { RateLimiter } = require('../utils/rateLimiter');
+const { validateInteractions } = require('../middleware/validateInteractions');
 
 // Crear middleware de rate limiting simple
 const createRateLimitMiddleware = (maxRequests = 100, windowMs = 60000) => {
@@ -30,14 +31,14 @@ router.use(createRateLimitMiddleware());
  * @desc    Búsqueda avanzada de noticias
  * @access  Public
  */
-router.post('/', newsSearchController.searchNews);
+router.post('/', validateInteractions, newsSearchController.searchNews);
 
 /**
  * @route   GET /api/news/search/similar/:id
  * @desc    Encontrar noticias similares
  * @access  Public
  */
-router.get('/similar/:id', newsSearchController.findSimilarNews);
+router.get('/similar/:id', validateInteractions, newsSearchController.findSimilarNews);
 
 /**
  * @route   GET /api/news/search/trending
@@ -58,7 +59,7 @@ router.get('/suggestions', newsSearchController.getSearchSuggestions);
  * @desc    Búsqueda avanzada con filtros complejos
  * @access  Public
  */
-router.post('/advanced', newsSearchController.advancedSearch);
+router.post('/advanced', validateInteractions, newsSearchController.advancedSearch);
 
 /**
  * @route   GET /api/news/search/filters

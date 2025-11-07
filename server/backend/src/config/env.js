@@ -64,7 +64,7 @@ const config = {
   
   // Chutes AI API (anteriormente Groq)
   chutesApiKey: process.env.CHUTES_API_KEY,
-  aiModel: process.env.AI_MODEL || 'gpt-4-turbo',
+  aiModel: process.env.AI_MODEL || 'openai/gpt-oss-20b',
   aiReasoningEffort: process.env.AI_REASONING_EFFORT || 'medium',
   
   // CORS - Validado en producción

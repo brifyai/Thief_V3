@@ -40,6 +40,9 @@ const extractNewsWithCheerio = ($, containerSelector, selectors, baseUrl, keywor
       // O si contiene selectores de atributo como a[title]
       let titleFound = false;
       for (const titleSel of titleSelectors) {
+        // Detectar si es un selector de atributo (ej: a[title], div[data-title])
+        const isAttributeSelector = titleSel && titleSel.includes('[') && titleSel.includes(']');
+        
         if (titleSel === containerSelector || $element.is(titleSel)) {
           // El selector del título es igual al del contenedor o coincide con el elemento
           const titleAttr = $element.attr('title') ||
@@ -50,6 +53,21 @@ const extractNewsWithCheerio = ($, containerSelector, selectors, baseUrl, keywor
           logger.debug(`🎯 Título extraído desde atributo (selector: "${titleSel}"): "${titulo}"`);
           titleFound = true;
           break;
+        } else if (isAttributeSelector) {
+          // Manejar selectores de atributo: extraer el atributo del selector
+          // Ej: a[title] → extraer atributo 'title'
+          const attrMatch = titleSel.match(/\[([^\]]+)\]/);
+          if (attrMatch) {
+            const attrName = attrMatch[1].replace(/^["']|["']$/g, ''); // Remover comillas si existen
+            const $titleEl = $element.find(titleSel).first();
+            if ($titleEl.length > 0) {
+              const titleAttr = $titleEl.attr(attrName) || $titleEl.text();
+              titulo = limpiarTexto(titleAttr);
+              logger.debug(`🎯 Título extraído desde atributo selector (selector: "${titleSel}", attr: "${attrName}"): "${titulo}"`);
+              titleFound = true;
+              break;
+            }
+          }
         }
       }
       
@@ -74,11 +92,28 @@ const extractNewsWithCheerio = ($, containerSelector, selectors, baseUrl, keywor
       // 🎯 LÓGICA ESPECIAL: Detectar si alguno de los selectores de enlace coincide con el contenedor
       let linkFound = false;
       for (const linkSel of linkSelectors) {
+        // Detectar si es un selector de atributo (ej: a[href], div[data-url])
+        const isAttributeSelector = linkSel && linkSel.includes('[') && linkSel.includes(']');
+        
         if (linkSel === containerSelector || $element.is(linkSel)) {
           enlace = $element.attr("href");
           logger.debug(`🎯 Enlace extraído desde atributo (selector: "${linkSel}"): "${enlace}"`);
           linkFound = true;
           break;
+        } else if (isAttributeSelector) {
+          // Manejar selectores de atributo: extraer el atributo del selector
+          // Ej: a[href] → extraer atributo 'href'
+          const attrMatch = linkSel.match(/\[([^\]]+)\]/);
+          if (attrMatch) {
+            const attrName = attrMatch[1].replace(/^["']|["']$/g, ''); // Remover comillas si existen
+            const $linkEl = $element.find(linkSel).first();
+            if ($linkEl.length > 0) {
+              enlace = $linkEl.attr(attrName) || $linkEl.attr('href');
+              logger.debug(`🎯 Enlace extraído desde atributo selector (selector: "${linkSel}", attr: "${attrName}"): "${enlace}"`);
+              linkFound = true;
+              break;
+            }
+          }
         }
       }
       

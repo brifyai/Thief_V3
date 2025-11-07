@@ -13,6 +13,8 @@ const config = require('./server/backend/src/config/env');
 const { errorHandler } = require('./server/backend/src/middleware/errorHandler');
 const { autoScraperService } = require('./server/backend/src/services/autoScraper.service');
 const { swaggerSpec, swaggerUi } = require('./server/backend/src/config/swagger');
+const dailyResetScheduler = require('./server/backend/src/services/dailyResetScheduler.service');
+
 const { tokenTracker } = require('./server/backend/src/services/tokenTracker.service');
 
 // Importar rutas del backend
@@ -37,6 +39,7 @@ const usersRoutes = require('./server/backend/src/routes/users.routes');
 const newsRoutes = require('./server/backend/src/routes/news.routes');
 const newsScrapingRoutes = require('./server/backend/src/routes/newsScraping.routes');
 const newsSearchRoutes = require('./server/backend/src/routes/newsSearch.routes');
+const interactionsRoutes = require('./server/backend/src/routes/interactions.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -175,6 +178,7 @@ api.use('/api/users', usersRoutes);
 api.use('/api/news', newsRoutes);
 api.use('/api/news/scrape', newsScrapingRoutes);
 api.use('/api/news/search', newsSearchRoutes);
+api.use('/api/interactions', interactionsRoutes);
 
 // Documentación Swagger
 api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -187,44 +191,20 @@ api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 api.use(errorHandler);
 
 app.prepare().then(() => {
-  createServer(async (req, res) => {
+  // Crear servidor HTTP que maneje tanto Express como Next.js
+  const server = createServer(async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true);
       const { pathname, query } = parsedUrl;
 
       // Si la ruta comienza con /api o es una ruta especial del backend, manejar con Express
-      if (pathname.startsWith('/api') || 
-          pathname.startsWith('/scrape') || 
+      if (pathname.startsWith('/api') ||
+          pathname.startsWith('/scrape') ||
           pathname.startsWith('/health') ||
           pathname.startsWith('/api-docs')) {
         
-        // Crear un mock de req/res para Express
-        const mockReq = {
-          ...req,
-          url: req.url,
-          method: req.method,
-          headers: req.headers,
-          body: req.body,
-          query: query
-        };
-        
-        const mockRes = {
-          ...res,
-          json: (data) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify(data));
-          },
-          status: (code) => {
-            res.statusCode = code;
-            return mockRes;
-          },
-          setHeader: (name, value) => {
-            res.setHeader(name, value);
-            return mockRes;
-          }
-        };
-        
-        api(mockReq, mockRes);
+        // Usar Express directamente
+        api(req, res);
         return;
       }
 
@@ -235,13 +215,23 @@ app.prepare().then(() => {
       res.statusCode = 500;
       res.end('internal server error');
     }
-  }).listen(port, () => {
+  });
+
+  server.listen(port, () => {
     console.log(`> Servidor unificado listo en http://${hostname}:${port}`);
     
     // Inicializar Token Tracker
     tokenTracker.initialize().catch(err => {
       console.error('⚠️ Error inicializando Token Tracker:', err);
     });
+
+    // Inicializar Daily Reset Scheduler para interacciones
+    try {
+      dailyResetScheduler.start();
+      console.log(`⏰ Daily Reset Scheduler iniciado: ${JSON.stringify(dailyResetScheduler.getStatus())}`);
+    } catch (error) {
+      console.error('⚠️ Error inicializando Daily Reset Scheduler:', error);
+    }
 
     // Configurar cron jobs del backend
     if (config.scrapingEnabled) {
