@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../lib/api-secure';
+import { API_BASE_URL, getAuthHeaders } from '../lib/api-secure';
 
 export interface PublicUrl {
   id: number;
@@ -45,13 +45,9 @@ export interface SelectUrlData {
   public_url_id: number;
 }
 
-// Función auxiliar para obtener headers
+// Función auxiliar para obtener headers (centralizado)
 function getHeaders() {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
-  };
+ return getAuthHeaders();
 }
 
 class UrlsService {
@@ -67,6 +63,9 @@ class UrlsService {
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return [];
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -91,6 +90,9 @@ class UrlsService {
       }
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return null;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -215,6 +217,9 @@ class UrlsService {
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return [];
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -235,6 +240,9 @@ class UrlsService {
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return [];
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
