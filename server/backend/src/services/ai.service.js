@@ -3,6 +3,8 @@ const config = require('../config/env');
 const { groqRateLimiter, groqCircuitBreaker } = require('../utils/rateLimiter');
 const { aiCostOptimizer } = require('./aiCostOptimizer.service');
 const { AppError } = require('../utils/AppError');
+const tokenTracker = require('./tokenTracker.service');
+const interactionManager = require('./interactionManager.service');
 
 // Constante para la API de Chutes AI
 const CHUTES_API_BASE_URL = 'https://api.chutes.ai/v1';
@@ -10,8 +12,65 @@ const CHUTES_API_BASE_URL = 'https://api.chutes.ai/v1';
 // Inicializar el optimizador de costos
 aiCostOptimizer.initialize().catch(console.warn);
 
+/**
+ * Función helper para procesar respuesta de AI y tracking
+ */
+const processAIResponse = async (response, userId, operationType, metadata = {}) => {
+  try {
+    const data = await response.json();
+    
+    // Extraer información de uso de tokens
+    const usage = data?.usage || {};
+    const { prompt_tokens = 0, completion_tokens = 0, total_tokens = 0 } = usage;
+    
+    // Calcular costos
+    const model = data?.model || 'gpt-4-turbo';
+    const cost = tokenTracker.calculateCost(model, prompt_tokens, completion_tokens);
+    
+    // Hacer tracking de tokens
+    if (userId && total_tokens > 0) {
+      await tokenTracker.trackUsage(userId, {
+        operationType,
+        promptTokens: prompt_tokens,
+        completionTokens: completion_tokens,
+        totalTokens: total_tokens,
+        model,
+        cost,
+        metadata: {
+          ...metadata,
+          responseTime: Date.now(),
+          success: true
+        }
+      });
+    }
+    
+    // Deducir interacción (1 por llamada a API)
+    if (userId) {
+      await interactionManager.deductInteraction(userId, operationType, {
+        ...metadata,
+        tokens_used: total_tokens,
+        cost,
+        model
+      });
+    }
+    
+    console.log(`✅ AI Operation completed:`, {
+      operationType,
+      userId,
+      tokens: total_tokens,
+      cost,
+      interactionDeducted: !!userId
+    });
+    
+    return data;
+  } catch (error) {
+    console.error('❌ Error processing AI response:', error);
+    throw error;
+  }
+};
+
 // Código original de reescritura con IA sin modificaciones
-const rewriteWithAI = async (titulo, contenido) => {
+const rewriteWithAI = async (titulo, contenido, userId = null) => {
   const prompt = `Actúa como un periodista experto y reescribe completamente esta noticia, creando una versión nueva y de unos 5 o 6 párrafos no tan extensos pero que mantenga los hechos principales pero con un enfoque fresco y diferente pero usando párrafos bien separados con doble salto de línea (\\n\\n)
 
     INSTRUCCIONES DETALLADAS:
@@ -149,7 +208,12 @@ FORMATO DE RESPUESTA:
     throw new Error(`Error en la API de Chutes AI: ${response.status} ${response.statusText}`);
   }
 
-  const data = await response.json();
+  // Procesar respuesta con tracking
+  const data = await processAIResponse(response, userId, 'rewrite', {
+    title: titulo,
+    contentLength: contenido?.length || 0
+  });
+  
   console.log("Respuesta completa de Chutes AI:", JSON.stringify(data, null, 2));
     
   const textoRespuesta = data?.choices?.[0]?.message?.content;
@@ -306,7 +370,7 @@ const extractAndParseJSON = (text) => {
   };
 };
 
-const categorizeWithAI = async (titulo, contenido, url = '') => {
+const categorizeWithAI = async (titulo, contenido, url = '', userId = null) => {
   const content = {
     title: titulo || 'Sin título',
     content: contenido ? contenido.substring(0, 400) + '...' : 'Sin contenido', // Reducido
@@ -354,7 +418,13 @@ const categorizeWithAI = async (titulo, contenido, url = '') => {
           throw new Error(`Error de la API de Chutes AI: ${response.status} ${errorText}`);
         }
 
-        const data = await response.json();
+        // Procesar respuesta con tracking
+        const data = await processAIResponse(response, userId, 'categorization', {
+          title: titulo,
+          contentLength: contenido?.length || 0,
+          url
+        });
+        
         const respuestaIA = data.choices[0]?.message?.content?.trim();
         
         if (!respuestaIA) {
@@ -432,7 +502,7 @@ const categorizeWithAI = async (titulo, contenido, url = '') => {
 };
 
 // Nueva función para búsqueda inteligente SEMÁNTICA con IA
-const intelligentSearch = async (userQuery) => {
+const intelligentSearch = async (userQuery, userId = null) => {
   try {
     return await aiCostOptimizer.executeWithOptimization(
       'search',
@@ -517,7 +587,12 @@ SÉ GENEROSO con los términos - mejor tener más que menos!`;
           throw new Error(`Error de la API de Chutes AI: ${response.status}`);
         }
 
-        const data = await response.json();
+        // Procesar respuesta con tracking
+        const data = await processAIResponse(response, userId, 'search', {
+          query: userQuery,
+          queryLength: userQuery?.length || 0
+        });
+        
         const respuestaIA = data.choices[0]?.message?.content?.trim();
         
         if (!respuestaIA || respuestaIA.length === 0) {
@@ -617,9 +692,10 @@ SÉ GENEROSO con los términos - mejor tener más que menos!`;
  * Función genérica para generar texto con IA
  * @param {string} prompt - Prompt para la IA
  * @param {Object} options - Opciones de generación
+ * @param {string} userId - ID del usuario para tracking
  * @returns {Promise<string>} Texto generado
  */
-const generateText = async (prompt, options = {}) => {
+const generateText = async (prompt, options = {}, userId = null) => {
   const {
     temperature = 0.7,
     maxTokens = 1000,
@@ -662,7 +738,12 @@ const generateText = async (prompt, options = {}) => {
     throw new Error(`Error en API de Chutes AI: ${response.status} - ${errorText}`);
   }
 
-  const data = await response.json();
+  // Procesar respuesta con tracking
+  const data = await processAIResponse(response, userId, 'generate_text', {
+    promptLength: prompt?.length || 0,
+    temperature,
+    maxTokens
+  });
   
   if (!data.choices || !data.choices[0] || !data.choices[0].message) {
     throw new Error("Respuesta inválida de la API de Chutes AI");

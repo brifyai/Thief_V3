@@ -17,8 +17,25 @@ export function getAuthHeaders(): Record<string, string> {
     };
   }
 
-  // Intentar obtener token desde localStorage
-  const token = localStorage.getItem('token');
+  let token = null;
+  
+  // Intentar obtener token desde localStorage primero
+  token = localStorage.getItem('token');
+  
+  // Si no hay token en localStorage, intentar desde el Zustand store
+  if (!token) {
+    try {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        const parsed = JSON.parse(authStorage);
+        token = parsed.state?.token;
+      }
+    } catch (e) {
+      console.warn('Error parsing auth-storage:', e);
+    }
+  }
+  
+  console.log('🔐 getAuthHeaders - Token found:', !!token, 'Token preview:', token ? token.substring(0, 20) + '...' : 'none');
   
   return {
     'Content-Type': 'application/json',

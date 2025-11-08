@@ -117,7 +117,8 @@ const rewriteWithAI = async (req, res) => {
       });
     }
 
-    const resultado = await aiService.rewriteWithAI(titulo, contenido);
+    const userId = req.user?.id || null;
+    const resultado = await aiService.rewriteWithAI(titulo, contenido, userId);
     return res.json(resultado);
   } catch (error) {
     console.error("Error en rewrite-with-ai:", error);
@@ -202,7 +203,8 @@ const saveScrapedContent = async (req, res) => {
     let region = null;
     
     try {
-      const categorization = await categorizeWithAI(titulo, contenido, url);
+      const userId = req.user?.id || null;
+      const categorization = await categorizeWithAI(titulo, contenido, url, userId);
       category = categorization.category;
       region = categorization.region;
       console.log('✅ Contenido categorizado:', { category, region, confidence: categorization.confidence });
@@ -773,7 +775,8 @@ const saveListingContent = async (req, res) => {
         let region = null;
         
         try {
-          const categorization = await categorizeWithAI(article.titulo, article.contenido, article.sourceUrl);
+          const userId = req.user?.id || null;
+          const categorization = await categorizeWithAI(article.titulo, article.contenido, article.sourceUrl, userId);
           category = categorization.category;
           region = categorization.region;
         } catch (error) {

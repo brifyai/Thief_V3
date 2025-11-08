@@ -224,8 +224,17 @@ const NewsDetail: React.FC<NewsDetailProps> = ({ news, onClose, onBack }) => {
             </CardHeader>
             <CardContent>
               <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {displayContent}
+                <div className="space-y-4 text-sm leading-relaxed text-gray-700">
+                  {displayContent?.split('\n\n').map((paragraph, index) => (
+                    <p key={index} className="text-justify">
+                      {paragraph.split('\n').map((line, lineIndex) => (
+                        <React.Fragment key={lineIndex}>
+                          {line}
+                          {lineIndex < paragraph.split('\n').length - 1 && <br />}
+                        </React.Fragment>
+                      ))}
+                    </p>
+                  ))}
                 </div>
               </div>
             </CardContent>

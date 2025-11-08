@@ -53,7 +53,7 @@ class NewsHumanizationService {
           error: (errPrimary && errPrimary.message) ? errPrimary.message.slice(0, 200) : String(errPrimary).slice(0, 200)
         });
         try {
-          const alt = await aiService.generateText(prompt, { temperature: 0.65, maxTokens: 1500, model: process.env.AI_MODEL || 'openai/gpt-oss-20b' });
+          const alt = await aiService.generateText(prompt, { temperature: 0.65, maxTokens: 1500, model: process.env.AI_MODEL || 'openai/gpt-oss-20b' }, userId);
           const usage = alt?.usage || {};
           const tokensUsed = (usage.total_tokens != null)
             ? usage.total_tokens
@@ -138,6 +138,7 @@ class NewsHumanizationService {
         loggers.general.warn('Error tracking token usage (non-blocking):', {
           error: (trackError && trackError.message) ? trackError.message.slice(0, 200) : String(trackError).slice(0, 200)
         });
+      }
 
       // Deducir interacción del usuario
       try {
@@ -152,8 +153,6 @@ class NewsHumanizationService {
         loggers.general.warn('Error deducting interaction (non-blocking):', {
           error: (deductError && deductError.message) ? deductError.message.slice(0, 200) : String(deductError).slice(0, 200)
         });
-      }
-
       }
 
       loggers.general.info(`Successfully humanized news ${newsId} for user ${userId}`);
@@ -454,7 +453,7 @@ class NewsHumanizationService {
 
       try {
         const altStart = Date.now();
-        const alt = await aiService.generateText(prompt, { temperature: 0.65, maxTokens: 1500, model });
+        const alt = await aiService.generateText(prompt, { temperature: 0.65, maxTokens: 1500, model }, userId);
         const usage = alt?.usage || {};
         const tokensUsed = (usage.total_tokens != null)
           ? usage.total_tokens

@@ -27,9 +27,12 @@ class InteractionManager {
         throw new AppError('User ID requerido', 400);
       }
 
+      // Normalizar userId para manejar IDs de demo
+      const normalizedUserId = this.normalizeUserId(userId);
+
       // Llamar función SQL para deducir interacción
       const { data, error } = await supabase.rpc('deduct_interaction', {
-        p_user_id: userId,
+        p_user_id: normalizedUserId,
         p_operation_type: operationType,
         p_metadata: metadata ? JSON.stringify(metadata) : null
       });
@@ -81,9 +84,12 @@ class InteractionManager {
         throw new AppError('User ID requerido', 400);
       }
 
+      // Normalizar userId para manejar IDs de demo
+      const normalizedUserId = this.normalizeUserId(userId);
+
       // Llamar función SQL para obtener saldo
       const { data, error } = await supabase.rpc('get_user_balance', {
-        p_user_id: userId
+        p_user_id: normalizedUserId
       });
 
       if (error) {
@@ -121,6 +127,27 @@ class InteractionManager {
       // En caso de error, permitir la operación (fallback)
       return true;
     }
+  }
+
+  /**
+   * Normalizar el userId para manejar IDs de demo
+   */
+  normalizeUserId(userId) {
+    if (!userId) return null;
+    
+    // Si es un ID de demo, convertirlo a un UUID válido para la BD
+    if (userId === 'demo-admin' || userId === 'demo-token') {
+      return '00000000-0000-0000-0000-000000000001'; // UUID fijo para demo
+    }
+    
+    // Si ya parece un UUID, retornarlo tal cual
+    if (typeof userId === 'string' && userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return userId;
+    }
+    
+    // Para cualquier otro caso, retornar null para evitar errores
+    loggers.general.warn(`⚠️ UserId no válido para interaction manager: ${userId}`);
+    return null;
   }
 
   /**

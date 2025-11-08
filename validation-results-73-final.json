@@ -1,0 +1,714 @@
+[
+  {
+    "name": "Emol",
+    "url": "https://emol.com",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 196,
+    "titleElements": 25,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "PuroMarketing",
+    "url": "https://puromarketing.com",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 385,
+    "titleElements": 1,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "La Tercera",
+    "url": "https://latercera.com",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 364,
+    "titleElements": 144,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "La Tercera CL",
+    "url": "https://latercera.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 364,
+    "titleElements": 144,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "T13",
+    "url": "https://t13.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 158,
+    "titleElements": 8,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "La Cuarta",
+    "url": "https://lacuarta.com",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 158,
+    "titleElements": 41,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "La Nación",
+    "url": "https://lanacion.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 373,
+    "titleElements": 99,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "24 Horas",
+    "url": "https://24horas.cl",
+    "status": "success",
+    "articleElements": 171,
+    "linkElements": 385,
+    "titleElements": 195,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Mega Noticias",
+    "url": "https://meganoticias.cl",
+    "status": "success",
+    "articleElements": 106,
+    "linkElements": 248,
+    "titleElements": 130,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Chilevisión",
+    "url": "https://chilevision.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 187,
+    "titleElements": 33,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Biobío Chile",
+    "url": "https://biobiochile.cl",
+    "status": "success",
+    "articleElements": 304,
+    "linkElements": 724,
+    "titleElements": 333,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Cooperativa",
+    "url": "https://cooperativa.cl",
+    "status": "success",
+    "articleElements": 114,
+    "linkElements": 581,
+    "titleElements": 117,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "ADN Radio",
+    "url": "https://adnradio.cl",
+    "status": "success",
+    "articleElements": 50,
+    "linkElements": 261,
+    "titleElements": 74,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Bloomberg Línea",
+    "url": "https://bloomberglinea.com",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 317,
+    "titleElements": 152,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Chocale",
+    "url": "https://chocale.cl",
+    "status": "success",
+    "articleElements": 62,
+    "linkElements": 255,
+    "titleElements": 68,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Tele13 Radio",
+    "url": "https://tele13radio.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 0,
+    "titleElements": 0,
+    "scrapeable": false,
+    "attempts": 1
+  },
+  {
+    "name": "RedGol",
+    "url": "https://redgol.cl",
+    "status": "success",
+    "articleElements": 83,
+    "linkElements": 324,
+    "titleElements": 96,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "AS Chile",
+    "url": "https://chile.as.com",
+    "status": "success",
+    "articleElements": 107,
+    "linkElements": 424,
+    "titleElements": 118,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Al Aire Libre",
+    "url": "https://alairelibre.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 128,
+    "titleElements": 37,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Prensa Fútbol",
+    "url": "https://prensafutbol.cl",
+    "status": "success",
+    "articleElements": 89,
+    "linkElements": 514,
+    "titleElements": 144,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Ciper Chile",
+    "url": "https://ciperchile.cl",
+    "status": "success",
+    "articleElements": 37,
+    "linkElements": 168,
+    "titleElements": 36,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Mostrador",
+    "url": "https://elmostrador.cl",
+    "status": "success",
+    "articleElements": 1,
+    "linkElements": 297,
+    "titleElements": 81,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Interferencia",
+    "url": "https://interferencia.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 108,
+    "titleElements": 25,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Desconcierto",
+    "url": "https://eldesconcierto.cl",
+    "status": "success",
+    "articleElements": 65,
+    "linkElements": 232,
+    "titleElements": 61,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "ANID",
+    "url": "https://anid.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 168,
+    "titleElements": 15,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "MinCiencia",
+    "url": "https://minciencia.gob.cl",
+    "status": "success",
+    "articleElements": 8,
+    "linkElements": 196,
+    "titleElements": 20,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Chile Cultura",
+    "url": "https://chilecultura.gob.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 48,
+    "titleElements": 9,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Orbe",
+    "url": "https://orbe.cl",
+    "status": "error",
+    "error": "connect ECONNREFUSED 190.110.125.196:443",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "Mediabanco",
+    "url": "https://mediabanco.com",
+    "status": "success",
+    "articleElements": 40,
+    "linkElements": 106,
+    "titleElements": 31,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "En Prensa",
+    "url": "https://enprensa.cl",
+    "status": "success",
+    "articleElements": 8,
+    "linkElements": 17,
+    "titleElements": 5,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Soy Chile",
+    "url": "https://soychile.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 161,
+    "titleElements": 57,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Arica Aldia",
+    "url": "https://aricaldia.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 283,
+    "titleElements": 79,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Morro de Arica",
+    "url": "https://elmorrodearica.cl",
+    "status": "success",
+    "articleElements": 22,
+    "linkElements": 186,
+    "titleElements": 30,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Arica 365",
+    "url": "https://arica365.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 434,
+    "titleElements": 119,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Morro Cotudo",
+    "url": "https://elmorrocotudo.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 270,
+    "titleElements": 7,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Cappissima Multimedial",
+    "url": "https://cappissimamultimedial.cl",
+    "status": "success",
+    "articleElements": 8,
+    "linkElements": 26,
+    "titleElements": 11,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Austral Temuco",
+    "url": "https://www.australtemuco.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 26,
+    "titleElements": 0,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "La Opinión",
+    "url": "https://www.laopinon.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 270,
+    "titleElements": 7,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Naveghable",
+    "url": "https://www.elnaveghable.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 270,
+    "titleElements": 7,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "ATV Valdivia",
+    "url": "https://atvvaldivia.cl",
+    "status": "success",
+    "articleElements": 37,
+    "linkElements": 240,
+    "titleElements": 41,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Soy de Puerto",
+    "url": "https://soydepuerto.cl",
+    "status": "success",
+    "articleElements": 10,
+    "linkElements": 75,
+    "titleElements": 2,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Austral Osorno",
+    "url": "https://www.australosorno.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 26,
+    "titleElements": 0,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "La Estrella Chiloé",
+    "url": "https://www.laestrellachiloe.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 44,
+    "titleElements": 1,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Repuertero",
+    "url": "https://www.elrepuertero.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 270,
+    "titleElements": 7,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Ciudadano Radio",
+    "url": "https://ciudadanoradio.cl",
+    "status": "success",
+    "articleElements": 14,
+    "linkElements": 94,
+    "titleElements": 16,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Magallanews",
+    "url": "https://www.elmagallanews.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 270,
+    "titleElements": 7,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "EFE",
+    "url": "https://www.efe.com",
+    "status": "success",
+    "articleElements": 8,
+    "linkElements": 98,
+    "titleElements": 21,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "AP News Chile",
+    "url": "https://apnews.com/hub/chile",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 1372,
+    "titleElements": 47,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Reuters Chile",
+    "url": "https://www.reuters.com/places/chile",
+    "status": "error",
+    "error": "Request failed with status code 401",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "El País",
+    "url": "https://elpais.com",
+    "status": "success",
+    "articleElements": 143,
+    "linkElements": 381,
+    "titleElements": 190,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "ABC",
+    "url": "https://abc.es",
+    "status": "success",
+    "articleElements": 66,
+    "linkElements": 358,
+    "titleElements": 74,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "El Mundo",
+    "url": "https://elmundo.es",
+    "status": "success",
+    "articleElements": 55,
+    "linkElements": 441,
+    "titleElements": 62,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Soy Chile Temuco",
+    "url": "https://www.soychile.cl/temuco/",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 111,
+    "titleElements": 37,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Soy Chile Valdivia",
+    "url": "https://www.soychile.cl/valdivia/",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 106,
+    "titleElements": 35,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Soy Chile Puerto Montt",
+    "url": "https://www.soychile.cl/puerto-montt/",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 111,
+    "titleElements": 37,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Soy Chile Osorno",
+    "url": "https://www.soychile.cl/osorno/",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 111,
+    "titleElements": 37,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Soy Chile Chiloé",
+    "url": "https://www.soychile.cl/chiloe/",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 106,
+    "titleElements": 35,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Iquique",
+    "url": "https://www.diarioiquique.cl",
+    "status": "success",
+    "articleElements": 6,
+    "linkElements": 39,
+    "titleElements": 7,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Antofagasta",
+    "url": "https://www.diarioantofagasta.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 186,
+    "titleElements": 67,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Atacama",
+    "url": "https://www.diarioatacama.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 67,
+    "titleElements": 1,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Coquimbo",
+    "url": "https://www.diariocoquimbo.cl",
+    "status": "error",
+    "error": "getaddrinfo ENOTFOUND www.diariocoquimbo.cl",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "Diario Valparaíso",
+    "url": "https://www.diariovalparaiso.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 46,
+    "titleElements": 8,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Rancagua",
+    "url": "https://www.diariorancagua.cl",
+    "status": "success",
+    "articleElements": 18,
+    "linkElements": 107,
+    "titleElements": 29,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Talca",
+    "url": "https://www.diariotalca.cl",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 267,
+    "titleElements": 53,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Concepción",
+    "url": "https://www.diarioconcepcion.cl",
+    "status": "success",
+    "articleElements": 35,
+    "linkElements": 134,
+    "titleElements": 51,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "Diario Temuco",
+    "url": "https://www.diariotemuco.cl",
+    "status": "error",
+    "error": "getaddrinfo ENOTFOUND www.diariotemuco.cl",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "Diario Valdivia",
+    "url": "https://www.diariovaldivia.cl",
+    "status": "error",
+    "error": "getaddrinfo ENOTFOUND www.diariovaldivia.cl",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "Diario Puerto Montt",
+    "url": "https://www.diariopuertomontt.cl",
+    "status": "error",
+    "error": "getaddrinfo ENOTFOUND www.diariopuertomontt.cl",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "Diario Coyhaique",
+    "url": "https://www.diariocoyhaique.cl",
+    "status": "error",
+    "error": "getaddrinfo ENOTFOUND www.diariocoyhaique.cl",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "Diario Punta Arenas",
+    "url": "https://www.diariopuntaarenas.cl",
+    "status": "error",
+    "error": "getaddrinfo ENOTFOUND www.diariopuntaarenas.cl",
+    "scrapeable": false,
+    "attempts": 3
+  },
+  {
+    "name": "BBC News Mundo",
+    "url": "https://www.bbc.com/mundo",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 115,
+    "titleElements": 79,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "CNN Español",
+    "url": "https://cnnespanol.cnn.com",
+    "status": "success",
+    "articleElements": 0,
+    "linkElements": 457,
+    "titleElements": 52,
+    "scrapeable": true,
+    "attempts": 1
+  },
+  {
+    "name": "France24 Español",
+    "url": "https://www.france24.com/es",
+    "status": "error",
+    "error": "Request failed with status code 403",
+    "scrapeable": false,
+    "attempts": 3
+  }
+]

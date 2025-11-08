@@ -88,7 +88,10 @@ class TokenTracker {
         durationMs = null
       } = data;
       
-      console.log(`📊 trackUsage llamado: ${operationType}, tokens: ${inputTokens + outputTokens}`);
+      // Convertir ID de demo a UUID válido o manejar como null
+      const normalizedUserId = this.normalizeUserId(userId);
+      
+      console.log(`📊 trackUsage llamado: ${operationType}, tokens: ${inputTokens + outputTokens}, userId: ${normalizedUserId}`);
 
       // Calcular costos
       const pricing = MODEL_PRICING[modelUsed] || MODEL_PRICING['llama3-8b-8192'];
@@ -98,8 +101,7 @@ class TokenTracker {
 
       const logEntry = {
         operation_type: operationType,
-        operation_id: operationId,
-        user_id: userId,
+        user_id: normalizedUserId,
         input_tokens: inputTokens,
         output_tokens: outputTokens,
         total_tokens: inputTokens + outputTokens,
@@ -113,7 +115,8 @@ class TokenTracker {
         endpoint: endpoint,
         ip_address: ipAddress,
         user_agent: userAgent,
-        duration_ms: durationMs
+        duration_ms: durationMs,
+        created_at: new Date().toISOString()
       };
 
       // Guardar en batch
@@ -432,24 +435,24 @@ class TokenTracker {
         throw error;
       }
 
-      // Agregar datos
+      // Agregar datos con las columnas correctas
       const stats = {
         total_operations: logs.length,
-        total_tokens: logs.reduce((sum, log) => sum + log.total_tokens, 0),
-        total_cost: logs.reduce((sum, log) => sum + log.total_cost, 0),
+        total_tokens: logs.reduce((sum, log) => sum + (log.total_tokens || 0), 0),
+        total_cost: logs.reduce((sum, log) => sum + (log.total_cost || 0), 0),
         cache_hits: logs.filter(log => log.cache_hit).length,
         cache_misses: logs.filter(log => !log.cache_hit).length,
         by_operation: {}
       };
 
       // Agrupar por tipo
-      const types = ['search', 'sentiment', 'entity', 'clustering', 'synonym', 'pattern', 'other'];
+      const types = ['search', 'sentiment', 'entity', 'clustering', 'synonym', 'pattern', 'other', 'test'];
       types.forEach(type => {
         const typeLogs = logs.filter(log => log.operation_type === type);
         stats.by_operation[type] = {
           operations: typeLogs.length,
-          tokens: typeLogs.reduce((sum, log) => sum + log.total_tokens, 0),
-          cost: typeLogs.reduce((sum, log) => sum + log.total_cost, 0)
+          tokens: typeLogs.reduce((sum, log) => sum + (log.total_tokens || 0), 0),
+          cost: typeLogs.reduce((sum, log) => sum + (log.total_cost || 0), 0)
         };
       });
 
@@ -472,6 +475,30 @@ class TokenTracker {
     const pricing = MODEL_PRICING[modelUsed] || MODEL_PRICING['llama3-8b-8192'];
     const rate = isOutput ? pricing.output : pricing.input;
     return (tokens / 1000000) * rate;
+  }
+
+  /**
+   * Cleanup al cerrar
+   */
+  /**
+   * Normalizar el userId para manejar IDs de demo
+   */
+  normalizeUserId(userId) {
+    if (!userId) return null;
+    
+    // Si es un ID de demo, convertirlo a un UUID válido para la BD
+    if (userId === 'demo-admin' || userId === 'demo-token') {
+      return '00000000-0000-0000-0000-000000000001'; // UUID fijo para demo
+    }
+    
+    // Si ya parece un UUID, retornarlo tal cual
+    if (typeof userId === 'string' && userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return userId;
+    }
+    
+    // Para cualquier otro caso, retornar null para evitar errores
+    console.warn(`⚠️ UserId no válido para tracking: ${userId}`);
+    return null;
   }
 
   /**

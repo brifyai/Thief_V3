@@ -40,6 +40,7 @@ const newsRoutes = require('./server/backend/src/routes/news.routes');
 const newsScrapingRoutes = require('./server/backend/src/routes/newsScraping.routes');
 const newsSearchRoutes = require('./server/backend/src/routes/newsSearch.routes');
 const interactionsRoutes = require('./server/backend/src/routes/interactions.routes');
+const lunComRoutes = require('./server/backend/src/routes/lunCom.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -179,6 +180,7 @@ api.use('/api/news', newsRoutes);
 api.use('/api/news/scrape', newsScrapingRoutes);
 api.use('/api/news/search', newsSearchRoutes);
 api.use('/api/interactions', interactionsRoutes);
+api.use('/api/lun-com', lunComRoutes);
 
 // Documentación Swagger
 api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {

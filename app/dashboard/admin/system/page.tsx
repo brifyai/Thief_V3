@@ -19,6 +19,7 @@ import {
   Zap,
   HardDrive,
   Globe,
+  Newspaper,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,16 +33,41 @@ interface SystemHealth {
   details?: string;
 }
 
+interface LunComStatus {
+  schedulerActive: boolean;
+  lastScrapedTime: string | null;
+  scrapingWindow: string;
+  timezone: string;
+  nextScrapingTime: string;
+}
+
 export default function AdminSystemPage() {
   const [systemHealth, setSystemHealth] = useState<SystemHealth[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [lunComStatus, setLunComStatus] = useState<LunComStatus | null>(null);
+  const [lunComLoading, setLunComLoading] = useState(false);
+  const [lunComScraping, setLunComScraping] = useState(false);
 
   useEffect(() => {
     const checkSystemHealth = async () => {
       try {
         setLoading(true);
-        
+
+        // Verificar estado de LUN.COM
+        try {
+          setLunComLoading(true);
+          const lunComResponse = await fetch('/api/lun-com/status');
+          if (lunComResponse.ok) {
+            const lunComData = await lunComResponse.json();
+            setLunComStatus(lunComData.status);
+          }
+        } catch (error) {
+          console.error('Error verificando LUN.COM:', error);
+        } finally {
+          setLunComLoading(false);
+        }
+
         // Simular verificación de salud del sistema
         const healthChecks: SystemHealth[] = [
           {
@@ -85,6 +111,15 @@ export default function AdminSystemPage() {
             responseTime: 35,
             lastCheck: new Date().toISOString(),
             details: 'Disco: 45% utilizado'
+          },
+          {
+            component: 'LUN.COM Scraper',
+            status: lunComStatus?.schedulerActive ? 'healthy' : 'degraded',
+            responseTime: 150,
+            lastCheck: new Date().toISOString(),
+            details: lunComStatus?.schedulerActive
+              ? `Scheduler activo - Último scraping: ${lunComStatus.lastScrapedTime ? new Date(lunComStatus.lastScrapedTime).toLocaleString('es-CL') : 'Nunca'}`
+              : 'Scheduler inactivo'
           }
         ];
 
@@ -97,7 +132,7 @@ export default function AdminSystemPage() {
     };
 
     checkSystemHealth();
-    
+
     // Actualizar cada 60 segundos
     const interval = setInterval(checkSystemHealth, 60000);
     return () => clearInterval(interval);
@@ -111,6 +146,33 @@ export default function AdminSystemPage() {
       window.location.reload();
     } finally {
       setRefreshing(false);
+    }
+  };
+
+  const handleLunComScrape = async () => {
+    setLunComScraping(true);
+    try {
+      const response = await fetch('/api/lun-com/scrape-now', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(`✅ Scraping completado: ${data.noticias?.length || 0} noticias extraídas de LUN.COM`);
+        // Recargar la página para actualizar el estado
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(`❌ Error en scraping: ${error.error || 'Error desconocido'}`);
+      }
+    } catch (error) {
+      console.error('Error ejecutando scraping de LUN.COM:', error);
+      alert('❌ Error ejecutando scraping de LUN.COM');
+    } finally {
+      setLunComScraping(false);
     }
   };
 
@@ -278,7 +340,7 @@ export default function AdminSystemPage() {
         </CardContent>
       </Card>
 
-      {/* Gráfico de Rendimiento */}
+      {/* Gráfico de Rendimiento y LUN.COM */}
       <div className="grid gap-6 md:grid-cols-2">
         <AdminLineChart
           data={performanceData}
@@ -287,34 +349,87 @@ export default function AdminSystemPage() {
           color="#8884d8"
           height={300}
         />
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Configuración del Sistema</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Entorno</span>
-              <Badge variant="outline">Desarrollo</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Versión</span>
-              <Badge variant="outline">v3.0.0</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Node.js</span>
-              <Badge variant="outline">v20.x</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Base de Datos</span>
-              <Badge variant="outline">Supabase</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">API IA</span>
-              <Badge variant="outline">Chutes AI</Badge>
-            </div>
-          </CardContent>
-        </Card>
+
+        <div className="space-y-6">
+          {/* LUN.COM Scraper */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Newspaper className="h-5 w-5" />
+                LUN.COM Scraper
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Estado</span>
+                <Badge variant={lunComStatus?.schedulerActive ? "default" : "secondary"}>
+                  {lunComStatus?.schedulerActive ? "Activo" : "Inactivo"}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Último Scraping</span>
+                <span className="text-sm text-muted-foreground">
+                  {lunComStatus?.lastScrapedTime
+                    ? new Date(lunComStatus.lastScrapedTime).toLocaleString('es-CL')
+                    : "Nunca"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Ventana</span>
+                <span className="text-sm text-muted-foreground">
+                  {lunComStatus?.scrapingWindow || "00:01 - 06:00 AM"}
+                </span>
+              </div>
+              <Button
+                onClick={handleLunComScrape}
+                disabled={lunComScraping || lunComLoading}
+                className="w-full"
+                variant="outline"
+              >
+                {lunComScraping ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Scrapeando...
+                  </>
+                ) : (
+                  <>
+                    <Newspaper className="h-4 w-4 mr-2" />
+                    Ejecutar Scraping Manual
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Configuración del Sistema */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Configuración del Sistema</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Entorno</span>
+                <Badge variant="outline">Desarrollo</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Versión</span>
+                <Badge variant="outline">v3.0.0</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Node.js</span>
+                <Badge variant="outline">v20.x</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Base de Datos</span>
+                <Badge variant="outline">Supabase</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">API IA</span>
+                <Badge variant="outline">Chutes AI</Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

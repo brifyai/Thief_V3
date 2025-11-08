@@ -1,0 +1,142 @@
+{
+  "tele13radio.cl": {
+    "name": "Tele13 Radio",
+    "domain": "tele13radio.cl",
+    "method": "puppeteer",
+    "listingSelectors": {
+      "containerSelector": "a[href*=\"/noticia/\"], article, .noticia, [class*=\"news-item\"]",
+      "linkSelector": "a",
+      "titleSelector": "[title], .title, h2, h3"
+    },
+    "scrollStrategy": "aggressive",
+    "scrollIterations": 15,
+    "waitForSelector": "a[href*=\"/noticia/\"]",
+    "timeout": 30000
+  },
+  "diariocoquimbo.cl": {
+    "name": "Diario Coquimbo",
+    "domain": "diariocoquimbo.cl",
+    "alternateUrls": [
+      "https://diariocoquimbo.cl",
+      "https://www.diariocoquimbo.cl",
+      "https://diariocoquimbo.com"
+    ],
+    "method": "axios",
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "retries": 5,
+    "timeout": 20000
+  },
+  "diariotemuco.cl": {
+    "name": "Diario Temuco",
+    "domain": "diariotemuco.cl",
+    "alternateUrls": [
+      "https://diariotemuco.cl",
+      "https://www.diariotemuco.cl",
+      "https://diariotemuco.com"
+    ],
+    "method": "axios",
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "retries": 5,
+    "timeout": 20000
+  },
+  "diariovaldivia.cl": {
+    "name": "Diario Valdivia",
+    "domain": "diariovaldivia.cl",
+    "alternateUrls": [
+      "https://diariovaldivia.cl",
+      "https://www.diariovaldivia.cl",
+      "https://diariovaldivia.com"
+    ],
+    "method": "axios",
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "retries": 5,
+    "timeout": 20000
+  },
+  "diariopuertomontt.cl": {
+    "name": "Diario Puerto Montt",
+    "domain": "diariopuertomontt.cl",
+    "alternateUrls": [
+      "https://diariopuertomontt.cl",
+      "https://www.diariopuertomontt.cl",
+      "https://diariopuertomontt.com"
+    ],
+    "method": "axios",
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "retries": 5,
+    "timeout": 20000
+  },
+  "diariopuntaarenas.cl": {
+    "name": "Diario Punta Arenas",
+    "domain": "diariopuntaarenas.cl",
+    "alternateUrls": [
+      "https://diariopuntaarenas.cl",
+      "https://www.diariopuntaarenas.cl",
+      "https://diariopuntaarenas.com"
+    ],
+    "method": "axios",
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "retries": 5,
+    "timeout": 20000
+  },
+  "orbe.cl": {
+    "name": "Orbe",
+    "domain": "orbe.cl",
+    "method": "puppeteer",
+    "listingSelectors": {
+      "containerSelector": "article, .article, .post, [class*=\"noticia\"]",
+      "linkSelector": "a",
+      "titleSelector": "h2, h3, .title"
+    },
+    "retries": 5,
+    "backoffMultiplier": 2,
+    "timeout": 30000,
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+  },
+  "reuters.com": {
+    "name": "Reuters Chile",
+    "domain": "reuters.com",
+    "method": "puppeteer",
+    "listingSelectors": {
+      "containerSelector": "a[data-testid*=\"Link\"], article, [class*=\"article\"]",
+      "linkSelector": "a",
+      "titleSelector": "h3, h2, [class*=\"title\"]"
+    },
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "es-ES,es;q=0.9"
+    },
+    "retries": 3,
+    "timeout": 30000
+  },
+  "france24.com": {
+    "name": "France24 Español",
+    "domain": "france24.com",
+    "method": "puppeteer",
+    "listingSelectors": {
+      "containerSelector": "article, [class*=\"article\"], [class*=\"news\"]",
+      "linkSelector": "a",
+      "titleSelector": "h2, h3, .title"
+    },
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "es-ES,es;q=0.9",
+      "Referer": "https://www.france24.com/"
+    },
+    "retries": 3,
+    "timeout": 30000
+  }
+}

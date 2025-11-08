@@ -32,24 +32,24 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${result.message || response.statusText || 'Error del servidor'}`);
+      throw new Error(`Error ${response.status}: ${result.message || result.error || response.statusText || 'Error del servidor'}`);
     }
 
-    // Verificar que la respuesta tenga sesión y usuario
-    if (!result.session || !result.user) {
-      throw new Error('Respuesta del servidor inválida: falta sesión o usuario');
+    // Verificar que la respuesta tenga token y usuario
+    if (!result.token || !result.user) {
+      console.error('Invalid response from backend:', result);
+      throw new Error('Respuesta del servidor inválida: falta token o usuario');
     }
 
     // Guardar token en localStorage para persistencia
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', result.session.access_token);
-      localStorage.setItem('refresh_token', result.session.refresh_token);
+      localStorage.setItem('token', result.token);
     }
 
     // Estructurar la respuesta para compatibilidad
     return {
       success: true,
-      token: result.session.access_token,
+      token: result.token,
       user: result.user,
       message: result.message || 'Login exitoso'
     };

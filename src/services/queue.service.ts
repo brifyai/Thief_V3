@@ -69,6 +69,12 @@ class QueueService {
 
   // Iniciar trabajo en cola
   async addJob(jobData: CreateJobRequest): Promise<JobResponse> {
+    const DEFAULT: JobResponse = {
+      success: false,
+      jobId: '',
+      message: 'Error al crear trabajo'
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/scraping`, {
         method: 'POST',
@@ -80,18 +86,15 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en addJob, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        jobId: '',
-        message: 'Error desconocido'
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en addJob:', error);
-      throw error;
+      console.warn('⚠️ addJob fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -128,7 +131,7 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        return [];
       }
 
       const result = await response.json();
@@ -141,6 +144,19 @@ class QueueService {
 
   // Obtener estadísticas de cola
   async getQueueStats(): Promise<QueueStats> {
+    const DEFAULT: QueueStats = {
+      total: 0,
+      pending: 0,
+      running: 0,
+      completed: 0,
+      failed: 0,
+      cancelled: 0,
+      averageWaitTime: 0,
+      averageProcessingTime: 0,
+      throughput: 0,
+      successRate: 0
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/stats`, {
         method: 'GET',
@@ -148,36 +164,14 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        total: 0,
-        pending: 0,
-        running: 0,
-        completed: 0,
-        failed: 0,
-        cancelled: 0,
-        averageWaitTime: 0,
-        averageProcessingTime: 0,
-        throughput: 0,
-        successRate: 0
-      };
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('Error en getQueueStats:', error);
-      return {
-        total: 0,
-        pending: 0,
-        running: 0,
-        completed: 0,
-        failed: 0,
-        cancelled: 0,
-        averageWaitTime: 0,
-        averageProcessingTime: 0,
-        throughput: 0,
-        successRate: 0
-      };
+      return DEFAULT;
     }
   }
 
@@ -186,6 +180,11 @@ class QueueService {
     success: boolean;
     message: string;
   }> {
+    const DEFAULT = {
+      success: false,
+      message: 'Error al cancelar trabajo'
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}`, {
         method: 'DELETE',
@@ -193,17 +192,15 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en cancelJob, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        message: 'Error al cancelar trabajo'
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en cancelJob:', error);
-      throw error;
+      console.warn('⚠️ cancelJob fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -213,6 +210,12 @@ class QueueService {
     deletedJobs: number;
     message: string;
   }> {
+    const DEFAULT = {
+      success: false,
+      deletedJobs: 0,
+      message: 'Error al limpiar trabajos'
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/clean`, {
         method: 'POST',
@@ -224,18 +227,15 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en cleanOldJobs, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        deletedJobs: 0,
-        message: 'Error al limpiar trabajos'
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en cleanOldJobs:', error);
-      throw error;
+      console.warn('⚠️ cleanOldJobs fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -309,6 +309,12 @@ class QueueService {
 
   // Reintentar trabajo fallido
   async retryJob(jobId: string): Promise<JobResponse> {
+    const DEFAULT: JobResponse = {
+      success: false,
+      jobId: '',
+      message: 'Error al reintentar trabajo'
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}/retry`, {
         method: 'POST',
@@ -316,18 +322,15 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en retryJob, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        jobId: '',
-        message: 'Error al reintentar trabajo'
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en retryJob:', error);
-      throw error;
+      console.warn('⚠️ retryJob fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -336,6 +339,11 @@ class QueueService {
     success: boolean;
     message: string;
   }> {
+    const DEFAULT = {
+      success: false,
+      message: 'Error al pausar trabajo'
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}/pause`, {
         method: 'POST',
@@ -343,17 +351,15 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en pauseJob, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        message: 'Error al pausar trabajo'
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en pauseJob:', error);
-      throw error;
+      console.warn('⚠️ pauseJob fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -362,6 +368,11 @@ class QueueService {
     success: boolean;
     message: string;
   }> {
+    const DEFAULT = {
+      success: false,
+      message: 'Error al reanudar trabajo'
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/${jobId}/resume`, {
         method: 'POST',
@@ -369,17 +380,15 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en resumeJob, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        message: 'Error al reanudar trabajo'
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en resumeJob:', error);
-      throw error;
+      console.warn('⚠️ resumeJob fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -493,6 +502,15 @@ class QueueService {
     queueLength: number;
     bottlenecks: string[];
   }> {
+    const DEFAULT = {
+      throughput: 0,
+      averageProcessingTime: 0,
+      successRate: 0,
+      errorRate: 0,
+      queueLength: 0,
+      bottlenecks: [] as string[]
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/queue/metrics?range=${timeRange}`, {
         method: 'GET',
@@ -500,28 +518,14 @@ class QueueService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        throughput: 0,
-        averageProcessingTime: 0,
-        successRate: 0,
-        errorRate: 0,
-        queueLength: 0,
-        bottlenecks: []
-      };
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('Error en getPerformanceMetrics:', error);
-      return {
-        throughput: 0,
-        averageProcessingTime: 0,
-        successRate: 0,
-        errorRate: 0,
-        queueLength: 0,
-        bottlenecks: []
-      };
+      return DEFAULT;
     }
   }
 }

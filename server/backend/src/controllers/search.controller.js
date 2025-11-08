@@ -747,7 +747,8 @@ const aiSearch = async (req, res) => {
       aiResult = cachedResult.data;
     } else {
       // Procesar la consulta con IA (usar query sanitizada)
-      aiResult = await intelligentSearch(sanitizedQuery || cleanQuery);
+      const userId = req.user?.id || null;
+      aiResult = await intelligentSearch(sanitizedQuery || cleanQuery, userId);
       
       // Guardar en caché
       aiSearchCache.set(cacheKey, {
