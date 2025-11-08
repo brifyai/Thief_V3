@@ -174,36 +174,53 @@ class MetricsService {
   // ==================== Métricas Generales ====================
 
   async getGeneralMetrics(): Promise<GeneralMetrics> {
+    const DEFAULT: GeneralMetrics = {
+      totalArticles: 0,
+      totalScrapes: 0,
+      successRate: 0,
+      averageProcessingTime: 0,
+      activeUsers: 0,
+      totalDomains: 0,
+      storageUsed: 0,
+      lastUpdated: new Date().toISOString(),
+    };
+
     try {
+      const headers = getAuthHeaders();
+      console.log('📊 Fetching general metrics with headers:', { Authorization: headers.Authorization ? headers.Authorization.substring(0, 30) + '...' : 'none' });
+      
       const response = await fetch(`${API_BASE_URL}/api/metrics/general`, {
         method: 'GET',
-        headers: getAuthHeaders()
+        headers
       });
 
+      // Manejo amable de autenticación: si no hay token o no autorizado, devolver valores por defecto
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return DEFAULT;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      return result.data || {
-        totalArticles: 0,
-        totalScrapes: 0,
-        successRate: 0,
-        averageProcessingTime: 0,
-        activeUsers: 0,
-        totalDomains: 0,
-        storageUsed: 0,
-        lastUpdated: new Date().toISOString()
-      };
+      return (result && result.data) ? result.data as GeneralMetrics : DEFAULT;
     } catch (error) {
-      console.error('Error en getGeneralMetrics:', error);
-      throw error;
+      console.warn('⚠️ getGeneralMetrics fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
   // ==================== Métricas de Duplicados ====================
 
   async getDuplicateMetrics(): Promise<DuplicateMetrics> {
+    const DEFAULT: DuplicateMetrics = {
+      totalDuplicates: 0,
+      duplicateRate: 0,
+      duplicatesByDomain: [],
+      duplicatesByDate: [],
+      topDuplicates: []
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/metrics/duplicates`, {
         method: 'GET',
@@ -211,26 +228,34 @@ class MetricsService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en getDuplicateMetrics, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        totalDuplicates: 0,
-        duplicateRate: 0,
-        duplicatesByDomain: [],
-        duplicatesByDate: [],
-        topDuplicates: []
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en getDuplicateMetrics:', error);
-      throw error;
+      console.warn('⚠️ getDuplicateMetrics fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
   // ==================== Métricas de Títulos ====================
 
   async getTitleMetrics(): Promise<TitleMetrics> {
+    const DEFAULT: TitleMetrics = {
+      averageTitleLength: 0,
+      shortestTitles: [],
+      longestTitles: [],
+      titleDistribution: {
+        veryShort: 0,
+        short: 0,
+        medium: 0,
+        long: 0
+      },
+      commonWords: []
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/metrics/titles`, {
         method: 'GET',
@@ -238,31 +263,29 @@ class MetricsService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en getTitleMetrics, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        averageTitleLength: 0,
-        shortestTitles: [],
-        longestTitles: [],
-        titleDistribution: {
-          veryShort: 0,
-          short: 0,
-          medium: 0,
-          long: 0
-        },
-        commonWords: []
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en getTitleMetrics:', error);
-      throw error;
+      console.warn('⚠️ getTitleMetrics fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
   // ==================== Métricas de Categorización ====================
 
   async getCategorizationMetrics(): Promise<CategorizationMetrics> {
+    const DEFAULT: CategorizationMetrics = {
+      totalCategorized: 0,
+      categorizationRate: 0,
+      categoryDistribution: [],
+      uncategorizedByDomain: [],
+      categorizationAccuracy: 0
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/metrics/categorization`, {
         method: 'GET',
@@ -270,20 +293,15 @@ class MetricsService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en getCategorizationMetrics, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        totalCategorized: 0,
-        categorizationRate: 0,
-        categoryDistribution: [],
-        uncategorizedByDomain: [],
-        categorizationAccuracy: 0
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en getCategorizationMetrics:', error);
-      throw error;
+      console.warn('⚠️ getCategorizationMetrics fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -297,7 +315,30 @@ class MetricsService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`Métricas de IA no disponibles (${response.status}), usando valores por defecto`);
+        return {
+          totalAIRequests: 0,
+          successfulAIRequests: 0,
+          aiSuccessRate: 0,
+          averageResponseTime: 0,
+          aiOperationsByType: {
+            sentimentAnalysis: 0,
+            summarization: 0,
+            categorization: 0,
+            rewriting: 0,
+            translation: 0
+          },
+          aiCosts: {
+            totalCost: 0,
+            averageCostPerRequest: 0,
+            costByOperation: {}
+          },
+          aiAccuracy: {
+            sentimentAccuracy: 0,
+            categorizationAccuracy: 0,
+            summarizationQuality: 0
+          }
+        };
       }
 
       const result = await response.json();
@@ -326,13 +367,50 @@ class MetricsService {
       };
     } catch (error) {
       console.error('Error en getAIMetrics:', error);
-      throw error;
+      // Retornar valores por defecto en lugar de lanzar error
+      return {
+        totalAIRequests: 0,
+        successfulAIRequests: 0,
+        aiSuccessRate: 0,
+        averageResponseTime: 0,
+        aiOperationsByType: {
+          sentimentAnalysis: 0,
+          summarization: 0,
+          categorization: 0,
+          rewriting: 0,
+          translation: 0
+        },
+        aiCosts: {
+          totalCost: 0,
+          averageCostPerRequest: 0,
+          costByOperation: {}
+        },
+        aiAccuracy: {
+          sentimentAccuracy: 0,
+          categorizationAccuracy: 0,
+          summarizationQuality: 0
+        }
+      };
     }
   }
 
   // ==================== Métricas de Dominios ====================
 
   async getDomainMetrics(): Promise<DomainMetrics> {
+    const DEFAULT: DomainMetrics = {
+      totalDomains: 0,
+      activeDomains: 0,
+      domainsByActivity: [],
+      topDomainsByArticles: [],
+      domainsByCategory: [],
+      domainPerformance: {
+        fastest: [],
+        slowest: [],
+        mostReliable: [],
+        leastReliable: []
+      }
+    };
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/metrics/domains`, {
         method: 'GET',
@@ -340,11 +418,123 @@ class MetricsService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en getDomainMetrics, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
+      return result.data || DEFAULT;
+    } catch (error) {
+      console.warn('⚠️ getDomainMetrics fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
+    }
+  }
+
+  // ==================== Métricas en Tiempo Real ====================
+
+  async getRealTimeMetrics(): Promise<RealTimeMetrics> {
+    const DEFAULT: RealTimeMetrics = {
+      currentActiveUsers: 0,
+      articlesPerMinute: 0,
+      scrapesPerMinute: 0,
+      systemLoad: {
+        cpu: 0,
+        memory: 0,
+        disk: 0
+      },
+      activeJobs: 0,
+      queueSize: 0,
+      errorsPerMinute: 0,
+      responseTime: {
+        p50: 0,
+        p95: 0,
+        p99: 0
+      }
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/metrics/realtime`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      });
+
+      // No debe romper el dashboard por estados no 2xx: usar valores por defecto
+      if (!response.ok) {
+        return DEFAULT;
+      }
+
+      const result = await response.json();
+      return result.data || DEFAULT;
+    } catch (error) {
+      console.warn('⚠️ getRealTimeMetrics fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
+    }
+  }
+
+  // ==================== Todas las Métricas ====================
+
+  async getAllMetrics(): Promise<AllMetrics> {
+    const DEFAULT: AllMetrics = {
+      general: {
+        totalArticles: 0,
+        totalScrapes: 0,
+        successRate: 0,
+        averageProcessingTime: 0,
+        activeUsers: 0,
+        totalDomains: 0,
+        storageUsed: 0,
+        lastUpdated: new Date().toISOString()
+      },
+      duplicates: {
+        totalDuplicates: 0,
+        duplicateRate: 0,
+        duplicatesByDomain: [],
+        duplicatesByDate: [],
+        topDuplicates: []
+      },
+      titles: {
+        averageTitleLength: 0,
+        shortestTitles: [],
+        longestTitles: [],
+        titleDistribution: {
+          veryShort: 0,
+          short: 0,
+          medium: 0,
+          long: 0
+        },
+        commonWords: []
+      },
+      categorization: {
+        totalCategorized: 0,
+        categorizationRate: 0,
+        categoryDistribution: [],
+        uncategorizedByDomain: [],
+        categorizationAccuracy: 0
+      },
+      ai: {
+        totalAIRequests: 0,
+        successfulAIRequests: 0,
+        aiSuccessRate: 0,
+        averageResponseTime: 0,
+        aiOperationsByType: {
+          sentimentAnalysis: 0,
+          summarization: 0,
+          categorization: 0,
+          rewriting: 0,
+          translation: 0
+        },
+        aiCosts: {
+          totalCost: 0,
+          averageCostPerRequest: 0,
+          costByOperation: {}
+        },
+        aiAccuracy: {
+          sentimentAccuracy: 0,
+          categorizationAccuracy: 0,
+          summarizationQuality: 0
+        }
+      },
+      domains: {
         totalDomains: 0,
         activeDomains: 0,
         domainsByActivity: [],
@@ -356,54 +546,10 @@ class MetricsService {
           mostReliable: [],
           leastReliable: []
         }
-      };
-    } catch (error) {
-      console.error('Error en getDomainMetrics:', error);
-      throw error;
-    }
-  }
+      },
+      lastUpdated: new Date().toISOString()
+    };
 
-  // ==================== Métricas en Tiempo Real ====================
-
-  async getRealTimeMetrics(): Promise<RealTimeMetrics> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/metrics/realtime`, {
-        method: 'GET',
-        headers: getAuthHeaders()
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result.data || {
-        currentActiveUsers: 0,
-        articlesPerMinute: 0,
-        scrapesPerMinute: 0,
-        systemLoad: {
-          cpu: 0,
-          memory: 0,
-          disk: 0
-        },
-        activeJobs: 0,
-        queueSize: 0,
-        errorsPerMinute: 0,
-        responseTime: {
-          p50: 0,
-          p95: 0,
-          p99: 0
-        }
-      };
-    } catch (error) {
-      console.error('Error en getRealTimeMetrics:', error);
-      throw error;
-    }
-  }
-
-  // ==================== Todas las Métricas ====================
-
-  async getAllMetrics(): Promise<AllMetrics> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/metrics/all`, {
         method: 'GET',
@@ -411,88 +557,15 @@ class MetricsService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en getAllMetrics, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        general: {
-          totalArticles: 0,
-          totalScrapes: 0,
-          successRate: 0,
-          averageProcessingTime: 0,
-          activeUsers: 0,
-          totalDomains: 0,
-          storageUsed: 0,
-          lastUpdated: new Date().toISOString()
-        },
-        duplicates: {
-          totalDuplicates: 0,
-          duplicateRate: 0,
-          duplicatesByDomain: [],
-          duplicatesByDate: [],
-          topDuplicates: []
-        },
-        titles: {
-          averageTitleLength: 0,
-          shortestTitles: [],
-          longestTitles: [],
-          titleDistribution: {
-            veryShort: 0,
-            short: 0,
-            medium: 0,
-            long: 0
-          },
-          commonWords: []
-        },
-        categorization: {
-          totalCategorized: 0,
-          categorizationRate: 0,
-          categoryDistribution: [],
-          uncategorizedByDomain: [],
-          categorizationAccuracy: 0
-        },
-        ai: {
-          totalAIRequests: 0,
-          successfulAIRequests: 0,
-          aiSuccessRate: 0,
-          averageResponseTime: 0,
-          aiOperationsByType: {
-            sentimentAnalysis: 0,
-            summarization: 0,
-            categorization: 0,
-            rewriting: 0,
-            translation: 0
-          },
-          aiCosts: {
-            totalCost: 0,
-            averageCostPerRequest: 0,
-            costByOperation: {}
-          },
-          aiAccuracy: {
-            sentimentAccuracy: 0,
-            categorizationAccuracy: 0,
-            summarizationQuality: 0
-          }
-        },
-        domains: {
-          totalDomains: 0,
-          activeDomains: 0,
-          domainsByActivity: [],
-          topDomainsByArticles: [],
-          domainsByCategory: [],
-          domainPerformance: {
-            fastest: [],
-            slowest: [],
-            mostReliable: [],
-            leastReliable: []
-          }
-        },
-        lastUpdated: new Date().toISOString()
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en getAllMetrics:', error);
-      throw error;
+      console.warn('⚠️ getAllMetrics fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 

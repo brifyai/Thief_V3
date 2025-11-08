@@ -130,7 +130,15 @@ class ArticleService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Fallback para 401/403 y otros errores
+        console.warn(`HTTP error! status: ${response.status} en getSavedArticlesStats, retornando fallback`);
+        return {
+          total: 0,
+          this_week: 0,
+          this_month: 0,
+          by_domain: [],
+          by_sentiment: { positive: 0, negative: 0, neutral: 0 }
+        };
       }
 
       const result = await response.json();
@@ -143,6 +151,7 @@ class ArticleService {
       };
     } catch (error) {
       console.error('Error en getSavedArticlesStats:', error);
+      // Fallback en caso de error de red o parsing
       return {
         total: 0,
         this_week: 0,
@@ -197,7 +206,17 @@ class ArticleService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Fallback para 401/403 y otros errores
+        console.warn(`HTTP error! status: ${response.status} en getSavedArticles, retornando fallback`);
+        return {
+          articles: [],
+          pagination: {
+            total: 0,
+            page,
+            limit,
+            totalPages: 0
+          }
+        };
       }
 
       const result = await response.json();
@@ -212,7 +231,16 @@ class ArticleService {
       };
     } catch (error) {
       console.error('Error en getSavedArticles:', error);
-      throw error;
+      // Fallback en caso de error de red o parsing
+      return {
+        articles: [],
+        pagination: {
+          total: 0,
+          page,
+          limit,
+          totalPages: 0
+        }
+      };
     }
   }
 
@@ -319,7 +347,8 @@ class ArticleService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en generateAISummary, retornando fallback`);
+        return content.substring(0, 200) + '...';
       }
 
       const result = await response.json();
@@ -433,7 +462,17 @@ class ArticleService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Fallback para 401/403 y otros errores
+        console.warn(`HTTP error! status: ${response.status} en searchSavedArticlesByTag, retornando fallback`);
+        return {
+          articles: [],
+          pagination: {
+            total: 0,
+            page,
+            limit,
+            totalPages: 0
+          }
+        };
       }
 
       const result = await response.json();
@@ -448,7 +487,16 @@ class ArticleService {
       };
     } catch (error) {
       console.error('Error en searchSavedArticlesByTag:', error);
-      throw error;
+      // Fallback en caso de error de red o parsing
+      return {
+        articles: [],
+        pagination: {
+          total: 0,
+          page,
+          limit,
+          totalPages: 0
+        }
+      };
     }
   }
 
@@ -461,7 +509,9 @@ class ArticleService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Fallback para 401/403 y otros errores
+        console.warn(`HTTP error! status: ${response.status} en getPopularTags, retornando fallback`);
+        return [];
       }
 
       const result = await response.json();
