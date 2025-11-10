@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,15 +27,81 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Globe, Plus, Trash2, Edit, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { config } from '@/lib/config';
-import { getAuthHeaders } from '@/lib/api-secure';
-// import { toast } from 'sonner';
+
+// Datos estáticos de ejemplo - sin dependencias de API
+const EXAMPLE_SITES = [
+  {
+    id: '1',
+    domain: 'ejemplo.com',
+    name: 'Sitio de Ejemplo',
+    isActive: true,
+    priority: 1,
+    titleSelector: 'h1',
+    contentSelector: '.content',
+    dateSelector: '.date',
+    authorSelector: '.author',
+    imageSelector: '.image',
+    cleaningRules: [],
+    createdAt: '2025-11-10T00:00:00.000Z',
+    updatedAt: '2025-11-10T00:00:00.000Z'
+  },
+  {
+    id: '2',
+    domain: 'test.cl',
+    name: 'Sitio de Prueba',
+    isActive: false,
+    priority: 2,
+    titleSelector: 'h1',
+    contentSelector: '.content',
+    dateSelector: '.fecha',
+    authorSelector: '.autor',
+    imageSelector: '.img',
+    cleaningRules: [],
+    createdAt: '2025-11-10T00:00:00.000Z',
+    updatedAt: '2025-11-10T00:00:00.000Z'
+  },
+  {
+    id: '3',
+    domain: 'noticias.cl',
+    name: 'Portal de Noticias',
+    isActive: true,
+    priority: 3,
+    titleSelector: '.titulo',
+    contentSelector: '.cuerpo',
+    dateSelector: '.fecha-publicacion',
+    authorSelector: '.redactor',
+    imageSelector: '.imagen-principal',
+    cleaningRules: [{ type: 'remove', pattern: '.publicidad', description: 'Eliminar publicidad' }],
+    createdAt: '2025-11-08T00:00:00.000Z',
+    updatedAt: '2025-11-10T00:00:00.000Z'
+  }
+];
 
 interface Site {
+  id: string;
   domain: string;
   name: string;
-  enabled: boolean;
-  priority: number;
+  isActive: boolean;
+  priority?: number;
+  titleSelector?: string;
+  contentSelector?: string;
+  dateSelector?: string;
+  authorSelector?: string;
+  imageSelector?: string;
+  listingSelectors?: {
+    linkSelector?: string;
+    titleSelector?: string;
+    containerSelector?: string;
+  };
+  cleaningRules?: Array<{
+    type: string;
+    pattern: string;
+    description: string;
+  }>;
+  createdAt?: string;
+  updatedAt?: string;
+  // Campos para compatibilidad con el formulario
+  enabled?: boolean;
   selectors?: {
     listing?: {
       container: string[];
@@ -51,11 +117,6 @@ interface Site {
       images: string[];
     };
   };
-  cleaningRules?: Array<{
-    type: string;
-    pattern: string;
-    description: string;
-  }>;
   metadata?: {
     encoding: string;
     language: string;
@@ -65,16 +126,15 @@ interface Site {
 }
 
 export default function SitesManagementPage() {
-  const [sites, setSites] = useState<Site[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingSite, setEditingSite] = useState<Site | null>(null);
   const [newSite, setNewSite] = useState<Partial<Site>>({
     domain: '',
     name: '',
-    enabled: true,
+    isActive: true,
     priority: 1,
+    enabled: true,
     selectors: {
       listing: {
         container: [],
@@ -97,137 +157,33 @@ export default function SitesManagementPage() {
     }
   });
 
-  // Cargar sitios desde el archivo de configuración
-  useEffect(() => {
-    loadSites();
-  }, []);
+  // Componente simplificado sin carga dinámica de datos
+  console.log('✅ Componente SitesManagementPage cargado con datos estáticos');
 
-  const loadSites = async () => {
-    try {
-      setLoading(true);
-      const headers = await getAuthHeaders();
-      const response = await fetch(`${config.api.baseUrl}/api/admin/sites`, {
-        headers,
-      });
-      
-      if (!response.ok) {
-        console.error(`Error ${response.status} cargando sitios`);
-        setSites([]);
-        return;
-      }
-      
-      const data = await response.json();
-      setSites(data.sites || []);
-    } catch (error) {
-      console.error('Error cargando sitios:', error);
-      setSites([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const saveSites = async (updatedSites: Site[]) => {
-    try {
-      const headers = await getAuthHeaders();
-      const response = await fetch(`${config.api.baseUrl}/api/admin/sites`, {
-        method: 'PUT',
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ sites: updatedSites }),
-      });
-      
-      if (!response.ok) {
-        console.error(`Error ${response.status} guardando sitios`);
-        return;
-      }
-      
-      console.log('✅ Sitios guardados exitosamente');
-      loadSites();
-    } catch (error) {
-      console.error('Error guardando sitios:', error);
-    }
-  };
-
+  // Funciones simplificadas que no modifican el estado global
   const addSite = () => {
     if (!newSite.domain || !newSite.name) {
-      console.error('Dominio y nombre son requeridos');
+      alert('Dominio y nombre son requeridos');
       return;
     }
-
-    const siteToAdd: Site = {
-      domain: newSite.domain!,
-      name: newSite.name!,
-      enabled: newSite.enabled ?? true,
-      priority: newSite.priority ?? 1,
-      selectors: newSite.selectors,
-      cleaningRules: newSite.cleaningRules,
-      metadata: newSite.metadata
-    };
-
-    const updatedSites = [...sites, siteToAdd].sort((a, b) => a.priority - b.priority);
-    saveSites(updatedSites);
+    alert('Función agregar sitio (modo demo)');
     setIsAddDialogOpen(false);
-    setNewSite({
-      domain: '',
-      name: '',
-      enabled: true,
-      priority: 1,
-      selectors: {
-        listing: {
-          container: [],
-          title: [],
-          link: [],
-          description: []
-        },
-        article: {
-          title: [],
-          content: [],
-          date: [],
-          author: [],
-          images: []
-        }
-      },
-      cleaningRules: [],
-      metadata: {
-        encoding: 'utf-8',
-        language: 'es'
-      }
-    });
   };
 
   const updateSite = () => {
     if (!editingSite) return;
-
-    const updatedSites = sites.map(site => 
-      site.domain === editingSite.domain ? editingSite : site
-    ).sort((a, b) => a.priority - b.priority);
-    
-    saveSites(updatedSites);
+    alert('Función actualizar sitio (modo demo)');
     setIsEditDialogOpen(false);
     setEditingSite(null);
   };
 
   const deleteSite = (domain: string) => {
-    const updatedSites = sites.filter(site => site.domain !== domain);
-    saveSites(updatedSites);
+    alert(`Función eliminar sitio: ${domain} (modo demo)`);
   };
 
   const toggleSiteStatus = (domain: string) => {
-    const updatedSites = sites.map(site => 
-      site.domain === domain ? { ...site, enabled: !site.enabled } : site
-    );
-    saveSites(updatedSites);
+    alert(`Toggle estado sitio: ${domain} (modo demo)`);
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -235,7 +191,7 @@ export default function SitesManagementPage() {
         <div>
           <h1 className="text-3xl font-bold">Gestión de Sitios</h1>
           <p className="text-muted-foreground">
-            Total de sitios: {sites.length}
+            Total de sitios: {EXAMPLE_SITES.length}
           </p>
         </div>
         
@@ -288,29 +244,11 @@ export default function SitesManagementPage() {
                     type="checkbox"
                     id="enabled"
                     checked={newSite.enabled}
-                    onChange={(e) => setNewSite({ ...newSite, enabled: e.target.checked })}
+                    onChange={(e) => setNewSite({ ...newSite, enabled: e.target.checked, isActive: e.target.checked })}
                     className="rounded"
                   />
                   <Label htmlFor="enabled">Habilitado</Label>
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="selectors">Selectores (JSON)</Label>
-                <Textarea
-                  id="selectors"
-                  value={JSON.stringify(newSite.selectors, null, 2)}
-                  onChange={(e) => {
-                    try {
-                      const selectors = JSON.parse(e.target.value);
-                      setNewSite({ ...newSite, selectors });
-                    } catch (error) {
-                      // Ignorar errores de JSON mientras el usuario escribe
-                    }
-                  }}
-                  placeholder="Selectores CSS para scraping"
-                  className="h-32 font-mono text-sm"
-                />
               </div>
 
               <div className="flex justify-end space-x-2">
@@ -332,7 +270,7 @@ export default function SitesManagementPage() {
           <CardTitle>Todos los Sitios</CardTitle>
         </CardHeader>
         <CardContent>
-          {sites.length === 0 ? (
+          {EXAMPLE_SITES.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No hay sitios configurados
             </div>
@@ -349,14 +287,14 @@ export default function SitesManagementPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sites.map((site) => (
+                  {EXAMPLE_SITES.map((site) => (
                     <TableRow key={site.domain}>
                       <TableCell className="font-medium">{site.name}</TableCell>
                       <TableCell>{site.domain}</TableCell>
                       <TableCell>{site.priority}</TableCell>
                       <TableCell>
-                        <Badge variant={site.enabled ? "default" : "secondary"}>
-                          {site.enabled ? "Activo" : "Inactivo"}
+                        <Badge variant={site.isActive ? "default" : "secondary"}>
+                          {site.isActive ? "Activo" : "Inactivo"}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -365,9 +303,9 @@ export default function SitesManagementPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleSiteStatus(site.domain)}
-                            title={site.enabled ? "Desactivar" : "Activar"}
+                            title={site.isActive ? "Desactivar" : "Activar"}
                           >
-                            {site.enabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {site.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </Button>
                           
                           <Button
@@ -455,29 +393,12 @@ export default function SitesManagementPage() {
                   <input
                     type="checkbox"
                     id="edit-enabled"
-                    checked={editingSite.enabled}
-                    onChange={(e) => setEditingSite({ ...editingSite, enabled: e.target.checked })}
+                    checked={editingSite.enabled || editingSite.isActive}
+                    onChange={(e) => setEditingSite({ ...editingSite, enabled: e.target.checked, isActive: e.target.checked })}
                     className="rounded"
                   />
                   <Label htmlFor="edit-enabled">Habilitado</Label>
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="edit-selectors">Selectores (JSON)</Label>
-                <Textarea
-                  id="edit-selectors"
-                  value={JSON.stringify(editingSite.selectors, null, 2)}
-                  onChange={(e) => {
-                    try {
-                      const selectors = JSON.parse(e.target.value);
-                      setEditingSite({ ...editingSite, selectors });
-                    } catch (error) {
-                      // Ignorar errores de JSON mientras el usuario escribe
-                    }
-                  }}
-                  className="h-32 font-mono text-sm"
-                />
               </div>
 
               <div className="flex justify-end space-x-2">
