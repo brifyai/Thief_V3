@@ -34,7 +34,7 @@ const simpleTestRoutes = require('./src/routes/simpleTest.routes'); // 🧪 Test
 const usersRoutes = require('./src/routes/users.routes'); // 👥 Gestión de usuarios
 const tempGenerateSummariesRoutes = require('./src/routes/temp-generate-summaries.routes'); // 🔧 Generación de resúmenes (temporal)
 const simpleGenerateSummariesRoutes = require('./src/routes/simple-generate-summaries.routes'); // 🔧 Generación simple de resúmenes
-const adminSitesRoutes = require('./src/routes/adminSites.routes'); // 🔧 Gestión de sitios de scraping
+// const adminSitesRoutes = require('./src/routes/adminSites.routes'); // 🔧 Gestión de sitios de scraping - Movido a Next.js API routes
 
 const app = express();
 
@@ -315,8 +315,8 @@ app.use('/api/simple-test', simpleTestRoutes);
 // 👥 Rutas de gestión de usuarios
 app.use('/api/users', usersRoutes);
 
-// 🔧 Rutas de gestión de sitios (admin)
-app.use('/api/admin/sites', adminSitesRoutes);
+// 🔧 Rutas de gestión de sitios (admin) - Movido a Next.js API routes
+// app.use('/api/admin/sites', adminSitesRoutes);
 
 // 📚 Documentación de la API con Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {

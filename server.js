@@ -199,18 +199,48 @@ app.prepare().then(() => {
       const parsedUrl = parse(req.url, true);
       const { pathname, query } = parsedUrl;
 
-      // Si la ruta comienza con /api o es una ruta especial del backend, manejar con Express
-      if (pathname.startsWith('/api') ||
-          pathname.startsWith('/scrape') ||
-          pathname.startsWith('/health') ||
-          pathname.startsWith('/api-docs')) {
+      // Rutas de Next.js App Router que deben ser manejadas por Next.js
+      const nextJsApiRoutes = [
+        '/api/admin',
+        '/api/alerts',
+        '/api/health',
+        '/api/metrics'
+      ];
+      
+      // Verificar si la ruta es una ruta de Next.js App Router
+      const isNextJsApiRoute = nextJsApiRoutes.some(route => pathname.startsWith(route));
+      
+      // Si la ruta comienza con /api pero NO es una ruta de Next.js App Router, manejar con Express
+      if (pathname.startsWith('/api') &&
+          !isNextJsApiRoute &&
+          (pathname.startsWith('/api/auth') ||
+           pathname.startsWith('/api/scraping') ||
+           pathname.startsWith('/api/urls') ||
+           pathname.startsWith('/api/stats') ||
+           pathname.startsWith('/api/search') ||
+           pathname.startsWith('/api/queue') ||
+           pathname.startsWith('/api/cache') ||
+           pathname.startsWith('/api/site-configs') ||
+           pathname.startsWith('/api/public-urls') ||
+           pathname.startsWith('/api/my-urls') ||
+           pathname.startsWith('/api/saved-articles') ||
+           pathname.startsWith('/api/metrics') ||
+           pathname.startsWith('/api/cleanup') ||
+           pathname.startsWith('/api/entities') ||
+           pathname.startsWith('/api/highlights') ||
+           pathname.startsWith('/api/ai-usage') ||
+           pathname.startsWith('/api/simple-test') ||
+           pathname.startsWith('/api/users') ||
+           pathname.startsWith('/api/news') ||
+           pathname.startsWith('/api/interactions') ||
+           pathname.startsWith('/api/lun-com'))) {
         
         // Usar Express directamente
         api(req, res);
         return;
       }
 
-      // Para todas las demás rutas, manejar con Next.js
+      // Para todas las demás rutas (incluyendo las rutas de Next.js App Router), manejar con Next.js
       await handle(req, res, parsedUrl);
     } catch (err) {
       console.error('Error occurred handling', req.url, err);
