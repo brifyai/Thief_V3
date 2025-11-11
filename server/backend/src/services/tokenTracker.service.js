@@ -88,7 +88,10 @@ class TokenTracker {
         durationMs = null
       } = data;
       
-      console.log(`📊 trackUsage llamado: ${operationType}, tokens: ${inputTokens + outputTokens}`);
+      // Convertir ID de demo a UUID válido o manejar como null
+      const normalizedUserId = this.normalizeUserId(userId);
+      
+      console.log(`📊 trackUsage llamado: ${operationType}, tokens: ${inputTokens + outputTokens}, userId: ${normalizedUserId}`);
 
       // Calcular costos
       const pricing = MODEL_PRICING[modelUsed] || MODEL_PRICING['llama3-8b-8192'];
@@ -98,8 +101,7 @@ class TokenTracker {
 
       const logEntry = {
         operation_type: operationType,
-        operation_id: operationId,
-        user_id: userId,
+        user_id: normalizedUserId,
         input_tokens: inputTokens,
         output_tokens: outputTokens,
         total_tokens: inputTokens + outputTokens,
@@ -113,7 +115,8 @@ class TokenTracker {
         endpoint: endpoint,
         ip_address: ipAddress,
         user_agent: userAgent,
-        duration_ms: durationMs
+        duration_ms: durationMs,
+        created_at: new Date().toISOString()
       };
 
       // Guardar en batch
@@ -149,21 +152,35 @@ class TokenTracker {
     const logsToSave = [...this.pendingLogs];
     this.pendingLogs = [];
 
+    // Modo demo - no guardar en BD
+    if (process.env.DEMO_MODE === 'true') {
+      console.log(`📊 ${logsToSave.length} logs de IA simulados (modo demo)`);
+      return;
+    }
+
     try {
-      await prisma.aiUsageLog.createMany({
-        data: logsToSave,
-        skipDuplicates: true
-      });
+      // Usar Supabase en lugar de Prisma
+      const { error } = await supabase
+        .from('ai_usage_logs')
+        .insert(logsToSave);
+
+      if (error) {
+        console.error('Error guardando logs de IA en Supabase:', error);
+        throw error;
+      }
 
       console.log(`📊 ${logsToSave.length} logs de IA guardados en BD`);
     } catch (error) {
       console.error('Error guardando logs de IA:', error);
       // Reintentar una vez
       try {
-        await prisma.aiUsageLog.createMany({
-          data: logsToSave,
-          skipDuplicates: true
-        });
+        const { error: retryError } = await supabase
+          .from('ai_usage_logs')
+          .insert(logsToSave);
+        
+        if (retryError) {
+          console.error('Error en reintento de logs:', retryError);
+        }
       } catch (retryError) {
         console.error('Error en reintento de logs:', retryError);
       }
@@ -265,25 +282,35 @@ class TokenTracker {
       // Verificar si ya existe una alerta similar reciente (última hora)
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
       
-      const existingAlert = await prisma.aiCostAlert.findFirst({
-        where: {
-          alert_type: alertData.alert_type,
-          threshold: alertData.threshold,
-          created_at: {
-            gte: oneHourAgo
-          },
-          resolved: false
-        }
-      });
+    // Modo demo - no crear alertas reales
+    if (process.env.DEMO_MODE === 'true') {
+      console.log(`🚨 Alerta simulada: ${alertData.message}`);
+      return;
+    }
+
+      // Usar Supabase en lugar de Prisma
+      const { data: existingAlert } = await supabase
+        .from('ai_cost_alerts')
+        .select('*')
+        .eq('alert_type', alertData.alert_type)
+        .eq('threshold', alertData.threshold)
+        .gte('created_at', oneHourAgo.toISOString())
+        .eq('resolved', false)
+        .single();
 
       if (existingAlert) {
         // Ya existe una alerta similar, no crear duplicado
         return;
       }
 
-      await prisma.aiCostAlert.create({
-        data: alertData
-      });
+      const { error } = await supabase
+        .from('ai_cost_alerts')
+        .insert(alertData);
+
+      if (error) {
+        console.error('Error creando alerta en Supabase:', error);
+        throw error;
+      }
       
       console.log(`🚨 Alerta creada: ${alertData.message}`);
     } catch (error) {
@@ -298,8 +325,8 @@ class TokenTracker {
     const today = new Date().toISOString().split('T')[0];
     const key = `ai_stats:${today}`;
 
-    if (!this.redisClient) {
-      // Fallback a BD
+    if (!this.redisClient || process.env.DEMO_MODE === 'true') {
+      // Modo demo o fallback a BD
       return await this.getStatsFromDB(today);
     }
 
@@ -371,43 +398,67 @@ class TokenTracker {
    */
   async getStatsFromDB(date) {
     try {
+      // Modo demo - retornar datos simulados
+      if (process.env.DEMO_MODE === 'true') {
+        return {
+          total_operations: 85,
+          total_tokens: 25000,
+          total_cost: 1.85,
+          cache_hits: 35,
+          cache_misses: 50,
+          cache_hit_rate: 41.18,
+          by_operation: {
+            search: { operations: 30, tokens: 8500, cost: 0.62 },
+            sentiment: { operations: 25, tokens: 7200, cost: 0.54 },
+            entity: { operations: 20, tokens: 6800, cost: 0.48 },
+            clustering: { operations: 5, tokens: 1500, cost: 0.12 },
+            synonym: { operations: 3, tokens: 800, cost: 0.06 },
+            pattern: { operations: 2, tokens: 200, cost: 0.03 },
+            other: { operations: 0, tokens: 0, cost: 0 }
+          }
+        };
+      }
+
       // Crear fechas en UTC para el día especificado
       const startDate = new Date(date + 'T00:00:00.000Z');
       const endDate = new Date(date + 'T23:59:59.999Z');
 
-      const logs = await prisma.aiUsageLog.findMany({
-        where: {
-          created_at: {
-            gte: startDate,
-            lte: endDate
-          }
-        }
-      });
+      // Usar Supabase en lugar de Prisma
+      const { data: logs, error } = await supabase
+        .from('ai_usage_logs')
+        .select('*')
+        .gte('created_at', startDate.toISOString())
+        .lte('created_at', endDate.toISOString());
 
-      // Agregar datos
+      if (error) {
+        console.error('Error obteniendo logs de Supabase:', error);
+        throw error;
+      }
+
+      // Agregar datos con las columnas correctas
       const stats = {
         total_operations: logs.length,
-        total_tokens: logs.reduce((sum, log) => sum + log.total_tokens, 0),
-        total_cost: logs.reduce((sum, log) => sum + log.total_cost, 0),
+        total_tokens: logs.reduce((sum, log) => sum + (log.total_tokens || 0), 0),
+        total_cost: logs.reduce((sum, log) => sum + (log.total_cost || 0), 0),
         cache_hits: logs.filter(log => log.cache_hit).length,
         cache_misses: logs.filter(log => !log.cache_hit).length,
         by_operation: {}
       };
 
       // Agrupar por tipo
-      const types = ['search', 'sentiment', 'entity', 'clustering', 'synonym', 'pattern', 'other'];
+      const types = ['search', 'sentiment', 'entity', 'clustering', 'synonym', 'pattern', 'other', 'test'];
       types.forEach(type => {
         const typeLogs = logs.filter(log => log.operation_type === type);
         stats.by_operation[type] = {
           operations: typeLogs.length,
-          tokens: typeLogs.reduce((sum, log) => sum + log.total_tokens, 0),
-          cost: typeLogs.reduce((sum, log) => sum + log.total_cost, 0)
+          tokens: typeLogs.reduce((sum, log) => sum + (log.total_tokens || 0), 0),
+          cost: typeLogs.reduce((sum, log) => sum + (log.total_cost || 0), 0)
         };
       });
 
       const totalCacheOps = stats.cache_hits + stats.cache_misses;
-      stats.cache_hit_rate = totalCacheOps > 0 
-        ? (stats.cache_hits / totalCacheOps) * 100 
+      stats.cache_hit_rate = totalCacheOps > 0
+        ? (stats.cache_hits / totalCacheOps) * 100
         : 0;
 
       return stats;
@@ -424,6 +475,30 @@ class TokenTracker {
     const pricing = MODEL_PRICING[modelUsed] || MODEL_PRICING['llama3-8b-8192'];
     const rate = isOutput ? pricing.output : pricing.input;
     return (tokens / 1000000) * rate;
+  }
+
+  /**
+   * Cleanup al cerrar
+   */
+  /**
+   * Normalizar el userId para manejar IDs de demo
+   */
+  normalizeUserId(userId) {
+    if (!userId) return null;
+    
+    // Si es un ID de demo, convertirlo a un UUID válido para la BD
+    if (userId === 'demo-admin' || userId === 'demo-token') {
+      return '00000000-0000-0000-0000-000000000001'; // UUID fijo para demo
+    }
+    
+    // Si ya parece un UUID, retornarlo tal cual
+    if (typeof userId === 'string' && userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return userId;
+    }
+    
+    // Para cualquier otro caso, retornar null para evitar errores
+    console.warn(`⚠️ UserId no válido para tracking: ${userId}`);
+    return null;
   }
 
   /**

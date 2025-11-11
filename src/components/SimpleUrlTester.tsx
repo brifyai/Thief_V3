@@ -16,7 +16,8 @@ import {
   Plus,
   HelpCircle,
   Trash2,
-  ExternalLink
+  ExternalLink,
+  Save
 } from 'lucide-react';
 import { useSimpleUrlTest } from '@/hooks/useSimpleUrlTest';
 import { toast } from 'react-hot-toast';
@@ -97,7 +98,7 @@ export function SimpleUrlTester({ onUrlSaved }: SimpleUrlTesterProps) {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}/public-urls`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/public-urls`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -146,6 +147,57 @@ export function SimpleUrlTester({ onUrlSaved }: SimpleUrlTesterProps) {
     } catch (error: unknown) {
       console.error('Error al guardar URL:', error);
       toast.error(error instanceof Error ? error.message : 'Error al guardar URL');
+    }
+  };
+
+  const handleSaveNews = async () => {
+    if (!result || !result.success) {
+      toast.error('Debes probar la URL primero');
+      return;
+    }
+
+    if (!result.news_count || result.news_count === 0) {
+      toast.error('No hay noticias para guardar');
+      return;
+    }
+
+    try {
+      toast.loading('Guardando noticias en la base de datos...', { id: 'save-news' });
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/simple-test`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          url: url,
+          save: true
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Error al guardar noticias');
+      }
+
+      const data = await response.json();
+      
+      toast.success(`✅ ${data.message}`, { id: 'save-news', duration: 5000 });
+      
+      // Opcional: Resetear el formulario después de guardar
+      if (data.saved_count > 0) {
+        setTimeout(() => {
+          reset();
+          setName('');
+          setRegion('');
+          setMaxNewsLimit('');
+        }, 2000);
+      }
+      
+    } catch (error: unknown) {
+      console.error('Error al guardar noticias:', error);
+      toast.error(error instanceof Error ? error.message : 'Error al guardar noticias', { id: 'save-news' });
     }
   };
 
@@ -477,6 +529,30 @@ EJEMPLOS COMUNES:
         </div>
 
         {/* Botones de Guardar */}
+        {hasResults && (
+          <div className="flex gap-2 pt-4 border-t">
+            {/* Botón para guardar noticias scrapeadas */}
+            <Button
+              onClick={handleSaveNews}
+              disabled={isLoading}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              size="lg"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Guardar {result?.news_count || 0} Noticias en BD
+            </Button>
+             
+            <Button
+              variant="outline"
+              onClick={reset}
+              disabled={isLoading}
+            >
+              Empezar de Nuevo
+            </Button>
+          </div>
+        )}
+
+        {/* Botón para guardar URL pública (solo si hay nombre) */}
         {canSave && (
           <div className="flex gap-2 pt-4 border-t">
             <Button
@@ -493,7 +569,7 @@ EJEMPLOS COMUNES:
                 </span>
               )}
             </Button>
-            
+             
             <Button
               variant="outline"
               onClick={reset}

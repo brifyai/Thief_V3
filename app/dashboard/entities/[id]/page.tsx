@@ -160,13 +160,11 @@ export default function EntityDetailPage() {
 
       // Agregar estadísticas V2 si están disponibles
       if (result.analyzer_stats) {
-        const stats = result.analyzer_stats;
+        const stats = result.analyzer_stats as any;
         message += `\n\n🔬 Estadísticas V2:\n` +
-          `⚡ Tiempo: ${stats.processing_time_ms}ms\n` +
-          `📈 Procesados: ${stats.total_processed}\n` +
-          `😊 Positivos: ${stats.sentiment_distribution.positive}\n` +
-          `😐 Neutrales: ${stats.sentiment_distribution.neutral}\n` +
-          `😞 Negativos: ${stats.sentiment_distribution.negative}`;
+          `📈 Procesados: ${stats.totalAnalyzed}\n` +
+          `🧠 IA Usada: ${stats.aiUsed}\n` +
+          `🔄 Fallback: ${stats.fallbackUsed}`;
       }
 
       toast.success(message, { id: 'analyze' });

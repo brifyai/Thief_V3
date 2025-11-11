@@ -350,7 +350,7 @@ class ScrapingService {
 
       console.log('🔍 Enviando datos de listado:', requestData);
 
-      const response = await fetch(`${API_BASE_URL}/public-urls/test`, {
+      const response = await fetch(`${API_BASE_URL}/api/public-urls/test`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),

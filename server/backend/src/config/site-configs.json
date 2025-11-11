@@ -93,6 +93,3656 @@
       "metadata": {
         "encoding": "utf-8"
       }
+    },
+    {
+      "domain": "latercera.com",
+      "name": "La Tercera",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            ".story",
+            ".news-item",
+            ".post",
+            ".entry",
+            ".card",
+            "h2",
+            "h3",
+            ".headline",
+            ".noticia",
+            ".article-list article"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a",
+            ".story-title a",
+            ".entry-title a",
+            ".post-title a",
+            ".headline a",
+            ".title a",
+            "a[title]",
+            ".card-title a",
+            ".article-title a",
+            ".noticia-title a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a",
+            ".story-title a",
+            ".entry-title a",
+            ".post-title a",
+            ".headline a",
+            ".title a",
+            "a[href]:not([class*=\"tag\"]):not([class*=\"category\"]):not([class*=\"more\"]):not([class*=\"read\"]):not([class*=\"comment\"])"
+          ],
+          "description": [
+            ".story-excerpt",
+            ".entry-summary",
+            ".post-excerpt",
+            ".headline-desc",
+            ".excerpt",
+            ".summary",
+            ".description",
+            ".bajada",
+            "p:first-child",
+            ".card-text p:first-child"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1.story-title",
+            "h1.entry-title",
+            "h1.post-title",
+            "h1.article-title",
+            "h1.headline",
+            "h1.title",
+            ".story-title",
+            ".entry-title",
+            ".post-title",
+            ".article-title",
+            "h1"
+          ],
+          "subtitle": [
+            ".story-subtitle",
+            ".entry-subtitle",
+            ".post-subtitle",
+            ".subtitle",
+            ".bajada",
+            ".deck",
+            "h2"
+          ],
+          "content": [
+            ".story-body",
+            ".entry-content",
+            ".post-content",
+            ".article-body",
+            ".article-content",
+            ".content",
+            ".story-content",
+            "#story-body",
+            ".texto",
+            ".content-text"
+          ],
+          "date": [
+            "time[datetime]",
+            "time",
+            ".story-date",
+            ".entry-date",
+            ".post-date",
+            ".article-date",
+            ".date",
+            ".fecha",
+            ".published",
+            "[class*=\"date\"]",
+            "[class*=\"time\"]"
+          ],
+          "author": [
+            ".story-author",
+            ".entry-author",
+            ".post-author",
+            ".article-author",
+            ".author",
+            ".autor",
+            ".byline",
+            "[rel=\"author\"]",
+            "[class*=\"author\"]"
+          ],
+          "images": [
+            ".story-image img",
+            ".entry-image img",
+            ".post-image img",
+            ".article-image img",
+            ".featured-image img",
+            "article img",
+            "figure img",
+            ".img-responsive",
+            "img[src*=\"latercera\"]"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "dateFormat": "DD/MM/YYYY",
+        "authorSeparator": "Por",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "latercera.cl",
+      "name": "La Tercera",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            ".story",
+            ".news-item",
+            ".post",
+            ".entry",
+            ".card",
+            "h2",
+            "h3",
+            ".headline",
+            ".noticia",
+            ".article-list article"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a",
+            ".story-title a",
+            ".entry-title a",
+            ".post-title a",
+            ".headline a",
+            ".title a",
+            "a[title]",
+            ".card-title a",
+            ".article-title a",
+            ".noticia-title a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a",
+            ".story-title a",
+            ".entry-title a",
+            ".post-title a",
+            ".headline a",
+            ".title a",
+            "a[href]:not([class*=\"tag\"]):not([class*=\"category\"]):not([class*=\"more\"]):not([class*=\"read\"]):not([class*=\"comment\"])"
+          ],
+          "description": [
+            ".story-excerpt",
+            ".entry-summary",
+            ".post-excerpt",
+            ".headline-desc",
+            ".excerpt",
+            ".summary",
+            ".description",
+            ".bajada",
+            "p:first-child",
+            ".card-text p:first-child"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1.story-title",
+            "h1.entry-title",
+            "h1.post-title",
+            "h1.article-title",
+            "h1.headline",
+            "h1.title",
+            ".story-title",
+            ".entry-title",
+            ".post-title",
+            ".article-title",
+            "h1"
+          ],
+          "subtitle": [
+            ".story-subtitle",
+            ".entry-subtitle",
+            ".post-subtitle",
+            ".subtitle",
+            ".bajada",
+            ".deck",
+            "h2"
+          ],
+          "content": [
+            ".story-body",
+            ".entry-content",
+            ".post-content",
+            ".article-body",
+            ".article-content",
+            ".content",
+            ".story-content",
+            "#story-body",
+            ".texto",
+            ".content-text"
+          ],
+          "date": [
+            "time[datetime]",
+            "time",
+            ".story-date",
+            ".entry-date",
+            ".post-date",
+            ".article-date",
+            ".date",
+            ".fecha",
+            ".published",
+            "[class*=\"date\"]",
+            "[class*=\"time\"]"
+          ],
+          "author": [
+            ".story-author",
+            ".entry-author",
+            ".post-author",
+            ".article-author",
+            ".author",
+            ".autor",
+            ".byline",
+            "[rel=\"author\"]",
+            "[class*=\"author\"]"
+          ],
+          "images": [
+            ".story-image img",
+            ".entry-image img",
+            ".post-image img",
+            ".article-image img",
+            ".featured-image img",
+            "article img",
+            "figure img",
+            ".img-responsive",
+            "img[src*=\"latercera\"]"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "dateFormat": "DD/MM/YYYY",
+        "authorSeparator": "Por",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "t13.cl",
+      "name": "T13",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "a[title][href*='noticia']"
+          ],
+          "title": [
+            "a[title][href*='noticia']"
+          ],
+          "link": [
+            "a[title][href*='noticia']"
+          ],
+          "description": [
+            ".epigrafe",
+            ".card .epigrafe"
+          ],
+          "image": [
+            ".imagen img",
+            "figure.imagen img",
+            "img[src*='t13.cl']"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1.titulo-articulo",
+            ".articulo-detalle-titulo",
+            "h1.title",
+            "h1"
+          ],
+          "subtitle": [
+            ".bajada",
+            ".subtitulo",
+            "h2",
+            ".deck"
+          ],
+          "content": [
+            ".articulo-detalle-content",
+            ".cuerpo-content",
+            ".texto",
+            "article",
+            ".content"
+          ],
+          "date": [
+            ".fecha",
+            ".fecha-publicacion",
+            "time[datetime]",
+            ".epigrafe"
+          ],
+          "author": [
+            ".autor",
+            ".author",
+            ".byline"
+          ],
+          "images": [
+            "article img",
+            ".imagen img",
+            "figure img"
+          ]
+        }
+      },
+      "cleaningRules": [
+        {
+          "type": "regex",
+          "pattern": "\\d{2}:\\d{2}$",
+          "description": "Remover timestamps del final de epígrafes"
+        }
+      ],
+      "metadata": {
+        "dateFormat": "DD/MM/YYYY HH:mm",
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "lacuarta.com",
+      "name": "La Cuarta",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "h2 a[href*='/noticia/']"
+          ],
+          "title": [
+            "h2 a[href*='/noticia/']"
+          ],
+          "link": [
+            "h2 a[href*='/noticia/']"
+          ],
+          "description": [
+            ".bajada",
+            ".resumen",
+            "p"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".titulo-principal",
+            ".titulo"
+          ],
+          "subtitle": [
+            ".bajada",
+            ".subtitulo"
+          ],
+          "content": [
+            ".contenido",
+            ".texto",
+            ".cuerpo"
+          ],
+          "date": [
+            ".fecha",
+            ".fecha-publicacion",
+            "time"
+          ],
+          "author": [
+            ".autor",
+            ".redactor"
+          ],
+          "images": [
+            ".imagen-principal img",
+            ".contenido img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "lanacion.cl",
+      "name": "La Nación",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            ".entry-title",
+            "h2",
+            "h3",
+            "article"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a",
+            ".entry-title a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a",
+            ".entry-title a"
+          ],
+          "description": [
+            ".entry-summary",
+            ".excerpt",
+            ".bajada"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1.entry-title",
+            "h1"
+          ],
+          "subtitle": [
+            ".entry-subtitle",
+            ".bajada"
+          ],
+          "content": [
+            ".entry-content",
+            ".contenido"
+          ],
+          "date": [
+            "time[datetime]",
+            ".entry-date"
+          ],
+          "author": [
+            ".entry-author",
+            ".autor"
+          ],
+          "images": [
+            ".entry-image img",
+            ".imagen img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "24horas.cl",
+      "name": "24 Horas",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "h3",
+            "article",
+            "a[href*='/noticiarios/']"
+          ],
+          "title": [
+            "h3 a",
+            "h2 a"
+          ],
+          "link": [
+            "h3 a",
+            "h2 a"
+          ],
+          "description": [
+            ".resumen",
+            ".bajada"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".titulo"
+          ],
+          "subtitle": [
+            ".bajada",
+            ".subtitulo"
+          ],
+          "content": [
+            ".contenido",
+            ".texto"
+          ],
+          "date": [
+            ".fecha",
+            "time"
+          ],
+          "author": [
+            ".autor"
+          ],
+          "images": [
+            ".imagen img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "meganoticias.cl",
+      "name": "Mega Noticias",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "a[href*='noticia']"
+          ],
+          "title": [
+            "a[href*='noticia']"
+          ],
+          "link": [
+            "a[href*='noticia']"
+          ],
+          "description": [
+            ".resumen",
+            ".bajada"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1.titulo",
+            "h1"
+          ],
+          "subtitle": [
+            ".bajada",
+            ".subtitulo"
+          ],
+          "content": [
+            ".contenido",
+            ".texto"
+          ],
+          "date": [
+            ".fecha",
+            "time"
+          ],
+          "author": [
+            ".autor"
+          ],
+          "images": [
+            ".imagen img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "chilevision.cl",
+      "name": "Chilevisión",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            ".card",
+            "h4",
+            "a[href*='/noticias/']"
+          ],
+          "title": [
+            "h4 a",
+            ".card-title"
+          ],
+          "link": [
+            "h4 a",
+            ".card a"
+          ],
+          "description": [
+            ".resumen",
+            ".bajada"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".titulo"
+          ],
+          "subtitle": [
+            ".bajada"
+          ],
+          "content": [
+            ".contenido",
+            ".texto"
+          ],
+          "date": [
+            ".fecha",
+            "time"
+          ],
+          "author": [
+            ".autor"
+          ],
+          "images": [
+            ".imagen img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "biobiochile.cl",
+      "name": "Biobío Chile",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "a[href*='noticia']"
+          ],
+          "title": [
+            "a[href*='noticia']"
+          ],
+          "link": [
+            "a[href*='noticia']"
+          ],
+          "description": [
+            ".resumen",
+            ".bajada"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1.titulo",
+            "h1"
+          ],
+          "subtitle": [
+            ".bajada",
+            ".subtitulo"
+          ],
+          "content": [
+            ".contenido",
+            ".texto"
+          ],
+          "date": [
+            ".fecha",
+            "time"
+          ],
+          "author": [
+            ".autor"
+          ],
+          "images": [
+            ".imagen img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "cooperativa.cl",
+      "name": "Cooperativa",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            ".card",
+            ".titular"
+          ],
+          "title": [
+            ".titular",
+            "article .titular",
+            ".card .titular"
+          ],
+          "link": [
+            "article",
+            ".card"
+          ],
+          "description": [
+            "p:first-child",
+            ".card p:first-child",
+            "article p:first-child"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".titular",
+            "h1.titular"
+          ],
+          "subtitle": [
+            ".bajada",
+            ".subtitle",
+            "h2"
+          ],
+          "content": [
+            "article p",
+            ".content p",
+            ".texto p",
+            "article .content p"
+          ],
+          "date": [
+            "time",
+            ".date",
+            ".fecha",
+            "[class*='date']",
+            "[class*='time']"
+          ],
+          "author": [
+            ".author",
+            ".byline",
+            ".autor",
+            "[class*='author']"
+          ],
+          "images": [
+            "article img",
+            ".content img",
+            ".imagen img",
+            "figure img"
+          ]
+        }
+      },
+      "cleaningRules": [
+        {
+          "type": "regex",
+          "pattern": "^\\s*\\d{1,2}:\\d{2}\\s*\\|\\s*",
+          "description": "Remover timestamps del inicio del texto"
+        },
+        {
+          "type": "regex",
+          "pattern": "\\s*\\|\\s*\\d{1,2}:\\d{2}\\s*$",
+          "description": "Remover timestamps del final del texto"
+        },
+        {
+          "type": "regex",
+          "pattern": "^\\s*\\+\\s*",
+          "description": "Remover símbolos + del inicio"
+        }
+      ],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es",
+        "dateFormat": "DD/MM/YYYY HH:mm"
+      }
+    },
+    {
+      "domain": "adnradio.cl",
+      "name": "ADN Radio",
+      "enabled": true,
+      "priority": 1,
+      "selectors": {
+        "listing": {
+          "container": [
+            "h3",
+            "a[href*='/noticias/']"
+          ],
+          "title": [
+            "h3 a"
+          ],
+          "link": [
+            "h3 a"
+          ],
+          "description": [
+            ".resumen"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".titulo"
+          ],
+          "content": [
+            ".contenido",
+            ".texto"
+          ],
+          "date": [
+            ".fecha",
+            "time"
+          ],
+          "images": [
+            ".imagen img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "bloomberglinea.com",
+      "name": "Bloomberg Línea",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "h2",
+            "article"
+          ],
+          "title": [
+            "h2 a"
+          ],
+          "link": [
+            "h2 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1"
+          ],
+          "content": [
+            ".content"
+          ],
+          "date": [
+            "time[datetime]"
+          ],
+          "images": [
+            ".featured-image img"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "chocale.cl",
+      "name": "Chocale",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            ".post",
+            "h2"
+          ],
+          "title": [
+            "h2 a"
+          ],
+          "link": [
+            "h2 a"
+          ],
+          "description": [
+            ".entry-summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1"
+          ],
+          "content": [
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "tele13radio.cl",
+      "name": "Tele13 Radio",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "a[href*='/']",
+            "article",
+            "h2"
+          ],
+          "title": [
+            "h2 a",
+            "a[title]"
+          ],
+          "link": [
+            "a[href*='/']"
+          ],
+          "description": [
+            ".resumen",
+            ".bajada"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".titulo"
+          ],
+          "content": [
+            ".contenido",
+            ".texto"
+          ],
+          "date": [
+            ".fecha"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "redgol.cl",
+      "name": "RedGol",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content",
+            ".post-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "chile.as.com",
+      "name": "AS Chile",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".story"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a",
+            ".title a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary",
+            ".lead"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title",
+            ".headline"
+          ],
+          "content": [
+            ".content",
+            ".article-body",
+            ".story-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date",
+            ".timestamp"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "alairelibre.cl",
+      "name": "Al Aire Libre",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "main",
+            ".container",
+            ".displa-posts-block",
+            "menu.temas-menu",
+            ".main",
+            "div.row.row-cols-1.row-cols-md-3.g-4.mb-5",
+            "div.acf-block.category-block"
+          ],
+          "title": [
+            "a",
+            "a[title]",
+            "h1 a",
+            "h2 a",
+            "h3 a",
+            ".title a",
+            ".card-title a"
+          ],
+          "link": [
+            "a[href*='/futbol/']",
+            "a[href*='/lucha-libre/']",
+            "a[href*='/polideportivo/']",
+            "a[href*='/noticia/']",
+            "a[href*='/post/']",
+            "a[href*='/article/']",
+            "a[href*='/campeonato-nacional/']",
+            "a[href*='/primera-b/']"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary",
+            ".description",
+            ".bajada",
+            "p:first-child",
+            ".card-text p"
+          ],
+          "image": [
+            "img[src]",
+            "img[data-src]",
+            ".thumbnail img",
+            ".featured-image img",
+            ".card img"
+          ],
+          "date": [
+            ".date",
+            ".published",
+            "time[datetime]",
+            ".entry-date",
+            "[class*='date']"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title",
+            ".entry-title",
+            ".post-title",
+            ".article-title"
+          ],
+          "subtitle": [
+            ".bajada",
+            ".subtitle",
+            ".deck"
+          ],
+          "content": [
+            ".content",
+            ".entry-content",
+            ".post-content",
+            ".article-content",
+            "article",
+            ".texto"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date",
+            ".published",
+            ".entry-date",
+            ".fecha",
+            "[class*='date']"
+          ],
+          "author": [
+            ".author",
+            ".byline",
+            ".autor",
+            "[rel='author']"
+          ],
+          "images": [
+            ".content img",
+            ".entry-content img",
+            "article img",
+            ".imagen img",
+            ".featured-image img"
+          ]
+        }
+      },
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1"
+      },
+      "cleaningRules": [
+        {
+          "type": "regex",
+          "pattern": "^\\s*\\d{1,2}:\\d{2}\\s*\\|\\s*",
+          "description": "Remover timestamps del inicio del texto"
+        }
+      ],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es",
+        "category": "deportes",
+        "dateFormat": "DD/MM/YYYY HH:mm"
+      }
+    },
+    {
+      "domain": "prensafutbol.cl",
+      "name": "Prensa Fútbol",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "ciperchile.cl",
+      "name": "Ciper Chile",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "elmostrador.cl",
+      "name": "El Mostrador",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "interferencia.cl",
+      "name": "Interferencia",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "eldesconcierto.cl",
+      "name": "El Desconcierto",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "anid.cl",
+      "name": "ANID",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "minciencia.gob.cl",
+      "name": "MinCiencia",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "chilecultura.gob.cl",
+      "name": "Chile Cultura",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "orbe.cl",
+      "name": "Orbe",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "mediabanco.com",
+      "name": "Mediabanco",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "enprensa.cl",
+      "name": "En Prensa",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "soychile.cl",
+      "name": "Soy Chile",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "aricaldia.cl",
+      "name": "Arica Aldia",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "elmorrodearica.cl",
+      "name": "El Morro de Arica",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "arica365.cl",
+      "name": "Arica 365",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "elmorrocotudo.cl",
+      "name": "El Morro Cotudo",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "cappissimamultimedial.cl",
+      "name": "Cappissima Multimedial",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.australtemuco.cl",
+      "name": "Austral Temuco",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.laopinon.cl",
+      "name": "La Opinión",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.elnaveghable.cl",
+      "name": "El Naveghable",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "atvvaldivia.cl",
+      "name": "ATV Valdivia",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "soydepuerto.cl",
+      "name": "Soy de Puerto",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.australosorno.cl",
+      "name": "Austral Osorno",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.laestrellachiloe.cl",
+      "name": "La Estrella Chiloé",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.elrepuertero.cl",
+      "name": "El Repuertero",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "ciudadanoradio.cl",
+      "name": "Ciudadano Radio",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.elmagallanews.cl",
+      "name": "El Magallanews",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.efe.com",
+      "name": "EFE",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "apnews.com/hub/chile",
+      "name": "AP News Chile",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "elpais.com",
+      "name": "El País",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "abc.es",
+      "name": "ABC",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "elmundo.es",
+      "name": "El Mundo",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.soychile.cl/temuco/",
+      "name": "Soy Chile Temuco",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.soychile.cl/valdivia/",
+      "name": "Soy Chile Valdivia",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.soychile.cl/puerto-montt/",
+      "name": "Soy Chile Puerto Montt",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.soychile.cl/osorno/",
+      "name": "Soy Chile Osorno",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.soychile.cl/chiloe/",
+      "name": "Soy Chile Chiloé",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diarioiquique.cl",
+      "name": "Diario Iquique",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diarioantofagasta.cl",
+      "name": "Diario Antofagasta",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diarioatacama.cl",
+      "name": "Diario Atacama",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariovalparaiso.cl",
+      "name": "Diario Valparaíso",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariorancagua.cl",
+      "name": "Diario Rancagua",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariotalca.cl",
+      "name": "Diario Talca",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diarioconcepcion.cl",
+      "name": "Diario Concepción",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.bbc.com/mundo",
+      "name": "BBC News Mundo",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "cnnespanol.cnn.com",
+      "name": "CNN Español",
+      "enabled": true,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.reuters.com/places/chile",
+      "name": "Reuters Chile",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariocoquimbo.cl",
+      "name": "Diario Coquimbo",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariotemuco.cl",
+      "name": "Diario Temuco",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariovaldivia.cl",
+      "name": "Diario Valdivia",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariopuertomontt.cl",
+      "name": "Diario Puerto Montt",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariocoyhaique.cl",
+      "name": "Diario Coyhaique",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.diariopuntaarenas.cl",
+      "name": "Diario Punta Arenas",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
+    },
+    {
+      "domain": "www.france24.com/es",
+      "name": "France24 Español",
+      "enabled": false,
+      "priority": 2,
+      "selectors": {
+        "listing": {
+          "container": [
+            "article",
+            "h2",
+            ".post"
+          ],
+          "title": [
+            "h2 a",
+            "h3 a"
+          ],
+          "link": [
+            "h2 a",
+            "h3 a"
+          ],
+          "description": [
+            ".excerpt",
+            ".summary"
+          ]
+        },
+        "article": {
+          "title": [
+            "h1",
+            ".title"
+          ],
+          "content": [
+            ".content",
+            ".entry-content"
+          ],
+          "date": [
+            "time[datetime]",
+            ".date"
+          ]
+        }
+      },
+      "cleaningRules": [],
+      "metadata": {
+        "encoding": "utf-8",
+        "language": "es"
+      }
     }
   ]
 }

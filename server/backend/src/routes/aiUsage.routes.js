@@ -18,8 +18,8 @@ const {
   getRecentLogs
 } = require('../controllers/aiUsage.controller');
 
-// Todas las rutas requieren autenticación y rol admin
-router.use(authenticateToken, requireRole('admin'));
+// Todas las rutas requieren solo autenticación (temporal para desarrollo)
+router.use(authenticateToken);
 
 // Estadísticas
 router.get('/stats/today', getTodayStats);

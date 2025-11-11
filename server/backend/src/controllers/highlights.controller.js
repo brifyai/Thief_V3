@@ -21,41 +21,9 @@ async function getHighlights(req, res) {
   try {
     const userId = req.user.id;
     
-    // Obtener dominios seleccionados por el usuario
-    const userSelections = await prisma.userUrlSelection.findMany({
-      where: { user_id: userId },
-      include: {
-        public_url: {
-          select: {
-            domain: true,
-            is_active: true
-          }
-        }
-      }
-    });
-
-    const selectedDomains = userSelections
-      .filter(s => s.public_url.is_active)
-      .map(s => s.public_url.domain);
-
-    // Si no tiene dominios seleccionados, retornar vacío
-    if (selectedDomains.length === 0) {
-      return res.json({
-        success: true,
-        data: {
-          hasContent: false,
-          message: 'No tienes fuentes de noticias seleccionadas',
-          sections: []
-        }
-      });
-    }
-
-    // Filtro base: solo noticias de dominios seleccionados
-    const baseFilter = {
-      success: true,
-      domain: { in: selectedDomains }
-    };
-
+    // Modo real con Supabase - obtener todas las noticias
+    console.log('✅ Usando Supabase real para highlights');
+    
     // Usar caché (5 minutos)
     const cacheKey = `highlights:${userId}`;
     const highlights = await cacheService.getCached(
@@ -65,100 +33,78 @@ async function getHighlights(req, res) {
         const last24Hours = new Date();
         last24Hours.setHours(last24Hours.getHours() - 24);
 
-        const latestNews = await prisma.scraping_results.findMany({
-          where: {
-            ...baseFilter,
-            scraped_at: { gte: last24Hours }
-          },
-          orderBy: { scraped_at: 'desc' },
-          take: 6,
-          select: {
-            id: true,
-            title: true,
-            summary: true,
-            category: true,
-            domain: true,
-            scraped_at: true,
-            content_length: true
-          }
-        });
+        const { data: latestNews } = await supabase
+          .from('news')
+          .select('*')
+          .eq('success', true)
+          .gte('scraped_at', last24Hours.toISOString())
+          .order('scraped_at', { ascending: false })
+          .limit(6);
 
         // 2. MÁS LEÍDAS (noticias largas y recientes = más completas)
-        const mostRead = await prisma.scraping_results.findMany({
-          where: {
-            ...baseFilter,
-            content_length: { gte: 1000 }, // Al menos 1000 caracteres
-            scraped_at: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Última semana
-          },
-          orderBy: [
-            { content_length: 'desc' },
-            { scraped_at: 'desc' }
-          ],
-          take: 6,
-          select: {
-            id: true,
-            title: true,
-            summary: true,
-            category: true,
-            domain: true,
-            scraped_at: true,
-            content_length: true
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const { data: mostRead } = await supabase
+          .from('news')
+          .select('*')
+          .eq('success', true)
+          .gte('content_length', 1000)
+          .gte('scraped_at', weekAgo.toISOString())
+          .order('content_length', { ascending: false })
+          .order('scraped_at', { ascending: false })
+          .limit(6);
+
+        // 3. POR CATEGORÍA (top 3 categorías con más noticias)
+        const { data: allNews } = await supabase
+          .from('news')
+          .select('category')
+          .eq('success', true)
+          .not('category', 'is', null);
+
+        // Agrupar por categoría manualmente
+        const categoryCount = {};
+        allNews?.forEach(news => {
+          if (news.category) {
+            categoryCount[news.category] = (categoryCount[news.category] || 0) + 1;
           }
         });
 
-        // 3. POR CATEGORÍA (top 3 categorías con más noticias)
-        const categoryStats = await prisma.scraping_results.groupBy({
-          by: ['category'],
-          where: {
-            ...baseFilter,
-            category: { not: null }
-          },
-          _count: { category: true },
-          orderBy: { _count: { category: 'desc' } },
-          take: 3
-        });
+        const topCategories = Object.entries(categoryCount)
+          .sort(([,a], [,b]) => b - a)
+          .slice(0, 3)
+          .map(([category]) => category);
 
         const byCategory = await Promise.all(
-          categoryStats.map(async (stat) => {
-            const news = await prisma.scraping_results.findMany({
-              where: {
-                ...baseFilter,
-                category: stat.category
-              },
-              orderBy: { scraped_at: 'desc' },
-              take: 4,
-              select: {
-                id: true,
-                title: true,
-                summary: true,
-                category: true,
-                domain: true,
-                scraped_at: true
-              }
-            });
+          topCategories.map(async (category) => {
+            const { data: news } = await supabase
+              .from('news')
+              .select('*')
+              .eq('success', true)
+              .eq('category', category)
+              .order('scraped_at', { ascending: false })
+              .limit(4);
 
             return {
-              category: stat.category,
-              count: stat._count.category,
-              news
+              category,
+              count: categoryCount[category],
+              news: news || []
             };
           })
         );
 
         // 4. TRENDING (noticias recientes con títulos más largos = más específicas)
-        const trending = await prisma.scraping_results.findMany({
-          where: {
-            ...baseFilter,
-            scraped_at: { gte: new Date(Date.now() - 48 * 60 * 60 * 1000) }, // Últimas 48 horas
-            title: { not: 'Sin título' }
-          },
-          orderBy: { scraped_at: 'desc' },
-          take: 100 // Obtener más para filtrar
-        });
+        const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+        const { data: trending } = await supabase
+          .from('news')
+          .select('*')
+          .eq('success', true)
+          .gte('scraped_at', twoDaysAgo.toISOString())
+          .neq('title', 'Sin título')
+          .order('scraped_at', { ascending: false })
+          .limit(100);
 
         // Filtrar las que tienen títulos más informativos (más de 30 caracteres)
-        const trendingFiltered = trending
-          .filter(n => n.title.length > 30)
+        const trendingFiltered = (trending || [])
+          .filter(n => n.title && n.title.length > 30)
           .slice(0, 6)
           .map(n => ({
             id: n.id,
@@ -170,30 +116,21 @@ async function getHighlights(req, res) {
           }));
 
         // 5. RECOMENDADAS (noticias con resumen generado = mejor calidad)
-        const recommended = await prisma.scraping_results.findMany({
-          where: {
-            ...baseFilter,
-            summary: { not: null },
-            scraped_at: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Última semana
-          },
-          orderBy: { scraped_at: 'desc' },
-          take: 6,
-          select: {
-            id: true,
-            title: true,
-            summary: true,
-            category: true,
-            domain: true,
-            scraped_at: true
-          }
-        });
+        const { data: recommended } = await supabase
+          .from('news')
+          .select('*')
+          .eq('success', true)
+          .not('summary', 'is', null)
+          .gte('scraped_at', weekAgo.toISOString())
+          .order('scraped_at', { ascending: false })
+          .limit(6);
 
         return {
-          latestNews,
-          mostRead,
+          latestNews: latestNews || [],
+          mostRead: mostRead || [],
           byCategory,
           trending: trendingFiltered,
-          recommended
+          recommended: recommended || []
         };
       },
       300 // 5 minutos
@@ -293,38 +230,27 @@ async function getHighlights(req, res) {
 async function getQuickStats(req, res) {
   try {
     const userId = req.user.id;
+    console.log('🔍 DEBUG getQuickStats - DEMO_MODE:', process.env.DEMO_MODE);
 
-    // Obtener dominios seleccionados
-    const userSelections = await prisma.userUrlSelection.findMany({
-      where: { user_id: userId },
-      include: {
-        public_url: {
-          select: { domain: true, is_active: true }
-        }
-      }
-    });
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true' || process.env.DEMO_MODE === true) {
+      console.log('🎭 Modo demo detectado en getQuickStats');
+      const demoStats = {
+        total: Math.floor(Math.random() * 200) + 100,
+        today: Math.floor(Math.random() * 20) + 5,
+        thisWeek: Math.floor(Math.random() * 100) + 50,
+        categories: Math.floor(Math.random() * 8) + 5
+      };
 
-    const selectedDomains = userSelections
-      .filter(s => s.public_url.is_active)
-      .map(s => s.public_url.domain);
-
-    if (selectedDomains.length === 0) {
       return res.json({
         success: true,
-        data: {
-          total: 0,
-          today: 0,
-          thisWeek: 0,
-          categories: 0
-        }
+        data: demoStats
       });
     }
 
-    const baseFilter = {
-      success: true,
-      domain: { in: selectedDomains }
-    };
-
+    // Modo real con Supabase
+    console.log('✅ Usando Supabase real para estadísticas');
+    
     // Usar caché (1 minuto)
     const cacheKey = `quick_stats:${userId}`;
     const stats = await cacheService.getCached(
@@ -334,35 +260,25 @@ async function getQuickStats(req, res) {
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-        const [total, todayCount, weekCount, categories] = await Promise.all([
-          prisma.scraping_results.count({ where: baseFilter }),
-          prisma.scraping_results.count({
-            where: {
-              ...baseFilter,
-              scraped_at: { gte: today }
-            }
-          }),
-          prisma.scraping_results.count({
-            where: {
-              ...baseFilter,
-              scraped_at: { gte: thisWeek }
-            }
-          }),
-          prisma.scraping_results.findMany({
-            where: {
-              ...baseFilter,
-              category: { not: null }
-            },
-            select: { category: true },
-            distinct: ['category']
-          })
-        ]);
+        // Obtener todos los datos
+        const { data: allNews } = await supabase
+          .from('news')
+          .select('*')
+          .eq('success', true);
+
+        // Filtrar y contar manualmente
+        const total = allNews?.length || 0;
+        const todayCount = allNews?.filter(n => new Date(n.scraped_at) >= today).length || 0;
+        const weekCount = allNews?.filter(n => new Date(n.scraped_at) >= thisWeek).length || 0;
+        
+        // Contar categorías únicas
+        const uniqueCategories = new Set(allNews?.filter(n => n.category).map(n => n.category) || []);
 
         return {
           total,
           today: todayCount,
           thisWeek: weekCount,
-          categories: categories.length
+          categories: uniqueCategories.size
         };
       },
       60 // 1 minuto

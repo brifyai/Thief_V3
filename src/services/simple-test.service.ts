@@ -51,7 +51,7 @@ class SimpleTestService {
 
       console.log('🧪 Enviando simple-test para URL:', url);
 
-      const response = await fetch(`${API_BASE_URL}/simple-test`, {
+      const response = await fetch(`${API_BASE_URL}/api/simple-test`, {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify({ url: url.trim() })
@@ -92,7 +92,7 @@ class SimpleTestService {
 
       console.log('🧪 Enviando simple-test con selectores para URL:', url);
 
-      const response = await fetch(`${API_BASE_URL}/simple-test/with-selectors`, {
+      const response = await fetch(`${API_BASE_URL}/api/simple-test/with-selectors`, {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify({

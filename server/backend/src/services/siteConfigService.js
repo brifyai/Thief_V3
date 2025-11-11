@@ -477,19 +477,11 @@ async function saveConfig(data, userId) {
       throw new Error('Selectores de título y contenido son requeridos');
     }
     
-    // Verificar si ya existe una config para este dominio
-    const existing = await prisma.siteConfiguration.findUnique({
-      where: { domain: normalizedDomain }
-    });
-    
-    if (existing) {
-      logger.warn(`⚠️ Ya existe configuración para "${normalizedDomain}": ${existing.name} (id: ${existing.id})`);
-      throw new Error(`Ya existe una configuración para el dominio: ${normalizedDomain}`);
-    }
-    
-    // Crear configuración
-    const config = await prisma.siteConfiguration.create({
-      data: {
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      logger.info(`🎭 Modo demo: Simulando guardado de configuración para "${normalizedDomain}"`);
+      return {
+        id: Math.floor(Math.random() * 1000),
         domain: normalizedDomain,
         name: data.name,
         titleSelector: data.selectors.titleSelector,
@@ -502,9 +494,56 @@ async function saveConfig(data, userId) {
         createdBy: userId.toString(),
         confidence: data.confidence || 0.5,
         isActive: true,
-        isVerified: false
-      }
-    });
+        isVerified: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+    }
+
+    // Verificar si ya existe una config para este dominio
+    const { data: existing, error: existingError } = await supabase
+      .from('site_configurations')
+      .select('*')
+      .eq('domain', normalizedDomain)
+      .single();
+    
+    if (existingError && existingError.code !== 'PGRST116') {
+      logger.error('Error verificando configuración existente:', existingError);
+      throw new Error('Error verificando configuración existente');
+    }
+    
+    if (existing) {
+      logger.warn(`⚠️ Ya existe configuración para "${normalizedDomain}": ${existing.name} (id: ${existing.id})`);
+      throw new Error(`Ya existe una configuración para el dominio: ${normalizedDomain}`);
+    }
+    
+    // Crear configuración
+    const { data: config, error: createError } = await supabase
+      .from('site_configurations')
+      .insert({
+        data: {
+          domain: normalizedDomain,
+          name: data.name,
+          titleSelector: data.selectors.titleSelector,
+          contentSelector: data.selectors.contentSelector,
+          dateSelector: data.selectors.dateSelector || null,
+          authorSelector: data.selectors.authorSelector || null,
+          imageSelector: data.selectors.imageSelector || null,
+          listingSelectors: data.listingSelectors || null,
+          cleaningRules: data.cleaningRules || null,
+          createdBy: userId.toString(),
+          confidence: data.confidence || 0.5,
+          isActive: true,
+          isVerified: false
+        }
+      })
+      .select()
+      .single();
+    
+    if (createError) {
+      logger.error('Error creando configuración:', createError);
+      throw new Error('Error creando configuración');
+    }
     
     logger.info(`✅ Configuración guardada exitosamente: ${config.id}`);
     logger.info(`📋 Dominio: "${config.domain}", Nombre: "${config.name}"`);
@@ -529,28 +568,32 @@ async function getConfigPriority(urlOrDomain) {
     
     logger.info(`🔍 Buscando configuración para dominio: "${normalizedDomain}"`);
     
-    // Buscar en BD (exacta)
-    const dbConfigs = await prisma.siteConfiguration.findMany({
-      where: {
-        domain: normalizedDomain,
-        isActive: true
-      },
-      orderBy: [
-        { isVerified: 'desc' },
-        { confidence: 'desc' },
-        { successCount: 'desc' }
-      ]
-    });
-    
-    if (dbConfigs.length > 0) {
-      const config = dbConfigs[0];
-      logger.info(`✅ Config de BD encontrada: "${config.name}" (${config.isVerified ? 'VERIFICADA' : 'no verificada'}, confidence: ${config.confidence})`);
-      logger.info(`📊 Estadísticas: ${config.successCount}/${config.usageCount} éxitos`);
-      return {
-        source: 'database',
-        config: config,
-        priority: config.isVerified ? 1 : 2
-      };
+    // Modo demo - omitir búsqueda en BD
+    if (process.env.DEMO_MODE === 'true') {
+      logger.info(`🎭 Modo demo: Omitiendo búsqueda en BD para "${normalizedDomain}"`);
+    } else {
+      // Buscar en BD (exacta)
+      const { data: dbConfigs, error: dbError } = await supabase
+        .from('site_configurations')
+        .select('*')
+        .eq('domain', normalizedDomain)
+        .eq('isActive', true)
+        .order('isVerified', { ascending: false })
+        .order('confidence', { ascending: false })
+        .order('successCount', { ascending: false });
+      
+      if (dbError) {
+        logger.error('Error buscando configuraciones en BD:', dbError);
+      } else if (dbConfigs && dbConfigs.length > 0) {
+        const config = dbConfigs[0];
+        logger.info(`✅ Config de BD encontrada: "${config.name}" (${config.isVerified ? 'VERIFICADA' : 'no verificada'}, confidence: ${config.confidence})`);
+        logger.info(`📊 Estadísticas: ${config.successCount}/${config.usageCount} éxitos`);
+        return {
+          source: 'database',
+          config: config,
+          priority: config.isVerified ? 1 : 2
+        };
+      }
     }
     
     logger.info(`⚠️ No se encontró config en BD para: "${normalizedDomain}"`);
@@ -606,24 +649,42 @@ async function updateStats(configId, success, errorMessage = null) {
       logger.warn(`📊 Config ${configId}: Fallo registrado${errorMessage ? ': ' + errorMessage : ''}`);
     }
     
-    await prisma.siteConfiguration.update({
-      where: { id: configId },
-      data: updateData
-    });
+    // Modo demo - solo simular actualización
+    if (process.env.DEMO_MODE === 'true') {
+      logger.info(`🎭 Modo demo: Simulando actualización de estadísticas para config ${configId}`);
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from('site_configurations')
+      .update(updateData)
+      .eq('id', configId);
+    
+    if (updateError) {
+      logger.error('Error actualizando estadísticas:', updateError);
+      return;
+    }
     
     // Recalcular confidence basado en success rate
-    const config = await prisma.siteConfiguration.findUnique({
-      where: { id: configId }
-    });
+    const { data: config, error: configError } = await supabase
+      .from('site_configurations')
+      .select('*')
+      .eq('id', configId)
+      .single();
     
-    if (config && config.usageCount > 0) {
+    if (configError || !config) {
+      logger.error('Error obteniendo configuración para recalcular confidence:', configError);
+      return;
+    }
+    
+    if (config.usageCount > 0) {
       const successRate = config.successCount / config.usageCount;
       const newConfidence = Math.min(0.5 + (successRate * 0.5), 1.0);
       
-      await prisma.siteConfiguration.update({
-        where: { id: configId },
-        data: { confidence: newConfidence }
-      });
+      await supabase
+        .from('site_configurations')
+        .update({ confidence: newConfidence })
+        .eq('id', configId);
       
       logger.info(`📈 Config ${configId}: Confidence actualizado a ${newConfidence.toFixed(2)} (${config.successCount}/${config.usageCount} éxitos)`);
     }
@@ -642,11 +703,24 @@ async function updateStats(configId, success, errorMessage = null) {
  */
 async function updateConfig(domain, data, userId) {
   try {
-    const config = await prisma.siteConfiguration.findUnique({
-      where: { domain }
-    });
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      logger.info(`🎭 Modo demo: Simulando actualización de configuración para "${domain}"`);
+      return {
+        id: Math.floor(Math.random() * 1000),
+        domain,
+        name: data.name || 'Config actualizada',
+        updatedAt: new Date()
+      };
+    }
+
+    const { data: config, error: configError } = await supabase
+      .from('site_configurations')
+      .select('*')
+      .eq('domain', domain)
+      .single();
     
-    if (!config) {
+    if (configError || !config) {
       throw new Error('Configuración no encontrada');
     }
     
@@ -669,10 +743,17 @@ async function updateConfig(domain, data, userId) {
     if (data.cleaningRules !== undefined) updateData.cleaningRules = data.cleaningRules;
     if (data.isActive !== undefined) updateData.isActive = data.isActive;
     
-    const updated = await prisma.siteConfiguration.update({
-      where: { domain },
-      data: updateData
-    });
+    const { data: updated, error: updateError } = await supabase
+      .from('site_configurations')
+      .update(updateData)
+      .eq('domain', domain)
+      .select()
+      .single();
+    
+    if (updateError) {
+      logger.error('Error actualizando configuración:', updateError);
+      throw new Error('Error actualizando configuración');
+    }
     
     logger.info(`✅ Configuración actualizada: ${domain}`);
     
@@ -692,33 +773,58 @@ async function updateConfig(domain, data, userId) {
  */
 async function verifyConfig(domain, userId) {
   try {
-    const config = await prisma.siteConfiguration.findUnique({
-      where: { domain }
-    });
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      logger.info(`🎭 Modo demo: Simulando verificación para "${domain}"`);
+      return {
+        config: {
+          id: Math.floor(Math.random() * 1000),
+          domain,
+          verifiedBy: [userId.toString()],
+          isVerified: true,
+          confidence: 0.8
+        },
+        verificationCount: 1,
+        isVerified: true
+      };
+    }
+
+    const { data: config, error: configError } = await supabase
+      .from('site_configurations')
+      .select('*')
+      .eq('domain', domain)
+      .single();
     
-    if (!config) {
+    if (configError || !config) {
       throw new Error('Configuración no encontrada');
     }
     
     // Verificar si el usuario ya verificó esta config
-    if (config.verifiedBy.includes(userId.toString())) {
+    if (config.verifiedBy && config.verifiedBy.includes(userId.toString())) {
       throw new Error('Ya has verificado esta configuración');
     }
     
     // Agregar usuario a verifiedBy
-    const verifiedBy = [...config.verifiedBy, userId.toString()];
+    const verifiedBy = config.verifiedBy ? [...config.verifiedBy, userId.toString()] : [userId.toString()];
     
     // Si tiene más de 3 verificaciones, marcar como verificada
     const isVerified = verifiedBy.length >= 3;
     
-    const updated = await prisma.siteConfiguration.update({
-      where: { domain },
-      data: {
+    const { data: updated, error: updateError } = await supabase
+      .from('site_configurations')
+      .update({
         verifiedBy,
         isVerified,
         confidence: isVerified ? Math.max(config.confidence, 0.8) : config.confidence
-      }
-    });
+      })
+      .eq('domain', domain)
+      .select()
+      .single();
+    
+    if (updateError) {
+      logger.error('Error verificando configuración:', updateError);
+      throw new Error('Error verificando configuración');
+    }
     
     logger.info(`✅ Verificación agregada: ${domain} (${verifiedBy.length} verificaciones)`);
     
@@ -763,26 +869,54 @@ async function listConfigs(filters = {}, page = 1, limit = 20) {
     
     const skip = (page - 1) * limit;
     
-    const [configs, total] = await Promise.all([
-      prisma.siteConfiguration.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: [
-          { isVerified: 'desc' },
-          { confidence: 'desc' },
-          { usageCount: 'desc' }
-        ]
-      }),
-      prisma.siteConfiguration.count({ where })
-    ]);
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      const mockConfigs = Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
+        id: i + 1,
+        domain: `sitio${i + 1}.com`,
+        name: `Configuración ${i + 1}`,
+        isActive: true,
+        isVerified: i < 2,
+        confidence: 0.8 + (i * 0.05),
+        usageCount: 10 + (i * 5),
+        successCount: 8 + (i * 4),
+        createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+      }));
+      
+      return {
+        configs: mockConfigs,
+        total: 5,
+        page,
+        limit,
+        totalPages: 1
+      };
+    }
+
+    const { data: configs, error: configsError } = await supabase
+      .from('site_configurations')
+      .select('*')
+      .match(where)
+      .range(skip, skip + limit - 1)
+      .order('isVerified', { ascending: false })
+      .order('confidence', { ascending: false })
+      .order('usageCount', { ascending: false });
+    
+    const { count, error: countError } = await supabase
+      .from('site_configurations')
+      .select('*', { count: 'exact' })
+      .match(where);
+    
+    if (configsError || countError) {
+      logger.error('Error listando configuraciones:', { configsError, countError });
+      throw new Error('Error listando configuraciones');
+    }
     
     return {
       configs,
-      total,
+      total: count || 0,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil((count || 0) / limit)
     };
     
   } catch (error) {
@@ -798,15 +932,44 @@ async function listConfigs(filters = {}, page = 1, limit = 20) {
  */
 async function getConfigByDomain(domain) {
   try {
-    const config = await prisma.siteConfiguration.findUnique({
-      where: { domain }
-    });
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      return {
+        config: {
+          id: 1,
+          domain,
+          name: `Config de ${domain}`,
+          isActive: true,
+          isVerified: true,
+          confidence: 0.85,
+          usageCount: 25,
+          successCount: 22,
+          failureCount: 3,
+          verifiedBy: ['user1', 'user2', 'user3'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        stats: {
+          usageCount: 25,
+          successCount: 22,
+          failureCount: 3,
+          successRate: '88.00',
+          verificationCount: 3
+        }
+      };
+    }
+
+    const { data: config, error: configError } = await supabase
+      .from('site_configurations')
+      .select('*')
+      .eq('domain', domain)
+      .single();
     
-    if (!config) return null;
+    if (configError || !config) return null;
     
     // Calcular estadísticas
-    const successRate = config.usageCount > 0 
-      ? (config.successCount / config.usageCount) * 100 
+    const successRate = config.usageCount > 0
+      ? (config.successCount / config.usageCount) * 100
       : 0;
     
     return {
@@ -816,7 +979,7 @@ async function getConfigByDomain(domain) {
         successCount: config.successCount,
         failureCount: config.failureCount,
         successRate: successRate.toFixed(2),
-        verificationCount: config.verifiedBy.length
+        verificationCount: config.verifiedBy ? config.verifiedBy.length : 0
       }
     };
     

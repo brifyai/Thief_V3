@@ -43,7 +43,7 @@ class RetestService {
   async retestUrl(urlId: number, request: RetestRequest = {}): Promise<RetestResult> {
     try {
       // Primero, obtener la URL actual para hacer el test
-      const urlResponse = await fetch(`${API_BASE_URL}/public-urls/${urlId}`, {
+      const urlResponse = await fetch(`${API_BASE_URL}/api/public-urls/${urlId}`, {
         method: 'GET',
         headers: getAuthHeaders(),
       });
@@ -60,7 +60,7 @@ class RetestService {
       }
 
       // Hacer el test de la URL usando el endpoint correcto
-      const testResponse = await fetch(`${API_BASE_URL}/public-urls/test`, {
+      const testResponse = await fetch(`${API_BASE_URL}/api/public-urls/test`, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
@@ -83,7 +83,7 @@ class RetestService {
       // Si hay un nuevo límite, actualizar la URL
       let updatedUrl = urlData.data || urlData;
       if (request.new_limit && request.new_limit !== urlData.max_news_limit) {
-        const updateResponse = await fetch(`${API_BASE_URL}/public-urls/${urlId}`, {
+        const updateResponse = await fetch(`${API_BASE_URL}/api/public-urls/${urlId}`, {
           method: 'PUT',
           headers: {
             ...getAuthHeaders(),

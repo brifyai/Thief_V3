@@ -27,8 +27,30 @@ const register = async (req, res, next) => {
     const result = await authService.register(email, password, name);
     res.status(201).json(result);
   } catch (error) {
-    console.error('Error en register:', error);
-    res.status(400).json({ error: error.message });
+    // Log detallado en servidor para diagnóstico
+    console.error('❌ Error en register:', {
+      message: error?.message,
+      code: error?.code,
+      details: error?.details,
+      hint: error?.hint,
+      stack: error?.stack,
+      fullError: JSON.stringify(error)
+    });
+
+    // En desarrollo, exponer detalles para depuración del frontend
+    const isProd = false;
+    const statusCode = error?.code === '23505' ? 409 : 400;
+    
+    const response = {
+      error: error?.message || 'Error al crear el usuario',
+      code: error?.code || 'UNKNOWN',
+      details: error?.details || error?.message,
+      hint: error?.hint || 'Revisa los logs del servidor para más detalles',
+      fullError: error?.message,
+      timestamp: new Date().toISOString()
+    };
+    
+    return res.status(statusCode).json(response);
   }
 };
 

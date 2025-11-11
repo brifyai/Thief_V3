@@ -600,7 +600,8 @@ class AutoScraperService {
     console.log(`⚠️  Confianza baja (${(intelligentClassification.confidence * 100).toFixed(0)}%), intentando con IA...`);
     
     try {
-      const aiClassification = await categorizeWithAI(titulo, contenido, url);
+      // Para auto-scraper no hay usuario específico, es null
+      const aiClassification = await categorizeWithAI(titulo, contenido, url, null);
       
       console.log('✅ Clasificación con IA exitosa:', aiClassification);
       return {

@@ -1,6 +1,5 @@
 import { User } from '@/stores/auth.store';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+import { API_BASE_URL, getAuthHeaders } from '../lib/api-secure';
 
 export interface LoginRequest {
   email: string;
@@ -33,11 +32,12 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${result.message || response.statusText || 'Error del servidor'}`);
+      throw new Error(`Error ${response.status}: ${result.message || result.error || response.statusText || 'Error del servidor'}`);
     }
 
-    // Verificar que la respuesta tenga token y usuario (en lugar de result.success)
+    // Verificar que la respuesta tenga token y usuario
     if (!result.token || !result.user) {
+      console.error('Invalid response from backend:', result);
       throw new Error('Respuesta del servidor inválida: falta token o usuario');
     }
 

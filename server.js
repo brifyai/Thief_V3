@@ -13,6 +13,8 @@ const config = require('./server/backend/src/config/env');
 const { errorHandler } = require('./server/backend/src/middleware/errorHandler');
 const { autoScraperService } = require('./server/backend/src/services/autoScraper.service');
 const { swaggerSpec, swaggerUi } = require('./server/backend/src/config/swagger');
+const dailyResetScheduler = require('./server/backend/src/services/dailyResetScheduler.service');
+
 const { tokenTracker } = require('./server/backend/src/services/tokenTracker.service');
 
 // Importar rutas del backend
@@ -34,6 +36,11 @@ const highlightsRoutes = require('./server/backend/src/routes/highlights.routes'
 const aiUsageRoutes = require('./server/backend/src/routes/aiUsage.routes');
 const simpleTestRoutes = require('./server/backend/src/routes/simpleTest.routes');
 const usersRoutes = require('./server/backend/src/routes/users.routes');
+const newsRoutes = require('./server/backend/src/routes/news.routes');
+const newsScrapingRoutes = require('./server/backend/src/routes/newsScraping.routes');
+const newsSearchRoutes = require('./server/backend/src/routes/newsSearch.routes');
+const interactionsRoutes = require('./server/backend/src/routes/interactions.routes');
+const lunComRoutes = require('./server/backend/src/routes/lunCom.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -152,7 +159,6 @@ api.get('/health', async (req, res) => {
 
 // Montar todas las rutas del API
 api.use('/api/auth', authRoutes);
-api.use('/', scrapingRoutes);
 api.use('/api/scraping', scrapingRoutes);
 api.use('/api', urlsRoutes);
 api.use('/api', statsRoutes);
@@ -170,6 +176,11 @@ api.use('/api/highlights', highlightsRoutes);
 api.use('/api/ai-usage', aiUsageRoutes);
 api.use('/api/simple-test', simpleTestRoutes);
 api.use('/api/users', usersRoutes);
+api.use('/api/news', newsRoutes);
+api.use('/api/news/scrape', newsScrapingRoutes);
+api.use('/api/news/search', newsSearchRoutes);
+api.use('/api/interactions', interactionsRoutes);
+api.use('/api/lun-com', lunComRoutes);
 
 // Documentación Swagger
 api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -182,61 +193,77 @@ api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 api.use(errorHandler);
 
 app.prepare().then(() => {
-  createServer(async (req, res) => {
+  // Crear servidor HTTP que maneje tanto Express como Next.js
+  const server = createServer(async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true);
       const { pathname, query } = parsedUrl;
 
-      // Si la ruta comienza con /api o es una ruta especial del backend, manejar con Express
-      if (pathname.startsWith('/api') || 
-          pathname.startsWith('/scrape') || 
-          pathname.startsWith('/health') ||
-          pathname.startsWith('/api-docs')) {
+      // Rutas de Next.js App Router que deben ser manejadas por Next.js
+      const nextJsApiRoutes = [
+        '/api/admin',
+        '/api/alerts',
+        '/api/health',
+        '/api/metrics'
+      ];
+      
+      // Verificar si la ruta es una ruta de Next.js App Router
+      const isNextJsApiRoute = nextJsApiRoutes.some(route => pathname.startsWith(route));
+      
+      // Si la ruta comienza con /api pero NO es una ruta de Next.js App Router, manejar con Express
+      if (pathname.startsWith('/api') &&
+          !isNextJsApiRoute &&
+          (pathname.startsWith('/api/auth') ||
+           pathname.startsWith('/api/scraping') ||
+           pathname.startsWith('/api/urls') ||
+           pathname.startsWith('/api/stats') ||
+           pathname.startsWith('/api/search') ||
+           pathname.startsWith('/api/queue') ||
+           pathname.startsWith('/api/cache') ||
+           pathname.startsWith('/api/site-configs') ||
+           pathname.startsWith('/api/public-urls') ||
+           pathname.startsWith('/api/my-urls') ||
+           pathname.startsWith('/api/saved-articles') ||
+           pathname.startsWith('/api/metrics') ||
+           pathname.startsWith('/api/cleanup') ||
+           pathname.startsWith('/api/entities') ||
+           pathname.startsWith('/api/highlights') ||
+           pathname.startsWith('/api/ai-usage') ||
+           pathname.startsWith('/api/simple-test') ||
+           pathname.startsWith('/api/users') ||
+           pathname.startsWith('/api/news') ||
+           pathname.startsWith('/api/interactions') ||
+           pathname.startsWith('/api/lun-com'))) {
         
-        // Crear un mock de req/res para Express
-        const mockReq = {
-          ...req,
-          url: req.url,
-          method: req.method,
-          headers: req.headers,
-          body: req.body,
-          query: query
-        };
-        
-        const mockRes = {
-          ...res,
-          json: (data) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify(data));
-          },
-          status: (code) => {
-            res.statusCode = code;
-            return mockRes;
-          },
-          setHeader: (name, value) => {
-            res.setHeader(name, value);
-            return mockRes;
-          }
-        };
-        
-        api(mockReq, mockRes);
+        // Usar Express directamente
+        api(req, res);
         return;
       }
 
-      // Para todas las demás rutas, manejar con Next.js
+      // Para todas las demás rutas (incluyendo las rutas de Next.js App Router), manejar con Next.js
       await handle(req, res, parsedUrl);
     } catch (err) {
       console.error('Error occurred handling', req.url, err);
       res.statusCode = 500;
       res.end('internal server error');
     }
-  }).listen(port, () => {
+  });
+
+  server.listen(port, () => {
     console.log(`> Servidor unificado listo en http://${hostname}:${port}`);
     
     // Inicializar Token Tracker
     tokenTracker.initialize().catch(err => {
       console.error('⚠️ Error inicializando Token Tracker:', err);
     });
+
+    // Inicializar Daily Reset Scheduler para interacciones
+    try {
+      dailyResetScheduler.start();
+      console.log(`⏰ Daily Reset Scheduler iniciado: ${JSON.stringify(dailyResetScheduler.getStatus())}`);
+    } catch (error) {
+      console.error('⚠️ Error inicializando Daily Reset Scheduler:', error);
+    }
 
     // Configurar cron jobs del backend
     if (config.scrapingEnabled) {

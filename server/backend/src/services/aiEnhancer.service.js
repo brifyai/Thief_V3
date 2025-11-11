@@ -48,10 +48,11 @@ Responde SOLO con un JSON válido en este formato exacto:
         const result = await trackAICallSimple(
           'title_generation', // Tipo de operación
           async () => {
+            // Para aiEnhancer no tenemos userId directo, es null
             return await generateText(prompt, {
               temperature: 0.3,
               maxTokens: 200
-            });
+            }, null);
           },
           {
             operationId: `title_gen_${Date.now()}`,

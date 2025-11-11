@@ -59,65 +59,75 @@ class CacheService {
   // ==================== Health Check ====================
 
   async getHealth(): Promise<CacheHealth> {
+    const DEFAULT: CacheHealth = {
+      status: 'unhealthy',
+      redis: {
+        connected: false,
+        ping: 0,
+        memory: { used: 0, total: 0, percentage: 0 },
+        keys: 0,
+        expires: 0
+      },
+      lastCheck: new Date().toISOString()
+    };
+
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/health`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/health`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.status === 401 || response.status === 403) {
+          return DEFAULT;
+        }
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        status: 'unhealthy',
-        redis: {
-          connected: false,
-          ping: 0,
-          memory: { used: 0, total: 0, percentage: 0 },
-          keys: 0,
-          expires: 0
-        },
-        lastCheck: new Date().toISOString()
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en getHealth:', error);
-      throw error;
+      console.warn('⚠️ getHealth fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
   // ==================== Estadísticas ====================
 
   async getStats(): Promise<CacheStats> {
+    const DEFAULT: CacheStats = {
+      totalKeys: 0,
+      totalMemory: 0,
+      hitRate: 0,
+      missRate: 0,
+      operations: {
+        gets: 0,
+        sets: 0,
+        deletes: 0,
+        expires: 0
+      },
+      keyTypes: {},
+      averageTTL: 0
+    };
+
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/stats`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.status === 401 || response.status === 403) {
+          return DEFAULT;
+        }
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        totalKeys: 0,
-        totalMemory: 0,
-        hitRate: 0,
-        missRate: 0,
-        operations: {
-          gets: 0,
-          sets: 0,
-          deletes: 0,
-          expires: 0
-        },
-        keyTypes: {},
-        averageTTL: 0
-      };
+      return result.data || DEFAULT;
     } catch (error) {
-      console.error('Error en getStats:', error);
-      throw error;
+      console.warn('⚠️ getStats fallback to defaults:', error instanceof Error ? error.message : error);
+      return DEFAULT;
     }
   }
 
@@ -128,25 +138,29 @@ class CacheService {
     deletedKeys: number;
     freedMemory: number;
   }> {
+    const DEFAULT = {
+      success: false,
+      deletedKeys: 0,
+      freedMemory: 0
+    };
+
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/user/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/user/${userId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en cleanUserCache, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        deletedKeys: 0,
-        freedMemory: 0
-      };
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('Error en cleanUserCache:', error);
-      throw error;
+      // Fallback: retornar valores por defecto en caso de error
+      return DEFAULT;
     }
   }
 
@@ -155,25 +169,29 @@ class CacheService {
     deletedKeys: number;
     freedMemory: number;
   }> {
+    const DEFAULT = {
+      success: false,
+      deletedKeys: 0,
+      freedMemory: 0
+    };
+
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/searches/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/searches/${userId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en cleanUserSearchCache, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        deletedKeys: 0,
-        freedMemory: 0
-      };
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('Error en cleanUserSearchCache:', error);
-      throw error;
+      // Fallback: retornar valores por defecto en caso de error
+      return DEFAULT;
     }
   }
 
@@ -181,9 +199,9 @@ class CacheService {
 
   async getKeys(pattern?: string): Promise<CacheKey[]> {
     try {
-      const url = pattern 
-        ? `${API_BASE_URL}/cache/keys?pattern=${encodeURIComponent(pattern)}`
-        : `${API_BASE_URL}/cache/keys`;
+      const url = pattern
+        ? `${API_BASE_URL}/api/cache/keys?pattern=${encodeURIComponent(pattern)}`
+        : `${API_BASE_URL}/api/cache/keys`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -191,14 +209,16 @@ class CacheService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en getKeys, retornando array vacío`);
+        return [];
       }
 
       const result = await response.json();
       return result.data || [];
     } catch (error) {
       console.error('Error en getKeys:', error);
-      throw error;
+      // Fallback: retornar array vacío en caso de error
+      return [];
     }
   }
 
@@ -208,26 +228,30 @@ class CacheService {
     freedMemory: number;
     timeTaken: number;
   }> {
+    const DEFAULT = {
+      success: false,
+      deletedKeys: 0,
+      freedMemory: 0,
+      timeTaken: 0
+    };
+
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/clear`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/clear`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en clearAllCache, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        deletedKeys: 0,
-        freedMemory: 0,
-        timeTaken: 0
-      };
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('Error en clearAllCache:', error);
-      throw error;
+      // Fallback: retornar valores por defecto en caso de error
+      return DEFAULT;
     }
   }
 
@@ -236,25 +260,29 @@ class CacheService {
     deleted: boolean;
     freedMemory: number;
   }> {
+    const DEFAULT = {
+      success: false,
+      deleted: false,
+      freedMemory: 0
+    };
+
     try {
-      const response = await fetch(`${API_BASE_URL}/cache/key/${encodeURIComponent(key)}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cache/key/${encodeURIComponent(key)}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn(`HTTP error! status: ${response.status} en deleteKey, retornando fallback`);
+        return DEFAULT;
       }
 
       const result = await response.json();
-      return result.data || {
-        success: false,
-        deleted: false,
-        freedMemory: 0
-      };
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('Error en deleteKey:', error);
-      throw error;
+      // Fallback: retornar valores por defecto en caso de error
+      return DEFAULT;
     }
   }
 

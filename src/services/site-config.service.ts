@@ -97,7 +97,7 @@ export const siteConfigService = {
    * Obtener todas las configuraciones de sitios (público)
    */
   async getAll(): Promise<SiteConfiguration[]> {
-    const response = await fetch(`${API_BASE_URL}/site-configs`, {
+    const response = await fetch(`${API_BASE_URL}/api/site-configs`, {
       headers: getAuthHeaders(),
     });
 
@@ -113,7 +113,7 @@ export const siteConfigService = {
    * Obtener configuración por dominio (público)
    */
   async getByDomain(domain: string): Promise<SiteConfiguration | null> {
-    const response = await fetch(`${API_BASE_URL}/site-configs/${domain}`, {
+    const response = await fetch(`${API_BASE_URL}/api/site-configs/${domain}`, {
       headers: getAuthHeaders(),
     });
 
@@ -133,7 +133,7 @@ export const siteConfigService = {
    * Probar selectores (requiere autenticación)
    */
   async testSelectors(testData: TestSelectorsRequest): Promise<TestSelectorsResponse> {
-    const response = await fetch(`${API_BASE_URL}/site-configs/test`, {
+    const response = await fetch(`${API_BASE_URL}/api/site-configs/test`, {
       method: 'POST',
       headers: {
         ...getAuthHeaders(),
@@ -155,7 +155,7 @@ export const siteConfigService = {
    * Crear nueva configuración de sitio (requiere autenticación)
    */
   async create(configData: CreateSiteConfigData): Promise<SiteConfiguration> {
-    const response = await fetch(`${API_BASE_URL}/site-configs`, {
+    const response = await fetch(`${API_BASE_URL}/api/site-configs`, {
       method: 'POST',
       headers: {
         ...getAuthHeaders(),
@@ -180,7 +180,7 @@ export const siteConfigService = {
     domain: string,
     updates: UpdateSiteConfigData
   ): Promise<SiteConfiguration> {
-    const response = await fetch(`${API_BASE_URL}/site-configs/${domain}`, {
+    const response = await fetch(`${API_BASE_URL}/api/site-configs/${domain}`, {
       method: 'PUT',
       headers: {
         ...getAuthHeaders(),
@@ -202,7 +202,7 @@ export const siteConfigService = {
    * Verificar configuración (requiere autenticación)
    */
   async verify(domain: string): Promise<VerifyConfigResponse> {
-    const response = await fetch(`${API_BASE_URL}/site-configs/${domain}/verify`, {
+    const response = await fetch(`${API_BASE_URL}/api/site-configs/${domain}/verify`, {
       method: 'POST',
       headers: getAuthHeaders(),
     });
@@ -220,7 +220,7 @@ export const siteConfigService = {
    * Eliminar configuración (requiere autenticación)
    */
   async delete(domain: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/site-configs/${domain}`, {
+    const response = await fetch(`${API_BASE_URL}/api/site-configs/${domain}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
     });

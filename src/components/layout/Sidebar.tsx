@@ -16,6 +16,7 @@ import {
   BarChart3,
   Target,
   TrendingUp,
+  Globe,
 } from 'lucide-react';
 
 interface NavItem {
@@ -30,6 +31,12 @@ const navItems: NavItem[] = [
     title: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
+    roles: ['admin', 'user'],
+  },
+  {
+    title: 'Noticias',
+    href: '/news',
+    icon: Newspaper,
     roles: ['admin', 'user'],
   },
   {
@@ -72,6 +79,12 @@ const navItems: NavItem[] = [
     title: 'Scraping',
     href: '/dashboard/admin/scraper',
     icon: Database,
+    roles: ['admin'],
+  },
+  {
+    title: 'Sitios',
+    href: '/dashboard/admin/sites',
+    icon: Globe,
     roles: ['admin'],
   },
   {

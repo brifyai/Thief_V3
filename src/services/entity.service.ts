@@ -362,7 +362,7 @@ class EntityService {
   // Marcar alerta como leída
   async markAlertAsRead(alertId: string): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/entities/alerts/${alertId}/read`, {
+      const response = await fetch(`${API_BASE_URL}/api/entities/alerts/${alertId}/read`, {
         method: 'PATCH',
         headers: getAuthHeaders(),
       });

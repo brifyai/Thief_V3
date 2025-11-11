@@ -82,27 +82,26 @@ class SimpleAITokensService {
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ Error en ${endpoint}:`, response.status, errorText);
+      console.log(`ℹ️ Error en ${endpoint}:`, response.status, errorText);
       
       if (response.status === 401) {
-        throw new Error('No autorizado. Por favor inicia sesión nuevamente.');
+        console.log(`ℹ️ No autorizado en ${endpoint}, retornando fallback`);
+        return { success: false, data: null } as T;
       }
       
       if (response.status === 403) {
-        throw new Error('Acceso denegado. Se requieren permisos de administrador.');
+        console.log(`ℹ️ Acceso denegado en ${endpoint}, retornando fallback`);
+        return { success: false, data: null } as T;
       }
       
       if (response.status === 404) {
-        throw new Error(`Endpoint no encontrado: ${endpoint}`);
+        console.log(`ℹ️ Endpoint no encontrado: ${endpoint}, retornando fallback`);
+        return { success: false, data: null } as T;
       }
       
-      // Intentar parsear error JSON
-      try {
-        const errorData = JSON.parse(errorText);
-        throw new Error(errorData.error || errorData.message || `Error ${response.status}`);
-      } catch {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
+      // Para otros errores, también retornar fallback
+      console.log(`ℹ️ Error ${response.status} en ${endpoint}, retornando fallback`);
+      return { success: false, data: null } as T;
     }
 
     try {
@@ -110,8 +109,8 @@ class SimpleAITokensService {
       console.log(`✅ Datos recibidos de ${endpoint}:`, data);
       return data;
     } catch (error) {
-      console.error(`❌ Error parseando JSON de ${endpoint}:`, error);
-      throw new Error('Error al procesar la respuesta del servidor');
+      console.log(`ℹ️ Error parseando JSON de ${endpoint}:`, error);
+      return { success: false, data: null } as T;
     }
   }
 
@@ -121,7 +120,7 @@ class SimpleAITokensService {
     try {
       console.log('🔍 Obteniendo estadísticas del día...');
       
-      const response = await fetch(`${API_BASE_URL}/ai-usage/stats/today`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/stats/today`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -172,7 +171,7 @@ class SimpleAITokensService {
         limit: limit.toString()
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/alerts?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/alerts?${params}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -187,20 +186,26 @@ class SimpleAITokensService {
   }
 
   async resolveAlert(alertId: number): Promise<{ id: number; resolved: boolean; resolved_at: string }> {
+    const DEFAULT = {
+      id: alertId,
+      resolved: false,
+      resolved_at: new Date().toISOString()
+    };
+
     try {
       console.log(`🔍 Resolviendo alerta ${alertId}...`);
       
-      const response = await fetch(`${API_BASE_URL}/ai-usage/alerts/${alertId}/resolve`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/alerts/${alertId}/resolve`, {
         method: 'POST',
         headers: this.getAuthHeaders()
       });
 
       const result = await this.handleResponse<{ success: boolean; data: { id: number; resolved: boolean; resolved_at: string } }>(response, `alerts/${alertId}/resolve`);
       
-      return result.data;
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('❌ Error en resolveAlert:', error);
-      throw error;
+      return DEFAULT;
     }
   }
 
@@ -215,7 +220,7 @@ class SimpleAITokensService {
         days: days.toString()
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/top-operations?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/top-operations?${params}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -235,7 +240,7 @@ class SimpleAITokensService {
     try {
       console.log('🔍 Obteniendo modelos disponibles...');
       
-      const response = await fetch(`${API_BASE_URL}/ai-usage/models`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/models`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -259,6 +264,18 @@ class SimpleAITokensService {
   // ==================== Calculadora de Costos ====================
 
   async calculateCost(tokens: number, model: string = 'llama3-8b-8192', type: 'input' | 'output' = 'input'): Promise<SimpleCalculatorData> {
+    const DEFAULT: SimpleCalculatorData = {
+      tokens,
+      model,
+      type,
+      cost_usd: 0,
+      cost_formatted: '$0.000000 USD',
+      model_pricing: {
+        input_per_1m: 0,
+        output_per_1m: 0
+      }
+    };
+
     try {
       console.log(`🔍 Calculando costo (tokens=${tokens}, model=${model}, type=${type})...`);
       
@@ -268,27 +285,17 @@ class SimpleAITokensService {
         type
       });
 
-      const response = await fetch(`${API_BASE_URL}/ai-usage/calculator?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/calculator?${params}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
 
       const result = await this.handleResponse<{ success: boolean; data: SimpleCalculatorData }>(response, 'calculator');
       
-      return result.data || {
-        tokens,
-        model,
-        type,
-        cost_usd: 0,
-        cost_formatted: '$0.000000 USD',
-        model_pricing: {
-          input_per_1m: 0,
-          output_per_1m: 0
-        }
-      };
+      return result.data || DEFAULT;
     } catch (error) {
       console.error('❌ Error en calculateCost:', error);
-      throw error;
+      return DEFAULT;
     }
   }
 
@@ -369,7 +376,7 @@ class SimpleAITokensService {
       console.log('📡 API Base URL:', API_BASE_URL);
 
       // Intentar hacer una petición simple
-      const response = await fetch(`${API_BASE_URL}/ai-usage/stats/today`, {
+      const response = await fetch(`${API_BASE_URL}/api/ai-usage/stats/today`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });

@@ -32,7 +32,7 @@ if (!process.env.DATABASE_URL && isProduction) {
 if (!process.env.DATABASE_URL && !isProduction) {
   console.warn('⚠️ DATABASE_URL no configurado - ejecutando en modo demo sin base de datos');
   process.env.DATABASE_URL = 'postgresql://demo:demo@localhost:5432/scraper_demo';
-  process.env.DEMO_MODE = 'true';
+  // No forzar DEMO_MODE, usar Supabase
 }
 
 // Validaciones específicas de producción
@@ -55,7 +55,7 @@ if (isProduction) {
 
 // ===== CONFIGURACIÓN =====
 const config = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 3005,
   nodeEnv: process.env.NODE_ENV || 'development',
   
   // JWT - Sin fallback inseguro
@@ -64,7 +64,7 @@ const config = {
   
   // Chutes AI API (anteriormente Groq)
   chutesApiKey: process.env.CHUTES_API_KEY,
-  aiModel: process.env.AI_MODEL || 'gpt-4-turbo',
+  aiModel: process.env.AI_MODEL || 'openai/gpt-oss-20b',
   aiReasoningEffort: process.env.AI_REASONING_EFFORT || 'medium',
   
   // CORS - Validado en producción

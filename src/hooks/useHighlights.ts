@@ -10,33 +10,50 @@ async function fetchHighlights(): Promise<HighlightsData> {
   // Obtener token de localStorage
   const token = localStorage.getItem('token');
   
+  const emptyHighlights: HighlightsData = {
+    hasContent: false,
+    totalSections: 0,
+    sections: [],
+    generatedAt: new Date().toISOString()
+  };
+  
   if (!token) {
-    throw new Error('No authentication token found');
+    // Retornar datos vacíos en lugar de lanzar error
+    console.warn('⚠️ No authentication token found, returning empty highlights');
+    return emptyHighlights;
   }
 
   console.log('🔍 Fetching highlights from:', `${API_URL}/api/highlights`);
 
-  const response = await fetch(`${API_URL}/api/highlights`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+  try {
+    const response = await fetch(`${API_URL}/api/highlights`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      console.warn('⚠️ Error response:', response.status, response.statusText, '- returning empty highlights');
+      // Retornar datos vacíos en lugar de lanzar error para 401/403
+      return emptyHighlights;
     }
-  });
 
-  if (!response.ok) {
-    console.error('❌ Error response:', response.status, response.statusText);
-    throw new Error(`Error fetching highlights: ${response.status}`);
+    const result = await response.json();
+    
+    if (!result.success) {
+      console.warn('⚠️ API error:', result.error, '- returning empty highlights');
+      // Retornar datos vacíos en lugar de lanzar error
+      return emptyHighlights;
+    }
+
+    console.log('✅ Highlights loaded:', result.data.totalSections, 'sections');
+    return result.data;
+  } catch (error) {
+    console.error('❌ Error fetching highlights:', error);
+    // Retornar datos vacíos en caso de error de red
+    return emptyHighlights;
   }
-
-  const result = await response.json();
-  
-  if (!result.success) {
-    console.error('❌ API error:', result.error);
-    throw new Error(result.error || 'Failed to fetch highlights');
-  }
-
-  console.log('✅ Highlights loaded:', result.data.totalSections, 'sections');
-  return result.data;
 }
 
 export function useHighlights() {

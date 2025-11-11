@@ -5,9 +5,19 @@ const { limpiarTexto, obtenerURLBase, commonConfig, isValidUrl, exponentialBacko
 const configLoader = require('./configLoader.service');
 const smartScraper = require('./smartScraper.service');
 const siteConfigService = require('./siteConfigService');
+const { AdvancedAlAireLibreScraper } = require('./advancedAlAireLibreScraper.service');
+const { AdvancedProblematicSitesScraper } = require('./advancedProblematicSitesScraper.service');
+const { getLunComScraperServiceV2 } = require('./lunComScraper-v2.service');
 const { loggers } = require('../utils/logger');
+const problematicSitesConfig = require('../config/problematic-sites-config.json');
 
 const logger = loggers.scraping;
+
+// 🎬 Inicializar scheduler de LUN.COM al cargar el servicio
+// ✅ ACTIVADO: Scheduler de LUN.COM para funcionamiento real
+const lunComScraper = getLunComScraperServiceV2();
+lunComScraper.startScheduler();
+logger.info('✅ Scheduler de LUN.COM iniciado');
 
 // Configuración de Puppeteer
 const browserConfig = {
@@ -31,31 +41,155 @@ const extractNewsWithCheerio = ($, containerSelector, selectors, baseUrl, keywor
   $(containerSelector).each((_, element) => {
     const $element = $(element);
     
-    // Extraer título
+    // Extraer título - LÓGICA MEJORADA para detectar títulos en atributos
     let titulo = "";
     if (selectors.title) {
-      const titleSelector = Array.isArray(selectors.title) 
-        ? selectors.title.join(", ") 
-        : selectors.title;
-      titulo = limpiarTexto($element.find(titleSelector).first().text());
+      const titleSelectors = Array.isArray(selectors.title) ? selectors.title : [selectors.title];
+      
+      // 🎯 LÓGICA ESPECIAL: Detectar si alguno de los selectores de título coincide con el contenedor
+      // O si contiene selectores de atributo como a[title]
+      let titleFound = false;
+      for (const titleSel of titleSelectors) {
+        // Detectar si es un selector de atributo (ej: a[title], div[data-title])
+        const isAttributeSelector = titleSel && titleSel.includes('[') && titleSel.includes(']');
+        
+        if (titleSel === containerSelector || $element.is(titleSel)) {
+          // El selector del título es igual al del contenedor o coincide con el elemento
+          const titleAttr = $element.attr('title') ||
+                           $element.attr('data-title') ||
+                           $element.attr('alt') ||
+                           $element.text();
+          titulo = limpiarTexto(titleAttr);
+          logger.debug(`🎯 Título extraído desde atributo (selector: "${titleSel}"): "${titulo}"`);
+          titleFound = true;
+          break;
+        } else if (isAttributeSelector) {
+          // Manejar selectores de atributo: extraer el atributo del selector
+          // Ej: a[title] → extraer atributo 'title'
+          const attrMatch = titleSel.match(/\[([^\]]+)\]/);
+          if (attrMatch) {
+            const attrName = attrMatch[1].replace(/^["']|["']$/g, ''); // Remover comillas si existen
+            const $titleEl = $element.find(titleSel).first();
+            if ($titleEl.length > 0) {
+              const titleAttr = $titleEl.attr(attrName) || $titleEl.text();
+              titulo = limpiarTexto(titleAttr);
+              logger.debug(`🎯 Título extraído desde atributo selector (selector: "${titleSel}", attr: "${attrName}"): "${titulo}"`);
+              titleFound = true;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (!titleFound) {
+        // Lógica original: buscar en elementos hijos
+        for (const titleSel of titleSelectors) {
+          const foundTitle = limpiarTexto($element.find(titleSel).first().text());
+          if (foundTitle && foundTitle.length > 0) {
+            titulo = foundTitle;
+            logger.debug(`🎯 Título extraído desde hijos (selector: "${titleSel}"): "${titulo}"`);
+            break;
+          }
+        }
+      }
     }
     
-    // Extraer enlace
+    // Extraer enlace - LÓGICA MEJORADA para detectar enlaces en atributos
     let enlace = "";
     if (selectors.link) {
-      const linkSelector = Array.isArray(selectors.link) 
-        ? selectors.link.join(", ") 
-        : selectors.link;
-      enlace = $element.find(linkSelector).first().attr("href");
+      const linkSelectors = Array.isArray(selectors.link) ? selectors.link : [selectors.link];
+      
+      // 🎯 LÓGICA ESPECIAL: Detectar si alguno de los selectores de enlace coincide con el contenedor
+      let linkFound = false;
+      for (const linkSel of linkSelectors) {
+        // Detectar si es un selector de atributo (ej: a[href], div[data-url])
+        const isAttributeSelector = linkSel && linkSel.includes('[') && linkSel.includes(']');
+        
+        if (linkSel === containerSelector || $element.is(linkSel)) {
+          enlace = $element.attr("href");
+          logger.debug(`🎯 Enlace extraído desde atributo (selector: "${linkSel}"): "${enlace}"`);
+          linkFound = true;
+          break;
+        } else if (isAttributeSelector) {
+          // Manejar selectores de atributo: extraer el atributo del selector
+          // Ej: a[href] → extraer atributo 'href'
+          const attrMatch = linkSel.match(/\[([^\]]+)\]/);
+          if (attrMatch) {
+            const attrName = attrMatch[1].replace(/^["']|["']$/g, ''); // Remover comillas si existen
+            const $linkEl = $element.find(linkSel).first();
+            if ($linkEl.length > 0) {
+              enlace = $linkEl.attr(attrName) || $linkEl.attr('href');
+              logger.debug(`🎯 Enlace extraído desde atributo selector (selector: "${linkSel}", attr: "${attrName}"): "${enlace}"`);
+              linkFound = true;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (!linkFound) {
+        // Lógica original: buscar en elementos hijos
+        for (const linkSel of linkSelectors) {
+          const foundLink = $element.find(linkSel).first().attr("href");
+          if (foundLink && foundLink.length > 0) {
+            enlace = foundLink;
+            logger.debug(`🎯 Enlace extraído desde hijos (selector: "${linkSel}"): "${enlace}"`);
+            break;
+          }
+        }
+      }
     }
     
-    // Extraer descripción
+    // Extraer descripción - LÓGICA MEJORADA
     let descripcion = "";
     if (selectors.description) {
-      const descSelector = Array.isArray(selectors.description) 
-        ? selectors.description.join(", ") 
-        : selectors.description;
-      descripcion = limpiarTexto($element.find(descSelector).first().text());
+      const descSelectors = Array.isArray(selectors.description) ? selectors.description : [selectors.description];
+      
+      // Intentar con selectores configurados
+      for (const descSel of descSelectors) {
+        const foundDesc = limpiarTexto($element.find(descSel).first().text());
+        if (foundDesc && foundDesc.length > 0) {
+          descripcion = foundDesc;
+          logger.debug(`📝 Descripción extraída desde selector (${descSel}): "${descripcion.substring(0, 50)}..."`);
+          break;
+        }
+      }
+    }
+    
+    // Si no hay descripción, intentar con selectores comunes
+    if (!descripcion) {
+      const commonDescSelectors = [
+        'p:first-of-type',
+        '.description',
+        '.excerpt',
+        '.summary',
+        '[class*="description"]',
+        '[class*="excerpt"]',
+        '[class*="summary"]',
+        '[data-description]',
+        '[data-excerpt]'
+      ];
+      
+      for (const descSel of commonDescSelectors) {
+        let foundDesc = "";
+        
+        // Manejar selectores de atributo
+        if (descSel.includes('[data-')) {
+          const attrMatch = descSel.match(/\[data-([^\]]+)\]/);
+          if (attrMatch) {
+            const attrName = attrMatch[1];
+            foundDesc = limpiarTexto($element.attr(`data-${attrName}`) || "");
+          }
+        } else {
+          foundDesc = limpiarTexto($element.find(descSel).first().text());
+        }
+        
+        if (foundDesc && foundDesc.length > 20) {
+          descripcion = foundDesc;
+          logger.debug(`📝 Descripción extraída desde selector común (${descSel}): "${descripcion.substring(0, 50)}..."`);
+          break;
+        }
+      }
     }
     
     // Normalizar enlace
@@ -78,6 +212,15 @@ const extractNewsWithCheerio = ($, containerSelector, selectors, baseUrl, keywor
       !titulo.match(/menu|navegacion|search|newsletter/i) &&
       enlace
     ) {
+      // 🚫 VALIDACIÓN ESPECIAL PARA DF.CL: Rechazar páginas de suscripción
+      const isSubscriptionPage = descripcion.toLowerCase().includes('regístrese para recibir boletines informativos') ||
+                                descripcion.toLowerCase().includes('obtenga información financiera relevante para chile');
+      
+      if (isSubscriptionPage) {
+        logger.debug(`🚫 Rechazando página de suscripción de df.cl: "${titulo}"`);
+        return; // Saltar este elemento
+      }
+      
       if (
         !keyword ||
         titulo.toLowerCase().includes(keyword.toLowerCase()) ||
@@ -261,6 +404,75 @@ const processScraping = async (response, targetUrl, keyword, options = {}) => {
     }
   }
 
+  // 🆕 PRIORIDAD ESPECIAL (ANTES DE TODO): Usar scraper avanzado para Al Aire Libre
+  const normalizedDomain = siteConfigService.normalizeDomain(targetUrl);
+  if (normalizedDomain === 'alairelibre.cl') {
+    logger.info('🚀 PRIORIDAD ESPECIAL: Usando scraper avanzado personalizado para Al Aire Libre');
+    try {
+      const advancedScraper = new AdvancedAlAireLibreScraper();
+      const advancedResult = await advancedScraper.scrapeAlAireLibre();
+
+      if (advancedResult && advancedResult.length > 0) {
+        logger.info(`✅ Scraper avanzado exitoso: ${advancedResult.length} noticias`);
+
+        // El scraper avanzado ya retorna en formato compatible
+        const formattedNews = advancedResult.filter(news => news.titulo && news.enlace);
+
+        return {
+          sitio: obtenerURLBase(targetUrl),
+          total_noticias: formattedNews.length,
+          noticias: formattedNews,
+          metadata: {
+            configType: 'advanced',
+            configSource: 'advanced-scraper',
+            siteName: 'Al Aire Libre',
+            method: 'advanced-scraper',
+            scrapedAt: new Date().toISOString()
+          }
+        };
+      } else {
+        logger.warn('⚠️ Scraper avanzado no encontró noticias, continuando con flujo normal');
+      }
+    } catch (error) {
+      logger.error(`❌ Error en scraper avanzado: ${error.message}`);
+      logger.info('🔄 Continuando con flujo normal');
+    }
+  }
+
+  // 🆕 PRIORIDAD ESPECIAL: Usar scraper avanzado para 8 sitios problemáticos
+  const problematicSites = ['diariocoquimbo.cl', 'diariotemuco.cl', 'diariovaldivia.cl', 'diariopuertomontt.cl', 'diariopuntaarenas.cl', 'orbe.cl', 'reuters.com', 'france24.com'];
+  const isProblematiSite = problematicSites.some(site => targetUrl.includes(site));
+  
+  if (isProblematiSite) {
+    logger.info('🚀 PRIORIDAD ESPECIAL: Usando scraper avanzado para sitio problemático');
+    try {
+      const problematicScraper = new AdvancedProblematicSitesScraper();
+      const problematicResult = await problematicScraper.scrapeProblematicSite(targetUrl);
+
+      if (problematicResult && problematicResult.noticias && problematicResult.noticias.length > 0) {
+        logger.info(`✅ Scraper avanzado (problemático) exitoso: ${problematicResult.noticias.length} noticias`);
+
+        return {
+          sitio: problematicResult.sitio,
+          total_noticias: problematicResult.noticias.length,
+          noticias: problematicResult.noticias,
+          metadata: {
+            configType: 'advanced',
+            configSource: 'advanced-problematic-scraper',
+            siteName: problematicResult.sitio,
+            method: 'advanced-scraper',
+            scrapedAt: new Date().toISOString()
+          }
+        };
+      } else {
+        logger.warn('⚠️ Scraper avanzado (problemático) no encontró noticias, continuando con flujo normal');
+      }
+    } catch (error) {
+      logger.error(`❌ Error en scraper avanzado (problemático): ${error.message}`);
+      logger.info('🔄 Continuando con flujo normal');
+    }
+  }
+
   // PRIORIDAD 2: Intentar obtener configuración de BD primero, luego JSON
   const priorityConfig = await siteConfigService.getConfigPriority(targetUrl);
   let siteConfig = null;
@@ -346,11 +558,40 @@ const processScraping = async (response, targetUrl, keyword, options = {}) => {
                       enlace = new URL(enlace, baseUrl).href;
                     }
                     
-                    if (titulo && titulo.length > 10 && enlace) {
+                    // Extraer descripción desde selectores comunes
+                    let descripcion = '';
+                    const descSelectors = [
+                      'p:first-of-type',
+                      '.description',
+                      '.excerpt',
+                      '.summary',
+                      '[class*="description"]',
+                      '[class*="excerpt"]',
+                      '[class*="summary"]',
+                      '[data-description]',
+                      '[data-excerpt]'
+                    ];
+                    
+                    for (const descSel of descSelectors) {
+                      const descEl = container.querySelector(descSel);
+                      if (descEl) {
+                        const text = descEl.textContent?.trim() || '';
+                        if (text && text.length > 20) {
+                          descripcion = text.substring(0, 200);
+                          break;
+                        }
+                      }
+                    }
+                    
+                    // 🚫 VALIDACIÓN ESPECIAL PARA DF.CL: Rechazar páginas de suscripción
+                    const isSubscriptionPage = descripcion.toLowerCase().includes('regístrese para recibir boletines informativos') ||
+                                              descripcion.toLowerCase().includes('obtenga información financiera relevante para chile');
+                    
+                    if (titulo && titulo.length > 10 && enlace && !isSubscriptionPage) {
                       results.push({
                         titulo,
                         enlace,
-                        descripcion: 'No hay descripción disponible'
+                        descripcion: descripcion || 'No hay descripción disponible'
                       });
                     }
                   }
@@ -533,7 +774,8 @@ const processScraping = async (response, targetUrl, keyword, options = {}) => {
         }
       }
 
-      const descripcion = limpiarTexto(
+      // Extraer descripción - LÓGICA MEJORADA
+      let descripcion = limpiarTexto(
         $element
           .find(
             'p, [class*="excerpt"], [class*="description"], [class*="summary"]',
@@ -541,6 +783,29 @@ const processScraping = async (response, targetUrl, keyword, options = {}) => {
           .first()
           .text(),
       );
+      
+      // Si no hay descripción, intentar con más selectores
+      if (!descripcion || descripcion.length < 20) {
+        const descSelectors = [
+          '.description',
+          '.excerpt',
+          '.summary',
+          '[class*="description"]',
+          '[class*="excerpt"]',
+          '[class*="summary"]',
+          '[data-description]',
+          '[data-excerpt]',
+          'p:first-of-type'
+        ];
+        
+        for (const descSel of descSelectors) {
+          const foundDesc = limpiarTexto($element.find(descSel).first().text());
+          if (foundDesc && foundDesc.length > 20) {
+            descripcion = foundDesc;
+            break;
+          }
+        }
+      }
 
       if (
         titulo &&
@@ -548,6 +813,15 @@ const processScraping = async (response, targetUrl, keyword, options = {}) => {
         !titulo.match(/menu|navegacion|search|newsletter/i) &&
         enlace
       ) {
+        // 🚫 VALIDACIÓN ESPECIAL PARA DF.CL: Rechazar páginas de suscripción
+        const isSubscriptionPage = descripcion.toLowerCase().includes('regístrese para recibir boletines informativos') ||
+                                  descripcion.toLowerCase().includes('obtenga información financiera relevante para chile');
+        
+        if (isSubscriptionPage) {
+          logger.debug(`🚫 Rechazando página de suscripción de df.cl: "${titulo}"`);
+          return; // Saltar este elemento
+        }
+        
         if (
           !keyword ||
           titulo.toLowerCase().includes(keyword.toLowerCase()) ||

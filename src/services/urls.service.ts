@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../lib/api-secure';
+import { API_BASE_URL, getAuthHeaders } from '../lib/api-secure';
 
 export interface PublicUrl {
   id: number;
@@ -45,13 +45,9 @@ export interface SelectUrlData {
   public_url_id: number;
 }
 
-// Función auxiliar para obtener headers
+// Función auxiliar para obtener headers (centralizado)
 function getHeaders() {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
-  };
+ return getAuthHeaders();
 }
 
 class UrlsService {
@@ -61,12 +57,15 @@ class UrlsService {
   // Obtener todas las URLs públicas
   async getPublicUrls(): Promise<PublicUrl[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/public-urls`, {
+      const response = await fetch(`${API_BASE_URL}/api/public-urls`, {
         method: 'GET',
         headers: getHeaders()
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return [];
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -81,7 +80,7 @@ class UrlsService {
   // Obtener URL pública por ID
   async getPublicUrlById(id: number): Promise<PublicUrl | null> {
     try {
-      const response = await fetch(`${API_BASE_URL}/public-urls/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/public-urls/${id}`, {
         method: 'GET',
         headers: getHeaders()
       });
@@ -91,6 +90,9 @@ class UrlsService {
       }
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return null;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -105,7 +107,7 @@ class UrlsService {
   // Crear nueva URL pública (solo admin)
   async createPublicUrl(data: CreatePublicUrlData): Promise<PublicUrl> {
     try {
-      const response = await fetch(`${API_BASE_URL}/public-urls`, {
+      const response = await fetch(`${API_BASE_URL}/api/public-urls`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(data)
@@ -127,7 +129,7 @@ class UrlsService {
   // Actualizar URL pública (solo admin)
   async updatePublicUrl(id: number, data: UpdatePublicUrlData): Promise<PublicUrl> {
     try {
-      const response = await fetch(`${API_BASE_URL}/public-urls/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/public-urls/${id}`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify(data)
@@ -149,7 +151,7 @@ class UrlsService {
   // Eliminar URL pública (solo admin)
   async deletePublicUrl(id: number): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/public-urls/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/public-urls/${id}`, {
         method: 'DELETE',
         headers: getHeaders()
       });
@@ -169,7 +171,7 @@ class UrlsService {
   // Seleccionar URL para el usuario
   async selectUrl(data: SelectUrlData): Promise<MyUrl> {
     try {
-      const response = await fetch(`${API_BASE_URL}/my-urls/select`, {
+      const response = await fetch(`${API_BASE_URL}/api/my-urls/select`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(data)
@@ -191,7 +193,7 @@ class UrlsService {
   // Deseleccionar URL
   async deselectUrl(id: number): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/my-urls/select/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/my-urls/select/${id}`, {
         method: 'DELETE',
         headers: getHeaders()
       });
@@ -209,12 +211,15 @@ class UrlsService {
   // Obtener URLs seleccionadas por el usuario
   async getMySelectedUrls(): Promise<MyUrl[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/my-urls`, {
+      const response = await fetch(`${API_BASE_URL}/api/my-urls`, {
         method: 'GET',
         headers: getHeaders()
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return [];
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -229,12 +234,15 @@ class UrlsService {
   // Obtener dominios seleccionados por el usuario
   async getMySelectedDomains(): Promise<string[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/my-urls/domains`, {
+      const response = await fetch(`${API_BASE_URL}/api/my-urls/domains`, {
         method: 'GET',
         headers: getHeaders()
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return [];
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 

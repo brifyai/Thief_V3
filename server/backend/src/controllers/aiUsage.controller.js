@@ -54,57 +54,66 @@ const getStatsRange = async (req, res) => {
     const endDate = new Date(end_date);
     endDate.setHours(23, 59, 59, 999);
     
-    // Obtener logs agrupados por tipo de operación
-    const stats = await prisma.aiUsageLog.groupBy({
-      by: ['operation_type'],
-      where: {
-        created_at: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
-      _sum: {
-        total_tokens: true,
-        total_cost: true,
-        input_tokens: true,
-        output_tokens: true
-      },
-      _count: true,
-      _avg: {
-        total_cost: true,
-        duration_ms: true
+    // Usar Supabase en lugar de Prisma
+    const { data: logs, error } = await supabase
+      .from('ai_usage_logs')
+      .select('*')
+      .gte('created_at', startDate.toISOString())
+      .lte('created_at', endDate.toISOString());
+    
+    if (error) {
+      console.error('Error obteniendo logs de Supabase:', error);
+      throw error;
+    }
+    
+    // Agrupar por tipo de operación manualmente
+    const statsByType = {};
+    const cacheStats = { hits: 0, misses: 0 };
+    let totals = { operations: 0, tokens: 0, cost: 0 };
+    
+    logs.forEach(log => {
+      const type = log.operation_type || 'unknown';
+      
+      // Acumular por tipo
+      if (!statsByType[type]) {
+        statsByType[type] = {
+          operation_type: type,
+          operations: 0,
+          tokens: 0,
+          cost: 0,
+          total_cost: 0,
+          duration_ms: 0
+        };
+      }
+      
+      statsByType[type].operations++;
+      statsByType[type].tokens += log.total_tokens || 0;
+      statsByType[type].cost += log.total_cost || 0;
+      statsByType[type].total_cost += log.total_cost || 0;
+      statsByType[type].duration_ms += log.duration_ms || 0;
+      
+      // Acumular totales
+      totals.operations++;
+      totals.tokens += log.total_tokens || 0;
+      totals.cost += log.total_cost || 0;
+      
+      // Acumular caché
+      if (log.cache_hit) {
+        cacheStats.hits++;
+      } else {
+        cacheStats.misses++;
       }
     });
     
-    // Obtener totales
-    const totals = await prisma.aiUsageLog.aggregate({
-      where: {
-        created_at: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
-      _sum: {
-        total_tokens: true,
-        total_cost: true
-      },
-      _count: true
-    });
+    // Calcular promedios
+    const stats = Object.values(statsByType).map(s => ({
+      ...s,
+      avg_cost: s.operations > 0 ? s.cost / s.operations : 0,
+      avg_duration_ms: s.operations > 0 ? s.duration_ms / s.operations : 0
+    }));
     
-    // Obtener stats de caché
-    const cacheStats = await prisma.aiUsageLog.groupBy({
-      by: ['cache_hit'],
-      where: {
-        created_at: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
-      _count: true
-    });
-    
-    const cacheHits = cacheStats.find(s => s.cache_hit)?._count || 0;
-    const cacheMisses = cacheStats.find(s => !s.cache_hit)?._count || 0;
+    const cacheHits = cacheStats.hits;
+    const cacheMisses = cacheStats.misses;
     const totalCacheOps = cacheHits + cacheMisses;
     
     res.json({
@@ -114,19 +123,8 @@ const getStatsRange = async (req, res) => {
           start: start_date,
           end: end_date
         },
-        totals: {
-          operations: totals._count || 0,
-          tokens: totals._sum.total_tokens || 0,
-          cost: totals._sum.total_cost || 0
-        },
-        by_operation: stats.map(s => ({
-          operation_type: s.operation_type,
-          operations: s._count,
-          tokens: s._sum.total_tokens || 0,
-          cost: s._sum.total_cost || 0,
-          avg_cost: s._avg.total_cost || 0,
-          avg_duration_ms: s._avg.duration_ms || 0
-        })),
+        totals: totals,
+        by_operation: stats,
         cache: {
           hits: cacheHits,
           misses: cacheMisses,
@@ -197,15 +195,55 @@ const getAlerts = async (req, res) => {
   try {
     const { resolved = 'false', limit = '50' } = req.query;
     
-    const alerts = await prisma.aiCostAlert.findMany({
-      where: {
-        resolved: resolved === 'true'
-      },
-      orderBy: {
-        created_at: 'desc'
-      },
-      take: parseInt(limit)
-    });
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      const mockAlerts = [
+        {
+          id: 1,
+          alert_type: 'daily_limit',
+          threshold: 10,
+          current_value: 12.50,
+          message: 'Límite diario de $10 USD excedido. Consumo actual: $12.50',
+          severity: 'warning',
+          resolved: false,
+          created_at: new Date(),
+          resolved_at: null
+        },
+        {
+          id: 2,
+          alert_type: 'spike',
+          threshold: 1,
+          current_value: 1.25,
+          message: 'Operación costosa detectada: $1.25 USD',
+          severity: 'info',
+          resolved: false,
+          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000),
+          resolved_at: null
+        }
+      ];
+      
+      return res.json({
+        success: true,
+        data: mockAlerts
+      });
+    }
+
+    // Usar Supabase en lugar de Prisma
+    const { data: alerts, error } = await supabase
+      .from('ai_cost_alerts')
+      .select('*')
+      .eq('resolved', resolved === 'true')
+      .order('created_at', { ascending: false })
+      .limit(parseInt(limit));
+    
+    if (error) {
+      console.error('Error obteniendo alertas de Supabase:', error);
+      // Retornar array vacío en caso de error
+      return res.json({
+        success: true,
+        data: []
+      });
+    }
     
     res.json({
       success: true,
@@ -228,13 +266,33 @@ const resolveAlert = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const alert = await prisma.aiCostAlert.update({
-      where: { id: parseInt(id) },
-      data: {
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      return res.json({
+        success: true,
+        data: {
+          id: parseInt(id),
+          resolved: true,
+          resolved_at: new Date()
+        }
+      });
+    }
+
+    // Usar Supabase en lugar de Prisma
+    const { data: alert, error } = await supabase
+      .from('ai_cost_alerts')
+      .update({
         resolved: true,
-        resolved_at: new Date()
-      }
-    });
+        resolved_at: new Date().toISOString()
+      })
+      .eq('id', parseInt(id))
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error resolviendo alerta en Supabase:', error);
+      throw error;
+    }
     
     res.json({
       success: true,
@@ -260,31 +318,75 @@ const getTopOperations = async (req, res) => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - parseInt(days));
     
-    const topOps = await prisma.aiUsageLog.findMany({
-      where: {
-        created_at: {
-          gte: startDate
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      const mockTopOps = [
+        {
+          id: 1,
+          operation_type: 'entity',
+          total_tokens: 4500,
+          input_tokens: 3000,
+          output_tokens: 1500,
+          total_cost: 0.85,
+          model_used: 'llama3-8b-8192',
+          duration_ms: 450,
+          cache_hit: false,
+          created_at: new Date(Date.now() - 30 * 60 * 1000),
+          user_id: 1,
+          endpoint: '/api/entities/analyze'
+        },
+        {
+          id: 2,
+          operation_type: 'search',
+          total_tokens: 3200,
+          input_tokens: 2200,
+          output_tokens: 1000,
+          total_cost: 0.62,
+          model_used: 'llama3-8b-8192',
+          duration_ms: 280,
+          cache_hit: false,
+          created_at: new Date(Date.now() - 45 * 60 * 1000),
+          user_id: 1,
+          endpoint: '/api/search/smart'
+        },
+        {
+          id: 3,
+          operation_type: 'sentiment',
+          total_tokens: 2800,
+          input_tokens: 2000,
+          output_tokens: 800,
+          total_cost: 0.48,
+          model_used: 'llama3-8b-8192',
+          duration_ms: 220,
+          cache_hit: true,
+          created_at: new Date(Date.now() - 60 * 60 * 1000),
+          user_id: 2,
+          endpoint: '/api/sentiment/analyze'
         }
-      },
-      orderBy: {
-        total_cost: 'desc'
-      },
-      take: parseInt(limit),
-      select: {
-        id: true,
-        operation_type: true,
-        total_tokens: true,
-        input_tokens: true,
-        output_tokens: true,
-        total_cost: true,
-        model_used: true,
-        duration_ms: true,
-        cache_hit: true,
-        created_at: true,
-        user_id: true,
-        endpoint: true
-      }
-    });
+      ];
+      
+      return res.json({
+        success: true,
+        data: mockTopOps
+      });
+    }
+
+    // Usar Supabase en lugar de Prisma
+    const { data: topOps, error } = await supabase
+      .from('ai_usage_logs')
+      .select('*')
+      .gte('created_at', startDate.toISOString())
+      .order('total_cost', { ascending: false })
+      .limit(parseInt(limit));
+    
+    if (error) {
+      console.error('Error obteniendo top operaciones de Supabase:', error);
+      // Retornar array vacío en caso de error
+      return res.json({
+        success: true,
+        data: []
+      });
+    }
     
     res.json({
       success: true,
@@ -334,21 +436,37 @@ const getRecentLogs = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
     
-    const logs = await prisma.ai_usage_logs.findMany({
-      orderBy: { created_at: 'desc' },
-      take: limit,
-      select: {
-        id: true,
-        operation_type: true,
-        model_used: true,
-        input_tokens: true,
-        output_tokens: true,
-        total_tokens: true,
-        estimated_cost: true,
-        duration_ms: true,
-        created_at: true
-      }
-    });
+    // Modo demo - retornar datos simulados
+    if (process.env.DEMO_MODE === 'true') {
+      const mockLogs = Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
+        id: i + 1,
+        operation_type: ['search', 'sentiment', 'entity'][i % 3],
+        model_used: 'llama3-8b-8192',
+        input_tokens: 1000 + (i * 500),
+        output_tokens: 500 + (i * 250),
+        total_tokens: 1500 + (i * 750),
+        estimated_cost: 0.05 + (i * 0.02),
+        duration_ms: 200 + (i * 50),
+        created_at: new Date(Date.now() - i * 10 * 60 * 1000)
+      }));
+      
+      return res.json(mockLogs);
+    }
+
+    // Usar Supabase en lugar de Prisma
+    const { data: logs, error } = await supabase
+      .from('ai_usage_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    
+    if (error) {
+      console.error('Error obteniendo logs recientes de Supabase:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Error obteniendo logs'
+      });
+    }
     
     res.json(logs);
   } catch (error) {

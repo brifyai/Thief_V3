@@ -177,12 +177,16 @@ const createMockRedisClient = () => {
     exists: async (key) => 0,
     expire: async (key, ttl) => 1,
     ttl: async (key) => -1,
+    keys: async (pattern) => [], // Método keys que faltaba
     
     // Métodos de hash
     hget: async (key, field) => null,
     hset: async (key, field, value) => 1,
     hgetall: async (key) => ({}),
     hdel: async (key, field) => 1,
+    hincrby: async (key, field, increment) => increment,
+    hincrbyfloat: async (key, field, increment) => increment,
+    hget: async (key, field) => null,
     
     // Métodos de lista
     lpush: async (key, ...values) => values.length,
@@ -281,11 +285,18 @@ const resetCircuitBreaker = () => {
   console.log('🔄 Circuit breaker reseteado manualmente');
 };
 
+// Exportar el cliente directamente para compatibilidad
+const redisClient = getRedisClient();
+
 module.exports = {
   getRedisClient,
   closeRedisConnection,
   createMockRedisClient,
   healthCheck,
   getCircuitBreakerState,
-  resetCircuitBreaker
+  resetCircuitBreaker,
+  // Para compatibilidad con el script de verificación
+  ping: () => redisClient.ping(),
+  // Exportar el cliente directamente
+  client: redisClient
 };
