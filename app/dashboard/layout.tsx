@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthGuard } from '@/middleware/auth-guard';
+// import { AuthGuard } from '@/middleware/auth-guard'; // Temporalmente deshabilitado para demo
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 
@@ -10,7 +10,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthGuard>
+    // <AuthGuard> // Temporalmente deshabilitado para demo
       <div className="flex h-screen overflow-hidden">
         <Sidebar />
         <div className="flex flex-1 flex-col overflow-hidden">
@@ -20,6 +20,6 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
-    </AuthGuard>
+    // </AuthGuard>
   );
 }

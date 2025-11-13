@@ -30,69 +30,35 @@ import { Globe, Plus, Trash2, Edit, Eye, EyeOff } from 'lucide-react';
 import { API_BASE_URL, getAuthHeaders } from '@/lib/api-secure';
 
 interface Site {
+  id: string;
   domain: string;
   name: string;
-  enabled: boolean;
-  priority: number;
-  selectors?: {
-    listing?: {
-      container: string[];
-      title: string[];
-      link: string[];
-      description: string[];
-    };
-    article?: {
-      title: string[];
-      content: string[];
-      date: string[];
-      author: string[];
-      images: string[];
-    };
-  };
-  cleaningRules?: Array<{
-    type: string;
-    pattern: string;
-    description: string;
-  }>;
-  metadata?: {
-    encoding: string;
-    language: string;
-    dateFormat?: string;
-    authorSeparator?: string;
-  };
+  description: string;
+  category: string;
+  country: string;
+  language: string;
+  is_active: boolean;
+  scraper_config: any;
+  last_scraped: string | null;
+  scraping_frequency: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function SitesManagementPage() {
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingSite, setEditingSite] = useState<Site | null>(null);
   const [newSite, setNewSite] = useState<Partial<Site>>({
     domain: '',
     name: '',
-    enabled: true,
-    priority: 1,
-    selectors: {
-      listing: {
-        container: [],
-        title: [],
-        link: [],
-        description: []
-      },
-      article: {
-        title: [],
-        content: [],
-        date: [],
-        author: [],
-        images: []
-      }
-    },
-    cleaningRules: [],
-    metadata: {
-      encoding: 'utf-8',
-      language: 'es'
-    }
+    description: '',
+    category: 'news',
+    country: 'CL',
+    language: 'es',
+    is_active: true,
+    scraper_config: {},
+    scraping_frequency: 3600
   });
 
   // Cargar sitios desde el archivo de configuración
@@ -122,7 +88,7 @@ export default function SitesManagementPage() {
     }
   };
 
-  const saveSites = async (updatedSites: Site[]) => {
+  const updateSite = async (site: Site) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/sites`, {
         method: 'PUT',
@@ -130,87 +96,88 @@ export default function SitesManagementPage() {
           ...getAuthHeaders(),
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ sites: updatedSites }),
+        body: JSON.stringify({
+          sites: [{
+            ...site,
+            is_active: !site.is_active // Toggle active status
+          }]
+        }),
       });
 
-      if (!response.ok) throw new Error('Error guardando sitios');
+      if (!response.ok) throw new Error('Error actualizando sitio');
 
-      console.log('Sitios guardados exitosamente');
+      console.log('Sitio actualizado exitosamente');
       loadSites();
     } catch (error) {
-      console.error('Error guardando sitios:', error);
+      console.error('Error actualizando sitio:', error);
     }
   };
 
-  const addSite = () => {
+  const deleteSite = async (domain: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/sites?domain=${encodeURIComponent(domain)}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) throw new Error('Error eliminando sitio');
+
+      console.log('Sitio eliminado exitosamente');
+      loadSites();
+    } catch (error) {
+      console.error('Error eliminando sitio:', error);
+    }
+  };
+
+  const addSite = async () => {
     if (!newSite.domain || !newSite.name) {
       console.error('Dominio y nombre son requeridos');
       return;
     }
 
-    const siteToAdd: Site = {
-      domain: newSite.domain!,
-      name: newSite.name!,
-      enabled: newSite.enabled ?? true,
-      priority: newSite.priority ?? 1,
-      selectors: newSite.selectors,
-      cleaningRules: newSite.cleaningRules,
-      metadata: newSite.metadata
-    };
-
-    const updatedSites = [...sites, siteToAdd].sort((a, b) => a.priority - b.priority);
-    saveSites(updatedSites);
-    setIsAddDialogOpen(false);
-    setNewSite({
-      domain: '',
-      name: '',
-      enabled: true,
-      priority: 1,
-      selectors: {
-        listing: {
-          container: [],
-          title: [],
-          link: [],
-          description: []
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/sites`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
         },
-        article: {
-          title: [],
-          content: [],
-          date: [],
-          author: [],
-          images: []
-        }
-      },
-      cleaningRules: [],
-      metadata: {
-        encoding: 'utf-8',
-        language: 'es'
+        body: JSON.stringify({
+          domain: newSite.domain,
+          name: newSite.name,
+          description: newSite.description || '',
+          category: newSite.category || 'news',
+          country: newSite.country || 'CL',
+          language: newSite.language || 'es',
+          scraper_config: newSite.scraper_config || {}
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error creando sitio');
       }
-    });
+
+      console.log('Sitio creado exitosamente');
+      loadSites();
+      setIsAddDialogOpen(false);
+      setNewSite({
+        domain: '',
+        name: '',
+        description: '',
+        category: 'news',
+        country: 'CL',
+        language: 'es',
+        is_active: true,
+        scraper_config: {},
+        scraping_frequency: 3600
+      });
+    } catch (error) {
+      console.error('Error creando sitio:', error);
+    }
   };
 
-  const updateSite = () => {
-    if (!editingSite) return;
-
-    const updatedSites = sites.map(site => 
-      site.domain === editingSite.domain ? editingSite : site
-    ).sort((a, b) => a.priority - b.priority);
-    
-    saveSites(updatedSites);
-    setIsEditDialogOpen(false);
-    setEditingSite(null);
-  };
-
-  const deleteSite = (domain: string) => {
-    const updatedSites = sites.filter(site => site.domain !== domain);
-    saveSites(updatedSites);
-  };
-
-  const toggleSiteStatus = (domain: string) => {
-    const updatedSites = sites.map(site => 
-      site.domain === domain ? { ...site, enabled: !site.enabled } : site
-    );
-    saveSites(updatedSites);
+  const toggleSiteStatus = async (site: Site) => {
+    await updateSite(site);
   };
 
   if (loading) {
@@ -263,44 +230,61 @@ export default function SitesManagementPage() {
                   />
                 </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
+
+              <div>
+                <Label htmlFor="description">Descripción</Label>
+                <Input
+                  id="description"
+                  value={newSite.description}
+                  onChange={(e) => setNewSite({ ...newSite, description: e.target.value })}
+                  placeholder="Descripción del sitio"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="priority">Prioridad</Label>
+                  <Label htmlFor="category">Categoría</Label>
                   <Input
-                    id="priority"
-                    type="number"
-                    value={newSite.priority}
-                    onChange={(e) => setNewSite({ ...newSite, priority: parseInt(e.target.value) })}
-                    min="1"
+                    id="category"
+                    value={newSite.category}
+                    onChange={(e) => setNewSite({ ...newSite, category: e.target.value })}
+                    placeholder="news"
                   />
                 </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="enabled"
-                    checked={newSite.enabled}
-                    onChange={(e) => setNewSite({ ...newSite, enabled: e.target.checked })}
-                    className="rounded"
+                <div>
+                  <Label htmlFor="country">País</Label>
+                  <Input
+                    id="country"
+                    value={newSite.country}
+                    onChange={(e) => setNewSite({ ...newSite, country: e.target.value })}
+                    placeholder="CL"
                   />
-                  <Label htmlFor="enabled">Habilitado</Label>
+                </div>
+                <div>
+                  <Label htmlFor="language">Idioma</Label>
+                  <Input
+                    id="language"
+                    value={newSite.language}
+                    onChange={(e) => setNewSite({ ...newSite, language: e.target.value })}
+                    placeholder="es"
+                  />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="selectors">Selectores (JSON)</Label>
+                <Label htmlFor="scraper_config">Configuración de Scraping (JSON)</Label>
                 <Textarea
-                  id="selectors"
-                  value={JSON.stringify(newSite.selectors, null, 2)}
+                  id="scraper_config"
+                  value={JSON.stringify(newSite.scraper_config, null, 2)}
                   onChange={(e) => {
                     try {
-                      const selectors = JSON.parse(e.target.value);
-                      setNewSite({ ...newSite, selectors });
+                      const scraper_config = JSON.parse(e.target.value);
+                      setNewSite({ ...newSite, scraper_config });
                     } catch (error) {
                       // Ignorar errores de JSON mientras el usuario escribe
                     }
                   }}
-                  placeholder="Selectores CSS para scraping"
+                  placeholder="Configuración de scraping"
                   className="h-32 font-mono text-sm"
                 />
               </div>
@@ -331,30 +315,19 @@ export default function SitesManagementPage() {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Badge variant={site.enabled ? "default" : "secondary"}>
-                    {site.enabled ? "Habilitado" : "Deshabilitado"}
+                  <Badge variant={site.is_active ? "default" : "secondary"}>
+                    {site.is_active ? "Activo" : "Inactivo"}
                   </Badge>
-                  <Badge variant="outline">Prioridad: {site.priority}</Badge>
-                  
+                  <Badge variant="outline">{site.category}</Badge>
+
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => toggleSiteStatus(site.domain)}
+                    onClick={() => toggleSiteStatus(site)}
                   >
-                    {site.enabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {site.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setEditingSite(site);
-                      setIsEditDialogOpen(true);
-                    }}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" size="sm">
@@ -365,7 +338,7 @@ export default function SitesManagementPage() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>¿Eliminar sitio?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Esta acción eliminará permanentemente el sitio "{site.name}" ({site.domain}) 
+                          Esta acción eliminará permanentemente el sitio "{site.name}" ({site.domain})
                           de la configuración de scraping.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
@@ -381,99 +354,22 @@ export default function SitesManagementPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-muted-foreground">
-                <p><strong>Selectores configurados:</strong></p>
-                <ul className="list-disc list-inside mt-1 space-y-1">
-                  <li>Contenedores: {site.selectors?.listing?.container?.length || 0}</li>
-                  <li>Títulos: {site.selectors?.listing?.title?.length || 0}</li>
-                  <li>Enlaces: {site.selectors?.listing?.link?.length || 0}</li>
-                  <li>Descripciones: {site.selectors?.listing?.description?.length || 0}</li>
-                </ul>
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>{site.description}</p>
+                <div className="flex items-center space-x-4 text-xs">
+                  <span>País: {site.country}</span>
+                  <span>Idioma: {site.language}</span>
+                  <span>Frecuencia: {site.scraping_frequency}s</span>
+                </div>
+                {site.last_scraped && (
+                  <p>Último scraping: {new Date(site.last_scraped).toLocaleString()}</p>
+                )}
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Dialog para editar */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Editar Sitio</DialogTitle>
-          </DialogHeader>
-          {editingSite && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-domain">Dominio</Label>
-                  <Input
-                    id="edit-domain"
-                    value={editingSite.domain}
-                    disabled
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-name">Nombre</Label>
-                  <Input
-                    id="edit-name"
-                    value={editingSite.name}
-                    onChange={(e) => setEditingSite({ ...editingSite, name: e.target.value })}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-priority">Prioridad</Label>
-                  <Input
-                    id="edit-priority"
-                    type="number"
-                    value={editingSite.priority}
-                    onChange={(e) => setEditingSite({ ...editingSite, priority: parseInt(e.target.value) })}
-                    min="1"
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="edit-enabled"
-                    checked={editingSite.enabled}
-                    onChange={(e) => setEditingSite({ ...editingSite, enabled: e.target.checked })}
-                    className="rounded"
-                  />
-                  <Label htmlFor="edit-enabled">Habilitado</Label>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="edit-selectors">Selectores (JSON)</Label>
-                <Textarea
-                  id="edit-selectors"
-                  value={JSON.stringify(editingSite.selectors, null, 2)}
-                  onChange={(e) => {
-                    try {
-                      const selectors = JSON.parse(e.target.value);
-                      setEditingSite({ ...editingSite, selectors });
-                    } catch (error) {
-                      // Ignorar errores de JSON mientras el usuario escribe
-                    }
-                  }}
-                  className="h-32 font-mono text-sm"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={updateSite}>
-                  Guardar Cambios
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

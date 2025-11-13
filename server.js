@@ -213,8 +213,7 @@ app.prepare().then(() => {
       // Si la ruta comienza con /api pero NO es una ruta de Next.js App Router, manejar con Express
       if (pathname.startsWith('/api') &&
           !isNextJsApiRoute &&
-          (pathname.startsWith('/api/auth') ||
-           pathname.startsWith('/api/scraping') ||
+          (pathname.startsWith('/api/scraping') ||
            pathname.startsWith('/api/urls') ||
            pathname.startsWith('/api/stats') ||
            pathname.startsWith('/api/search') ||
@@ -231,7 +230,6 @@ app.prepare().then(() => {
            pathname.startsWith('/api/ai-usage') ||
            pathname.startsWith('/api/simple-test') ||
            pathname.startsWith('/api/users') ||
-           pathname.startsWith('/api/news') ||
            pathname.startsWith('/api/interactions') ||
            pathname.startsWith('/api/lun-com'))) {
         

@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
     // Crear respuesta
     const response = {
       success: true,
+      token: authData.session.access_token,
       user: {
         id: authData.user.id,
         email: authData.user.email,
