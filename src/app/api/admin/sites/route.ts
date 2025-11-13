@@ -2,13 +2,168 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // Configuración de Supabase
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Crear cliente de Supabase solo si tenemos credenciales válidas
+const supabase = supabaseUrl && supabaseServiceKey && !supabaseUrl.includes('demo') && !supabaseServiceKey.includes('demo')
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : null;
 
 export async function GET() {
   try {
+    // Verificar si tenemos configuración de Supabase válida
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey || supabaseUrl.includes('demo') || supabaseServiceKey.includes('demo')) {
+      // Modo demo: devolver datos de ejemplo
+      console.log('🎭 Modo demo detectado - devolviendo datos de ejemplo para sitios');
+
+      const mockSites = [
+        {
+          id: 1,
+          domain: 'ejemplo.com',
+          name: 'Sitio de Ejemplo',
+          description: 'Sitio web de ejemplo para demostración',
+          category: 'news',
+          country: 'CL',
+          language: 'es',
+          is_active: true,
+          scraper_config: {
+            selectors: {
+              listing: {
+                container: ['.article-list', '.news-container'],
+                title: ['h2.article-title', '.news-title'],
+                link: ['a.article-link', '.news-link'],
+                description: ['.article-summary', '.news-excerpt']
+              },
+              article: {
+                title: ['h1.article-title', '.post-title'],
+                content: ['.article-content', '.post-content'],
+                date: ['.article-date', '.post-date'],
+                author: ['.article-author', '.post-author'],
+                images: ['.article-image img', '.post-image img']
+              }
+            }
+          },
+          last_scraped: null,
+          scraping_frequency: 3600,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 2,
+          domain: 'test.cl',
+          name: 'Sitio de Prueba',
+          description: 'Sitio web de prueba para desarrollo',
+          category: 'news',
+          country: 'CL',
+          language: 'es',
+          is_active: false,
+          scraper_config: {},
+          last_scraped: null,
+          scraping_frequency: 3600,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 3,
+          domain: 'noticias.cl',
+          name: 'Portal de Noticias',
+          description: 'Portal de noticias chileno',
+          category: 'news',
+          country: 'CL',
+          language: 'es',
+          is_active: true,
+          scraper_config: {},
+          last_scraped: null,
+          scraping_frequency: 3600,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ];
+
+      return NextResponse.json({
+        success: true,
+        sites: mockSites
+      });
+    }
+
+    // Verificar si tenemos cliente de Supabase válido
+    if (!supabase) {
+      console.log('🎭 Modo demo detectado - devolviendo datos de ejemplo para sitios');
+
+      const mockSites = [
+        {
+          id: 1,
+          domain: 'ejemplo.com',
+          name: 'Sitio de Ejemplo',
+          description: 'Sitio web de ejemplo para demostración',
+          category: 'news',
+          country: 'CL',
+          language: 'es',
+          is_active: true,
+          scraper_config: {
+            selectors: {
+              listing: {
+                container: ['.article-list', '.news-container'],
+                title: ['h2.article-title', '.news-title'],
+                link: ['a.article-link', '.news-link'],
+                description: ['.article-summary', '.news-excerpt']
+              },
+              article: {
+                title: ['h1.article-title', '.post-title'],
+                content: ['.article-content', '.post-content'],
+                date: ['.article-date', '.post-date'],
+                author: ['.article-author', '.post-author'],
+                images: ['.article-image img', '.post-image img']
+              }
+            }
+          },
+          last_scraped: null,
+          scraping_frequency: 3600,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 2,
+          domain: 'test.cl',
+          name: 'Sitio de Prueba',
+          description: 'Sitio web de prueba para desarrollo',
+          category: 'news',
+          country: 'CL',
+          language: 'es',
+          is_active: false,
+          scraper_config: {},
+          last_scraped: null,
+          scraping_frequency: 3600,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 3,
+          domain: 'noticias.cl',
+          name: 'Portal de Noticias',
+          description: 'Portal de noticias chileno',
+          category: 'news',
+          country: 'CL',
+          language: 'es',
+          is_active: true,
+          scraper_config: {},
+          last_scraped: null,
+          scraping_frequency: 3600,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ];
+
+      return NextResponse.json({
+        success: true,
+        sites: mockSites
+      });
+    }
+
     // Obtener todos los sitios de Supabase
     const { data: sites, error } = await supabase
       .from('site_configurations')
@@ -73,6 +228,16 @@ export async function PUT(request: NextRequest) {
           { status: 400 }
         );
       }
+    }
+
+    // En modo demo, simular actualización exitosa
+    if (!supabase) {
+      console.log('🎭 Modo demo - simulando actualización de sitios');
+      return NextResponse.json({
+        success: true,
+        message: 'Sitios actualizados exitosamente (modo demo)',
+        sites: sites
+      });
     }
 
     // Upsert de todos los sitios en Supabase
@@ -147,6 +312,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // En modo demo, simular creación exitosa
+    if (!supabase) {
+      console.log('🎭 Modo demo - simulando creación de sitio');
+      const newSite = {
+        id: Date.now(),
+        domain,
+        name,
+        description: description || '',
+        category: category || 'news',
+        country: country || 'CL',
+        language: language || 'es',
+        is_active: true,
+        scraper_config: scraper_config || {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      return NextResponse.json({
+        success: true,
+        message: 'Sitio creado exitosamente (modo demo)',
+        site: newSite
+      });
+    }
+
     // Insertar nuevo sitio en Supabase
     const { data, error } = await supabase
       .from('site_configurations')
@@ -197,6 +386,15 @@ export async function DELETE(request: NextRequest) {
         { error: 'domain es requerido para eliminar' },
         { status: 400 }
       );
+    }
+
+    // En modo demo, simular eliminación exitosa
+    if (!supabase) {
+      console.log('🎭 Modo demo - simulando eliminación de sitio:', domain);
+      return NextResponse.json({
+        success: true,
+        message: 'Sitio eliminado exitosamente (modo demo)'
+      });
     }
 
     // Eliminar sitio de Supabase

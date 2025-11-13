@@ -1,5 +1,5 @@
 // Cliente API mejorado con manejo de errores
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3005';
 const API_BASE_URL = `${BASE_URL}/api`;
 
 export interface APIResponse<T> {

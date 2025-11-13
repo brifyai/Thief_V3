@@ -353,7 +353,7 @@ export const useUrlTestFlow = () => {
       } : null;
 
       // Usar el servicio de URLs en lugar de fetch directo
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/public-urls`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3005'}/api/public-urls`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

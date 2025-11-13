@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { AuthGuard } from '@/middleware/auth-guard';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -9,8 +8,8 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <AuthGuard requiredRole="admin">
+    <div className="container mx-auto px-4 py-8">
       {children}
-    </AuthGuard>
+    </div>
   );
 }

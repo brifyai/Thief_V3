@@ -34,6 +34,16 @@ export async function POST(request: NextRequest) {
       }
     });
     
+    // Si el registro fue exitoso pero no hay sesión, intentar login automático
+    let sessionToken = authData.session?.access_token;
+    if (!sessionToken && !authError) {
+      const { data: loginData } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      sessionToken = loginData.session?.access_token;
+    }
+    
     if (authError) {
       console.error('❌ Error de registro:', authError.message);
       return NextResponse.json(
@@ -71,6 +81,7 @@ export async function POST(request: NextRequest) {
     // Crear respuesta
     const response = {
       success: true,
+      token: sessionToken || '',
       user: {
         id: authData.user.id,
         email: authData.user.email,

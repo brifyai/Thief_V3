@@ -160,7 +160,7 @@ class HumanizedNewsService {
    * Exportar noticias humanizadas
    */
   async exportHumanizedNews(format: 'json' | 'csv' | 'markdown' = 'json', includeMetrics = true): Promise<Blob> {
-    const url = `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000')}/api/news/humanized/export?format=${format}&metrics=${includeMetrics}`;
+    const url = `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3005')}/api/news/humanized/export?format=${format}&metrics=${includeMetrics}`;
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
